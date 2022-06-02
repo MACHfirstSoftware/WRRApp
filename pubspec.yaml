@@ -45,7 +45,12 @@ dependencies:
   google_nav_bar: ^5.0.6
   #Icons8 icon pack
   line_icons: ^2.0.1
-  
+  #Show toast message
+  animated_snack_bar: ^0.2.0
+  #HTTP request package
+  dio: ^4.0.6
+  #Loading spinner
+  loading_indicator: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +60,16 @@ dev_dependencies:
 
   #Get native splash screen
   flutter_native_splash: ^2.1.6
+  # App launcher icon
+  flutter_launcher_icons: ^0.9.2
+
+# App launcher icon configurations
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#F23A02"
+  adaptive_icon_foreground: "assets/icons/app_icon.png"
 
 # Splash Screen configurations
 flutter_native_splash:

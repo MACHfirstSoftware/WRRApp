@@ -17,7 +17,7 @@ class DashboardAppBar extends StatelessWidget {
             child: Icon(
               Icons.location_on_outlined,
               color: Colors.white,
-              size: 25.w,
+              size: 30.h,
             ),
           ),
           Align(
@@ -40,7 +40,7 @@ class DashboardAppBar extends StatelessWidget {
             child: Icon(
               Icons.search_rounded,
               color: Colors.white,
-              size: 25.w,
+              size: 30.h,
             ),
           ),
           Positioned(
@@ -49,7 +49,7 @@ class DashboardAppBar extends StatelessWidget {
             child: Icon(
               Icons.menu,
               color: Colors.white,
-              size: 25.w,
+              size: 30.h,
             ),
           ),
         ],

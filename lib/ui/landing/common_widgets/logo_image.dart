@@ -9,10 +9,10 @@ class LogoImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 150.w,
-      width: 150.w,
+      height: 150.h,
+      width: 150.h,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(75.w),
+        borderRadius: BorderRadius.circular(75.h),
         child: Image.asset(
           "assets/images/logo.png",
           fit: BoxFit.cover,

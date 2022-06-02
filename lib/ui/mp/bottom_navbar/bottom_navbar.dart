@@ -1,31 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard.dart';
-import 'package:line_icons/line_icons.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  final String? userName;
+  const BottomNavBar({Key? key, this.userName}) : super(key: key);
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
   int currentIndex = 0;
   late PageController _pageController;
 
-  List<IconData> listOfIcons = [
-    Icons.home_rounded,
-    Icons.favorite_rounded,
-    Icons.settings_rounded,
-    Icons.person_rounded,
+  List<String> listOfIcons = [
+    "assets/icons/nex.png",
+    "assets/icons/aim.png",
+    "assets/icons/verge.png",
+    "assets/icons/box.png",
   ];
 
   @override
   void initState() {
+    print("USER : $widget.user");
     _pageController = PageController(initialPage: 0);
     super.initState();
   }
@@ -46,16 +46,61 @@ class _BottomNavBarState extends State<BottomNavBar> {
           children: [
             const DashBorad(),
             Container(
-              color: Colors.red,
+              color: Colors.white,
             ),
             Container(
-              color: Colors.blue,
+              color: Colors.white,
             ),
             Container(
               alignment: Alignment.center,
-              color: Colors.green,
-              child: SizedBox(
-                  height: 50.w, width: 50.w, child: Icon(LineIcons.viber)),
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Welcome!",
+                    style: TextStyle(
+                        fontSize: 28.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Text(
+                    widget.userName ?? "",
+                    style: TextStyle(
+                        fontSize: 24.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 30.h,
+                  ),
+                  GestureDetector(
+                    onTap: () => _doLogout(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 50.h,
+                      width: 190.w,
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFF23A02),
+                          borderRadius: BorderRadius.circular(5.w)),
+                      child: Text(
+                        "LOGOUT",
+                        style: TextStyle(
+                            fontSize: 24.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -123,12 +168,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         );
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    _pageController.jumpToPage(index);
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     // _selectedIndex = index;
+  //   });
+  //   _pageController.jumpToPage(index);
+  // }
 
   _bottomNavbar() {
     return Container(
@@ -154,25 +199,74 @@ class _BottomNavBarState extends State<BottomNavBar> {
                         currentIndex = listOfIcons.indexOf(e);
                         _pageController.jumpToPage(listOfIcons.indexOf(e));
                       })),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 1500),
-                    curve: Curves.fastLinearToSlowEaseIn,
-                    width: 60.w,
-                    height: 50.h,
-                    decoration: BoxDecoration(
-                      color: currentIndex == listOfIcons.indexOf(e)
-                          ? const Color(0xFFF23A02)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(15.w),
-                    ),
-                    child: Icon(
-                      e,
-                      size: 30.w,
-                      color: Colors.white,
-                    ),
-                  ),
+                  // child: TweenAnimationBuilder<Color>(
+                  //     duration: const Duration(milliseconds: 1500),
+                  //     tween: Tween<Color>(
+                  //         begin: currentIndex == listOfIcons.indexOf(e)
+                  //             ? Colors.white
+                  //             : const Color(0xFFF23A02),
+                  //         end: currentIndex == listOfIcons.indexOf(e)
+                  //             ? const Color(0xFFF23A02)
+                  //             : Colors.white),
+                  //     child: Image.asset(
+                  //       e,
+                  //       height: 30.w,
+                  //       width: 30.w,
+                  //       // fit: BoxFit.fill,
+                  //     ),
+                  //     builder: (BuildContext _, Color value, Widget? child) {
+                  //       return ColorFiltered(
+                  //           child: child,
+                  //           colorFilter:
+                  //               ColorFilter.mode(value, BlendMode.modulate));
+                  //     }),
+                  // child: AnimatedContainer(
+                  //     duration: const Duration(milliseconds: 1500),
+                  //     curve: Curves.fastLinearToSlowEaseIn,
+                  // width: 60.w,
+                  // height: 50.h,
+                  //     decoration: BoxDecoration(
+                  // color: currentIndex == listOfIcons.indexOf(e)
+                  //     ? const Color(0xFFF23A02)
+                  //     : Colors.transparent,
+                  //       // borderRadius: BorderRadius.circular(15.w),
+                  //     ),
+                  // child: Image.asset(
+                  //   e,
+                  //   height: 30.w,
+                  //   width: 30.w,
+                  //   // fit: BoxFit.fill,
+                  // )
+                  //     // Icon(
+                  //     //   e,
+                  //     //   size: 30.w,
+                  //     //   color: Colors.white,
+                  //     // ),
+                  //     ),
+                  child: Container(
+                      color: Colors.transparent,
+                      height: 60.h,
+                      width: 60.h,
+                      child: Center(
+                        child: Image.asset(
+                          e,
+                          height: 35.h,
+                          width: 35.h,
+                          fit: BoxFit.cover,
+                          color: currentIndex == listOfIcons.indexOf(e)
+                              ? const Color(0xFFF23A02)
+                              : Colors.white,
+                        ),
+                      )),
                 ))
           ],
         )));
+  }
+
+  _doLogout() {
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInPage()),
+        (route) => false);
   }
 }
