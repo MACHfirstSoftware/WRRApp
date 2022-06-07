@@ -19,6 +19,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   int _currentStep = 0;
+  bool _sendMeUpdates = false;
   late PageController _pageController;
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -53,6 +54,12 @@ class _SignUpPageState extends State<SignUpPage> {
 
   _onPageChange() {
     _pageController.jumpToPage(_currentStep);
+  }
+
+  _sendMeUpdatesFunc() {
+    setState(() {
+      _sendMeUpdates = !_sendMeUpdates;
+    });
   }
 
   _validateStepOne() {
@@ -147,11 +154,12 @@ class _SignUpPageState extends State<SignUpPage> {
             MaterialPageRoute(
                 builder: (_) => VerificationPage(
                       userId: res,
-                    )));
-        setState(() {
-          _currentStep++;
+                    ))).then((value) {
+          setState(() {
+            _currentStep++;
+          });
+          _onPageChange();
         });
-        _onPageChange();
       } else {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
@@ -200,6 +208,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       emailController: _emailController),
                   StepTwo(
                       // phoneController: _phoneController,
+                      sendMeUpdates: _sendMeUpdates,
+                      onTap: _sendMeUpdatesFunc,
                       passwordController: _passwordController,
                       confirmPasswordController: _confirmPasswordController),
                   _buildStepThree(),
@@ -270,7 +280,7 @@ class _SignUpPageState extends State<SignUpPage> {
               width: 5.w,
             ),
             Text(
-              "Backward",
+              "Back",
               style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.white,
@@ -297,7 +307,8 @@ class _SignUpPageState extends State<SignUpPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              _currentStep == 1 ? "Submit" : "Forward",
+              "Next",
+              // _currentStep == 1 ? "Submit" : "Forward",
               style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.white,
@@ -307,7 +318,8 @@ class _SignUpPageState extends State<SignUpPage> {
               width: 5.w,
             ),
             Icon(
-              _currentStep == 1 ? Icons.check : Icons.arrow_forward_rounded,
+              // _currentStep == 1 ? Icons.check :
+              Icons.arrow_forward_rounded,
               color: Colors.white,
               size: 24.w,
             )
@@ -418,22 +430,33 @@ class CustomStepper extends StatelessWidget {
   }
 }
 
-class StepTwo extends StatelessWidget {
-  const StepTwo({
-    Key? key,
-    // required TextEditingController phoneController,
-    required TextEditingController passwordController,
-    required TextEditingController confirmPasswordController,
-  })  :
+class StepTwo extends StatefulWidget {
+  const StepTwo(
+      {Key? key,
+      // required TextEditingController phoneController,
+      required TextEditingController passwordController,
+      required TextEditingController confirmPasswordController,
+      required bool sendMeUpdates,
+      required VoidCallback onTap})
+      :
         // _phoneController = phoneController,
         _passwordController = passwordController,
         _confirmPasswordController = confirmPasswordController,
+        _sendMeUpdates = sendMeUpdates,
+        _onTap = onTap,
         super(key: key);
 
   // final TextEditingController _phoneController;
   final TextEditingController _passwordController;
   final TextEditingController _confirmPasswordController;
+  final bool _sendMeUpdates;
+  final VoidCallback _onTap;
 
+  @override
+  State<StepTwo> createState() => _StepTwoState();
+}
+
+class _StepTwoState extends State<StepTwo> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -461,18 +484,61 @@ class StepTwo extends StatelessWidget {
         InputField(
             hintText: "Password",
             prefixIconPath: "assets/icons/lock.svg",
-            controller: _passwordController,
+            controller: widget._passwordController,
             textInputType: TextInputType.visiblePassword,
             obscureText: true),
         SizedBox(
           height: 20.h,
         ),
         InputField(
-            hintText: "Confrim Password",
+            hintText: "Confirm Password",
             prefixIconPath: "assets/icons/lock.svg",
-            controller: _confirmPasswordController,
+            controller: widget._confirmPasswordController,
             textInputType: TextInputType.visiblePassword,
             obscureText: true),
+        SizedBox(
+          height: 20.h,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: widget._onTap,
+              child: SizedBox(
+                  height: 25.w,
+                  width: 25.w,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xFFF23A02),
+                          style: BorderStyle.solid,
+                          width: 2.5.w,
+                        ),
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(5.w)),
+                    child: widget._sendMeUpdates
+                        ? Icon(
+                            Icons.check,
+                            color: const Color(0xFFF23A02),
+                            size: 20.w,
+                          )
+                        : null,
+                  )),
+            ),
+            SizedBox(
+              width: 15.w,
+            ),
+            Text(
+              "Send me updates and alerts",
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ],
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/services/weather_service.dart';
-import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard_appbar.dart';
+import 'package:wisconsin_app/ui/mp/dashboard_screen/widgets/dashboard_appbar.dart';
 
 class DashBorad extends StatefulWidget {
   const DashBorad({Key? key}) : super(key: key);

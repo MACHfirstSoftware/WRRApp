@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard.dart';
 
@@ -17,15 +18,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
   late PageController _pageController;
 
   List<String> listOfIcons = [
-    "assets/icons/nex.png",
-    "assets/icons/aim.png",
-    "assets/icons/verge.png",
-    "assets/icons/box.png",
+    "assets/icons/news-feed.svg",
+    "assets/icons/weather.svg",
+    "assets/icons/shop-bag.svg",
+    "assets/icons/account.svg",
   ];
 
   @override
   void initState() {
-    print("USER : $widget.user");
     _pageController = PageController(initialPage: 0);
     super.initState();
   }
@@ -244,19 +244,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
                   //     // ),
                   //     ),
                   child: Container(
+                      alignment: Alignment.center,
                       color: Colors.transparent,
                       height: 60.h,
                       width: 60.h,
-                      child: Center(
-                        child: Image.asset(
-                          e,
-                          height: 35.h,
-                          width: 35.h,
-                          fit: BoxFit.cover,
-                          color: currentIndex == listOfIcons.indexOf(e)
-                              ? const Color(0xFFF23A02)
-                              : Colors.white,
-                        ),
+                      child: SvgPicture.asset(
+                        e,
+                        height: 30.h,
+                        width: 30.h,
+                        fit: BoxFit.fill,
+                        alignment: Alignment.center,
+                        color: currentIndex == listOfIcons.indexOf(e)
+                            ? const Color(0xFFF23A02)
+                            : Colors.white,
                       )),
                 ))
           ],

@@ -21,7 +21,7 @@ class VerificationPage extends StatefulWidget {
 class _VerificationPageState extends State<VerificationPage> {
   late TextEditingController _codeController;
   late TextEditingController _phoneController;
-  bool codeSendSuccess = false;
+  bool codeSendSuccess = true;
 
   @override
   void initState() {
@@ -145,19 +145,19 @@ class _VerificationPageState extends State<VerificationPage> {
         ),
         const LogoImage(),
         SizedBox(
-          height: 145.h,
+          height: 120.h,
         ),
-        Text(
-          "VERIFY YOUR \nPHONE NUMBER",
-          style: TextStyle(
-              fontSize: 24.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 45.h,
-        ),
+        // Text(
+        //   "VERIFY YOUR \nPHONE NUMBER",
+        //   style: TextStyle(
+        //       fontSize: 24.sp,
+        //       color: Colors.white,
+        //       fontWeight: FontWeight.bold),
+        //   textAlign: TextAlign.center,
+        // ),
+        // SizedBox(
+        //   height: 45.h,
+        // ),
         if (codeSendSuccess) _buildCodeUI(),
         if (!codeSendSuccess) _buildPhoneUI()
       ])),
@@ -167,6 +167,20 @@ class _VerificationPageState extends State<VerificationPage> {
   _buildCodeUI() {
     return Column(
       children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Text(
+            "We have sent your phone a verification code, please enter it to complete your account.",
+            style: TextStyle(
+                fontSize: 22.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(
+          height: 45.h,
+        ),
         InputField(
           hintText: "Verification Code",
           controller: _codeController,
@@ -216,6 +230,20 @@ class _VerificationPageState extends State<VerificationPage> {
   _buildPhoneUI() {
     return Column(
       children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child: Text(
+            "Congratulations, you have joined the Wisconsin Rut Report. Please verify you phone number to continue your account setup.",
+            style: TextStyle(
+                fontSize: 22.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        SizedBox(
+          height: 45.h,
+        ),
         InputField(
           hintText: "Phone Number",
           controller: _phoneController,

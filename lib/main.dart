@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/ui/landing/verification_page/verification_page.dart';
+import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
 
 void main() async {
@@ -35,7 +37,7 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: const SignInPage(),
+      child: const BottomNavBar(),
     );
   }
 }
