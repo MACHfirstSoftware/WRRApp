@@ -18,6 +18,7 @@ class UserService {
         return res;
       }
     } catch (e) {
+      print(e);
       ResponseObject res = ResponseObject(
           success: false, data: null, message: "Something went wrong!");
       return res;

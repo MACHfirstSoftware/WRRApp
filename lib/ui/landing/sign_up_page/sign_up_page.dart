@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/services/user_service.dart';
-import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
@@ -24,7 +23,7 @@ class _SignUpPageState extends State<SignUpPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  late TextEditingController _phoneController;
+  // late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
@@ -34,7 +33,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    _phoneController = TextEditingController();
+    // _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     super.initState();
@@ -47,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
+    // _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
   }
@@ -93,21 +92,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   _validateStepTwo() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    if (_phoneController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (!RegExp(r"^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$")
-        .hasMatch(_phoneController.text.trimRight())) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is invalid",
-          type: SnackBarType.error));
-      return false;
-    }
+
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -151,31 +136,43 @@ class _SignUpPageState extends State<SignUpPage> {
         "password": _passwordController.text
       };
       final res = await UserService.signUp(person);
-
+      Navigator.pop(context);
       if (res != null) {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: "Successfully registered!",
             type: SnackBarType.success));
-        await VerficationService.sendCode(res, _phoneController.text);
-        Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => VerificationPage(
-                    userId: res, phoneNumber: _phoneController.text)));
+                      userId: res,
+                    )));
         setState(() {
           _currentStep++;
         });
         _onPageChange();
       } else {
-        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: "Something went wrong!",
             type: SnackBarType.error));
       }
     }
+  }
+
+  _goDashborad() async {
+    PageLoader.showLoader(context);
+    final res = await UserService.signIn(
+        _emailController.text, _passwordController.text);
+    Map<String, dynamic> userData = res.data as Map<String, dynamic>;
+    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                BottomNavBar(userName: userData["firstName"])),
+        (route) => false);
   }
 
   @override
@@ -202,10 +199,10 @@ class _SignUpPageState extends State<SignUpPage> {
                       lastNameController: _lastNameController,
                       emailController: _emailController),
                   StepTwo(
-                      phoneController: _phoneController,
+                      // phoneController: _phoneController,
                       passwordController: _passwordController,
                       confirmPasswordController: _confirmPasswordController),
-                  const StepThree(),
+                  _buildStepThree(),
                 ],
               ),
             ),
@@ -319,6 +316,49 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+
+  Column _buildStepThree() {
+    return Column(
+      children: [
+        SvgPicture.asset("assets/icons/check-circle.svg",
+            height: 75.w, width: 75.w, color: Colors.white),
+        SizedBox(
+          height: 40.h,
+        ),
+        Text(
+          "Welcome \nto \nWisconsin Rut report",
+          style: TextStyle(
+              fontSize: 24.sp,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              height: 1.5),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 50.h,
+        ),
+        GestureDetector(
+          onTap: () => _goDashborad(),
+          child: Container(
+            alignment: Alignment.center,
+            height: 50.h,
+            width: 190.w,
+            decoration: BoxDecoration(
+                color: const Color(0xFFF23A02),
+                borderRadius: BorderRadius.circular(5.w)),
+            child: Text(
+              "Go to Dashboard",
+              style: TextStyle(
+                  fontSize: 18.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
 class CustomStepper extends StatelessWidget {
@@ -378,71 +418,19 @@ class CustomStepper extends StatelessWidget {
   }
 }
 
-class StepThree extends StatelessWidget {
-  const StepThree({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SvgPicture.asset("assets/icons/check-circle.svg",
-            height: 75.w, width: 75.w, color: Colors.white),
-        SizedBox(
-          height: 40.h,
-        ),
-        Text(
-          "Welcome \nto \nWisconsin Rut report",
-          style: TextStyle(
-              fontSize: 24.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              height: 1.5),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 50.h,
-        ),
-        GestureDetector(
-          onTap: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const BottomNavBar()),
-              (route) => false),
-          child: Container(
-            alignment: Alignment.center,
-            height: 50.h,
-            width: 190.w,
-            decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Go to Dashboard",
-              style: TextStyle(
-                  fontSize: 18.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class StepTwo extends StatelessWidget {
   const StepTwo({
     Key? key,
-    required TextEditingController phoneController,
+    // required TextEditingController phoneController,
     required TextEditingController passwordController,
     required TextEditingController confirmPasswordController,
-  })  : _phoneController = phoneController,
+  })  :
+        // _phoneController = phoneController,
         _passwordController = passwordController,
         _confirmPasswordController = confirmPasswordController,
         super(key: key);
 
-  final TextEditingController _phoneController;
+  // final TextEditingController _phoneController;
   final TextEditingController _passwordController;
   final TextEditingController _confirmPasswordController;
 
@@ -461,30 +449,30 @@ class StepTwo extends StatelessWidget {
         SizedBox(
           height: 45.h,
         ),
+        // InputField(
+        //   hintText: "Phone Number",
+        //   prefixIconPath: "assets/icons/lock.svg",
+        //   controller: _phoneController,
+        //   textInputType: TextInputType.number,
+        // ),
+        // SizedBox(
+        //   height: 20.h,
+        // ),
         InputField(
-          hintText: "Phone Number",
-          prefixIconPath: "assets/icons/lock.svg",
-          controller: _phoneController,
-          textInputType: TextInputType.number,
-        ),
+            hintText: "Password",
+            prefixIconPath: "assets/icons/lock.svg",
+            controller: _passwordController,
+            textInputType: TextInputType.visiblePassword,
+            obscureText: true),
         SizedBox(
           height: 20.h,
         ),
         InputField(
-          hintText: "Password",
-          prefixIconPath: "assets/icons/lock.svg",
-          controller: _passwordController,
-          textInputType: TextInputType.visiblePassword,
-        ),
-        SizedBox(
-          height: 20.h,
-        ),
-        InputField(
-          hintText: "Confrim Password",
-          prefixIconPath: "assets/icons/lock.svg",
-          controller: _confirmPasswordController,
-          textInputType: TextInputType.visiblePassword,
-        ),
+            hintText: "Confrim Password",
+            prefixIconPath: "assets/icons/lock.svg",
+            controller: _confirmPasswordController,
+            textInputType: TextInputType.visiblePassword,
+            obscureText: true),
       ],
     );
   }

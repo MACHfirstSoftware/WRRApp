@@ -5,6 +5,7 @@ import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/ui/landing/questionnaire_page/questionnaire_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_up_page/sign_up_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -136,11 +137,11 @@ class _SignInPageState extends State<SignInPage> {
               height: 20.h,
             ),
             InputField(
-              hintText: "Password",
-              prefixIconPath: "assets/icons/lock.svg",
-              controller: _passwordController,
-              textInputType: TextInputType.visiblePassword,
-            ),
+                hintText: "Password",
+                prefixIconPath: "assets/icons/lock.svg",
+                controller: _passwordController,
+                textInputType: TextInputType.visiblePassword,
+                obscureText: true),
             SizedBox(
               height: 25.h,
             ),
@@ -235,7 +236,7 @@ class _SignInPageState extends State<SignInPage> {
                       ..onTap = (() => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const SignUpPage()))),
+                              builder: (_) => const QuestionnairePage()))),
                     style: TextStyle(
                         fontSize: 16.sp,
                         color: const Color(0xFFF23A02),

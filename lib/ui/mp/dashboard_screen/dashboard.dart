@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wisconsin_app/services/weather_service.dart';
 import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard_appbar.dart';
 
 class DashBorad extends StatefulWidget {
@@ -11,6 +12,12 @@ class DashBorad extends StatefulWidget {
 }
 
 class _DashBoradState extends State<DashBorad> {
+  @override
+  void initState() {
+    // _getWeatherDetails();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +69,10 @@ class _DashBoradState extends State<DashBorad> {
       ),
     );
   }
+
+  void _getWeatherDetails() async {
+    await WeatherService.getWeatherDetails();
+  }
 }
 
 class WRRReport extends StatelessWidget {
@@ -72,7 +83,7 @@ class WRRReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 135.h,
+      // height: 145.h,
       width: 180.w,
       padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 7.5.h),
       decoration: BoxDecoration(

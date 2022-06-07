@@ -49,6 +49,7 @@ dependencies:
   animated_snack_bar: ^0.2.0
   #HTTP request package
   dio: ^4.0.6
+  http: any
   #Loading spinner
   loading_indicator: ^3.0.3
 

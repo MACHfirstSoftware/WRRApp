@@ -7,7 +7,7 @@ import 'package:wisconsin_app/utils/custom_http.dart';
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await Future.delayed(const Duration(seconds: 3), () {});
+  await Future.delayed(const Duration(seconds: 2), () {});
   FlutterNativeSplash.remove();
   CustomHttp.setInterceptor();
   runApp(const MyApp());
