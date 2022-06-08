@@ -18,6 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   late PageController _pageController;
 
   List<String> listOfIcons = [
+    "assets/icons/feed.svg",
     "assets/icons/news-feed.svg",
     "assets/icons/weather.svg",
     "assets/icons/shop-bag.svg",
@@ -44,6 +45,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
           controller: _pageController,
           physics: const NeverScrollableScrollPhysics(),
           children: [
+            Container(
+              color: Colors.white,
+            ),
             const DashBorad(),
             Container(
               color: Colors.white,

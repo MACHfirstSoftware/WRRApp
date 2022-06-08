@@ -44,9 +44,20 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
           ),
           Positioned(
               bottom: 10.h,
-              right: 40.w,
+              right: 80.w,
               child: SvgPicture.asset(
                 'assets/icons/search.svg',
+                fit: BoxFit.fill,
+                alignment: Alignment.center,
+                height: 30.h,
+                width: 30.h,
+                color: Colors.white,
+              )),
+          Positioned(
+              bottom: 10.h,
+              right: 40.w,
+              child: SvgPicture.asset(
+                'assets/icons/trophy-bold.svg',
                 fit: BoxFit.fill,
                 alignment: Alignment.center,
                 height: 30.h,

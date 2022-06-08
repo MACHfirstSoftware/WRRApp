@@ -32,7 +32,7 @@ class _DashBoradState extends State<DashBorad> {
       body: Column(
         children: [
           Container(
-            height: 210.h,
+            height: 220.h,
             width: 428.w,
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
             decoration: const BoxDecoration(
