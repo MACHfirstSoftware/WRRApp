@@ -32,8 +32,6 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   Region? _selectedRegion;
   County? _selectedCounty;
 
-  bool _isCountryTileExpand = false;
-
   @override
   void initState() {
     _isInitialing = true;
@@ -436,7 +434,12 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
           await Future.delayed(const Duration(milliseconds: 500));
           Navigator.pop(context);
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (_) => const SignUpPage()));
+              context,
+              MaterialPageRoute(
+                  builder: (_) => SignUpPage(
+                      country: _selectedCountry!,
+                      region: _selectedRegion!,
+                      county: _selectedCounty!)));
         }
       },
       child: Container(

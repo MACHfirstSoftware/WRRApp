@@ -46,7 +46,7 @@ class VerficationService {
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Person/$userId", data: [
-        {"path": "/isActive", "op": "Add", "value": true}
+        {"path": "/PhoneMobile", "op": "Add", "value": "0454545456"}
       ]);
       print(response);
       return true;

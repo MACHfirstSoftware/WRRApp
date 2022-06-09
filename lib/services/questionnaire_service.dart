@@ -19,15 +19,6 @@ class QuestionnaireService {
       }
     } catch (e) {
       print(e);
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      //   backgroundColor: Colors.white,
-      //   behavior: SnackBarBehavior.floating,
-      //   duration: const Duration(seconds: 10),
-      //   content: Text(
-      //     e.toString(),
-      //     style: const TextStyle(color: Colors.black),
-      //   ),
-      // ));
       return null;
     }
   }

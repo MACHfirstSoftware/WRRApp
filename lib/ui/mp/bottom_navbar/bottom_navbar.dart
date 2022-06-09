@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/weather_page.dart';
 
 class BottomNavBar extends StatefulWidget {
-  final String? userName;
-  const BottomNavBar({Key? key, this.userName}) : super(key: key);
+  final User user;
+  const BottomNavBar({Key? key, required this.user}) : super(key: key);
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -49,9 +51,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               color: Colors.white,
             ),
             const DashBorad(),
-            Container(
-              color: Colors.white,
-            ),
+            const WeatherPage(),
             Container(
               color: Colors.white,
             ),
@@ -74,7 +74,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     height: 5.h,
                   ),
                   Text(
-                    widget.userName ?? "",
+                    widget.user.firstName,
                     style: TextStyle(
                         fontSize: 24.sp,
                         color: Colors.black,

@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
@@ -8,6 +10,7 @@ import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/questionnaire_page/questionnaire_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_up_page/sign_up_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
@@ -84,21 +87,23 @@ class _SignInPageState extends State<SignInPage> {
       final res = await UserService.signIn(
           _emailController.text, _passwordController.text);
       Navigator.pop(context);
-      if (res.success) {
-        Map<String, dynamic> userData = res.data as Map<String, dynamic>;
-        print(userData["firstName"]);
+
+      res.when(success: (User user) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    BottomNavBar(userName: userData["firstName"])),
+            MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
             (route) => false);
-      } else {
+      }, failure: (NetworkExceptions error) {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: res.message!,
+            messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
-      }
+      }, responseError: (ResponseError responseError) {
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: responseError.error,
+            type: SnackBarType.error));
+      });
     }
   }
 

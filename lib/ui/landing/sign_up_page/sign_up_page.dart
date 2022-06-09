@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wisconsin_app/models/country.dart';
+import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/models/region.dart';
+import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:wisconsin_app/ui/landing/verification_page/verification_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  final Country country;
+  final Region region;
+  final County county;
+  const SignUpPage(
+      {Key? key,
+      required this.country,
+      required this.region,
+      required this.county})
+      : super(key: key);
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -136,36 +151,42 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_validateStepTwo()) {
       PageLoader.showLoader(context);
       Map<String, dynamic> person = {
-        "firstName": _firstNameController.text,
-        "lastName": _lastNameController.text,
-        "emailAddress": _emailController.text,
-        "username": _emailController.text,
-        "password": _passwordController.text
+        "firstName": _firstNameController.text.trim(),
+        "lastName": _lastNameController.text.trim(),
+        "emailAddress": _emailController.text.trim(),
+        "username": _emailController.text.trim(),
+        "password": _passwordController.text,
+        "country": widget.country.code,
+        "countyId": widget.county.id,
+        "regionId": widget.region.id,
+        "isOptIn": _sendMeUpdates
       };
       final res = await UserService.signUp(person);
       Navigator.pop(context);
-      if (res != null) {
-        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-            context: context,
-            messageText: "Successfully registered!",
-            type: SnackBarType.success));
+
+      res.when(success: (String userId) {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => VerificationPage(
-                      userId: res,
+                      userId: userId,
                     ))).then((value) {
           setState(() {
             _currentStep++;
           });
           _onPageChange();
         });
-      } else {
+      }, failure: (NetworkExceptions error) {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Something went wrong!",
+            messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
-      }
+      }, responseError: (ResponseError responseError) {
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: responseError.error,
+            type: SnackBarType.error));
+      });
     }
   }
 
@@ -173,14 +194,23 @@ class _SignUpPageState extends State<SignUpPage> {
     PageLoader.showLoader(context);
     final res = await UserService.signIn(
         _emailController.text, _passwordController.text);
-    Map<String, dynamic> userData = res.data as Map<String, dynamic>;
     Navigator.pop(context);
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                BottomNavBar(userName: userData["firstName"])),
-        (route) => false);
+    res.when(success: (User user) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
+          (route) => false);
+    }, failure: (NetworkExceptions error) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInPage()),
+          (route) => false);
+    }, responseError: (ResponseError responseError) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInPage()),
+          (route) => false);
+    });
   }
 
   @override
@@ -277,7 +307,7 @@ class _SignUpPageState extends State<SignUpPage> {
               size: 24.w,
             ),
             SizedBox(
-              width: 5.w,
+              width: 10.w,
             ),
             Text(
               "Back",
@@ -315,7 +345,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   fontWeight: FontWeight.bold),
             ),
             SizedBox(
-              width: 5.w,
+              width: 10.w,
             ),
             Icon(
               // _currentStep == 1 ? Icons.check :

@@ -21,7 +21,7 @@ class VerificationPage extends StatefulWidget {
 class _VerificationPageState extends State<VerificationPage> {
   late TextEditingController _codeController;
   late TextEditingController _phoneController;
-  bool codeSendSuccess = true;
+  bool codeSendSuccess = false;
 
   @override
   void initState() {
