@@ -8,7 +8,6 @@ import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/questionnaire_page/questionnaire_page.dart';
-import 'package:wisconsin_app/ui/landing/sign_up_page/sign_up_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';

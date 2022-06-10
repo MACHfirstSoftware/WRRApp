@@ -74,4 +74,15 @@ class QuestionnaireService {
       return [];
     }
   }
+
+  static Future<void> saveQuestionnaire(List<Map<String, dynamic>> data) async {
+    try {
+      // final response =
+      await CustomHttp.getDio().post(Constant.baseUrl + "/Profile", data: data);
+      // if (response.statusCode == 200) {
+      // } else {}
+    } catch (e) {
+      print(e);
+    }
+  }
 }

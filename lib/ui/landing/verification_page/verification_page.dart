@@ -40,7 +40,7 @@ class _VerificationPageState extends State<VerificationPage> {
   _reSend() async {
     PageLoader.showLoader(context);
     final res = await VerficationService.reSendCode(
-        widget.userId, _phoneController.text);
+        widget.userId, _phoneController.text.trim());
     Navigator.pop(context);
     if (res) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -59,10 +59,12 @@ class _VerificationPageState extends State<VerificationPage> {
     if (_validateCode()) {
       PageLoader.showLoader(context);
       final res = await VerficationService.verifyCode(
-          widget.userId, _codeController.text);
+          widget.userId, _codeController.text.trim());
 
       if (res) {
-        await VerficationService.personPatch(widget.userId);
+        await VerficationService.personPhonePatch(
+            widget.userId, _phoneController.text.trim());
+        // await VerficationService.personActivePatch(widget.userId);
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
@@ -87,7 +89,7 @@ class _VerificationPageState extends State<VerificationPage> {
     if (_validatePhoneNumber()) {
       PageLoader.showLoader(context);
       final res = await VerficationService.sendCode(
-          widget.userId, _phoneController.text);
+          widget.userId, _phoneController.text.trim());
       Navigator.pop(context);
       if (res) {
         setState(() {

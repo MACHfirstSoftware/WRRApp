@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_details.dart';
 
 class WeatherPage extends StatefulWidget {
-  const WeatherPage({Key? key}) : super(key: key);
+  final User user;
+  const WeatherPage({Key? key, required this.user}) : super(key: key);
 
   @override
   State<WeatherPage> createState() => _WeatherPageState();
@@ -18,7 +20,16 @@ class _WeatherPageState extends State<WeatherPage> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: const Color(0xFF262626),
-          title: const TabBar(tabs: [
+          centerTitle: true,
+          title: Text(
+            widget.user.country ?? "",
+            style: TextStyle(
+                fontSize: 25.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w700),
+            textAlign: TextAlign.center,
+          ),
+          bottom: const TabBar(tabs: [
             Tab(
               text: "Current",
             ),

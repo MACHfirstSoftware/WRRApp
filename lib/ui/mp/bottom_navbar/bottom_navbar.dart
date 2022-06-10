@@ -20,7 +20,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   late PageController _pageController;
 
   List<String> listOfIcons = [
-    "assets/icons/feed.svg",
+    "assets/icons/report.svg",
     "assets/icons/news-feed.svg",
     "assets/icons/weather.svg",
     "assets/icons/shop-bag.svg",
@@ -51,7 +51,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
               color: Colors.white,
             ),
             const DashBorad(),
-            const WeatherPage(),
+            WeatherPage(user: widget.user),
             Container(
               color: Colors.white,
             ),

@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
 
@@ -42,11 +41,12 @@ class VerficationService {
     }
   }
 
-  static Future<bool> personPatch(String userId) async {
+  static Future<bool> personPhonePatch(String userId, String phone) async {
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Person/$userId", data: [
-        {"path": "/PhoneMobile", "op": "Add", "value": "0454545456"}
+        {"path": "/PhoneMobile", "op": "Add", "value": phone},
+        {"path": "/IsActive", "op": "Add", "value": true}
       ]);
       print(response);
       return true;
@@ -55,4 +55,18 @@ class VerficationService {
       return false;
     }
   }
+
+  // static Future<bool> personActivePatch(String userId) async {
+  //   try {
+  //     final response = await CustomHttp.getDio()
+  //         .patch(Constant.baseUrl + "/Person/$userId", data: [
+  //       {"path": "/IsActive", "op": "Add", "value": true}
+  //     ]);
+  //     print(response);
+  //     return true;
+  //   } catch (e) {
+  //     print(e);
+  //     return false;
+  //   }
+  // }
 }

@@ -24,7 +24,7 @@ class User {
   String emailAddress;
   String username;
   String? country;
-  int? stateOrTerritory;
+  String? stateOrTerritory;
   int? countyId;
   int? regionId;
   bool? isOptIn;

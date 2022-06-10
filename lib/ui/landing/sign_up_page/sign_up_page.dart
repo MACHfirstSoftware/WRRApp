@@ -3,17 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/models/country.dart';
 import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/models/question.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/services/questionnaire_service.dart';
+import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
+import 'package:wisconsin_app/ui/landing/subscription_page/subscription_screen.dart';
 import 'package:wisconsin_app/ui/landing/verification_page/verification_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
+import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
@@ -21,11 +26,15 @@ class SignUpPage extends StatefulWidget {
   final Country country;
   final Region region;
   final County county;
+  final List<Answer> selectedAnswers;
+  final List<Question> questions;
   const SignUpPage(
       {Key? key,
       required this.country,
       required this.region,
-      required this.county})
+      required this.county,
+      required this.selectedAnswers,
+      required this.questions})
       : super(key: key);
 
   @override
@@ -35,6 +44,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   int _currentStep = 0;
   bool _sendMeUpdates = false;
+  late String _userId;
   late PageController _pageController;
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
@@ -147,6 +157,19 @@ class _SignUpPageState extends State<SignUpPage> {
     return true;
   }
 
+  _createQuestionnaireDataList(String userId) {
+    List<Map<String, dynamic>> _questionnaireData = [];
+    for (int i = 0; i < widget.questions.length; i++) {
+      _questionnaireData.add({
+        "personId": userId,
+        "questionId": widget.questions[i].id,
+        "answerId": widget.selectedAnswers[i].id,
+        "answerComment": ""
+      });
+    }
+    return _questionnaireData;
+  }
+
   _doSignUp() async {
     if (_validateStepTwo()) {
       PageLoader.showLoader(context);
@@ -162,9 +185,12 @@ class _SignUpPageState extends State<SignUpPage> {
         "isOptIn": _sendMeUpdates
       };
       final res = await UserService.signUp(person);
-      Navigator.pop(context);
 
-      res.when(success: (String userId) {
+      res.when(success: (String userId) async {
+        await QuestionnaireService.saveQuestionnaire(
+            _createQuestionnaireDataList(userId));
+        _userId = userId;
+        Navigator.pop(context);
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -177,11 +203,15 @@ class _SignUpPageState extends State<SignUpPage> {
           _onPageChange();
         });
       }, failure: (NetworkExceptions error) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
       }, responseError: (ResponseError responseError) {
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: responseError.error,
@@ -191,25 +221,56 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   _goDashborad() async {
+    print(_userId);
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    int sId = await Navigator.of(context).push(
+      HeroDialogRoute(builder: (context) => const SubscriptionScreen()),
+    );
     PageLoader.showLoader(context);
-    final res = await UserService.signIn(
-        _emailController.text, _passwordController.text);
-    Navigator.pop(context);
-    res.when(success: (User user) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
-          (route) => false);
-    }, failure: (NetworkExceptions error) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const SignInPage()),
-          (route) => false);
-    }, responseError: (ResponseError responseError) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const SignInPage()),
-          (route) => false);
+    final subscriptionResponse =
+        await SubscriptionService.addSubscription(_userId, sId);
+    subscriptionResponse.when(success: (bool success) async {
+      final res = await UserService.signIn(
+          _emailController.text, _passwordController.text);
+      Navigator.pop(context);
+      res.when(success: (User user) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
+            (route) => false);
+      }, failure: (NetworkExceptions error) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInPage()),
+            (route) => false);
+      }, responseError: (ResponseError responseError) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const SignInPage()),
+            (route) => false);
+      });
+    }, failure: (NetworkExceptions error) async {
+      Navigator.pop(context);
+      PageLoader.showTransparentLoader(context);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: NetworkExceptions.getErrorMessage(error),
+          type: SnackBarType.error));
+      await Future.delayed(const Duration(milliseconds: 2200), () {
+        Navigator.pop(context);
+      });
+      _goDashborad();
+    }, responseError: (ResponseError responseError) async {
+      Navigator.pop(context);
+      PageLoader.showTransparentLoader(context);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: responseError.error,
+          type: SnackBarType.error));
+      await Future.delayed(const Duration(milliseconds: 2200), () {
+        Navigator.pop(context);
+      });
+      _goDashborad();
     });
   }
 

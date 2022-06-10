@@ -22,7 +22,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   late List<Question>? _questions;
   int _currentIndex = 0;
   late PageController _pageController;
-  List<Answer> _selectedAnswers = [];
+  late List<Answer> _selectedAnswers;
 
   List<Country> countries = [];
   List<Region> regions = [];
@@ -34,6 +34,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
 
   @override
   void initState() {
+    _selectedAnswers = [];
     _isInitialing = true;
     _pageController = PageController();
     _init();
@@ -437,9 +438,12 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
               context,
               MaterialPageRoute(
                   builder: (_) => SignUpPage(
-                      country: _selectedCountry!,
-                      region: _selectedRegion!,
-                      county: _selectedCounty!)));
+                        country: _selectedCountry!,
+                        region: _selectedRegion!,
+                        county: _selectedCounty!,
+                        selectedAnswers: _selectedAnswers,
+                        questions: _questions!,
+                      )));
         }
       },
       child: Container(

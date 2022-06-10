@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:wisconsin_app/services/weather_service.dart';
 import 'package:wisconsin_app/ui/mp/dashboard_screen/widgets/dashboard_appbar.dart';
 
 class DashBorad extends StatefulWidget {
@@ -14,7 +13,6 @@ class DashBorad extends StatefulWidget {
 class _DashBoradState extends State<DashBorad> {
   @override
   void initState() {
-    // _getWeatherDetails();
     super.initState();
   }
 
@@ -29,49 +27,45 @@ class _DashBoradState extends State<DashBorad> {
         toolbarHeight: 70.h,
         automaticallyImplyLeading: false,
       ),
-      body: Column(
-        children: [
-          Container(
-            height: 220.h,
-            width: 428.w,
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/bg.png"),
-                    fit: BoxFit.fitWidth)),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    WRRProgress(
-                      title: "Daily WRR",
-                      precentage: .15,
-                    ),
-                    WRRProgress(
-                      title: "Hourly WRR",
-                      precentage: .15,
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    WRRReport(),
-                    WRRReport(),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
+      // body: Column(
+      //   children: [
+      //     Container(
+      //       height: 220.h,
+      //       width: 428.w,
+      //       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+      //       decoration: const BoxDecoration(
+      //           image: DecorationImage(
+      //               image: AssetImage("assets/images/bg.png"),
+      //               fit: BoxFit.fitWidth)),
+      //       child: Column(
+      //         children: [
+      //           Row(
+      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //             children: const [
+      //               WRRProgress(
+      //                 title: "Daily WRR",
+      //                 precentage: .15,
+      //               ),
+      //               WRRProgress(
+      //                 title: "Hourly WRR",
+      //                 precentage: .15,
+      //               ),
+      //             ],
+      //           ),
+      //           const Spacer(),
+      //           Row(
+      //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //             children: const [
+      //               WRRReport(),
+      //               WRRReport(),
+      //             ],
+      //           )
+      //         ],
+      //       ),
+      //     ),
+      //   ],
+      // ),
     );
-  }
-
-  void _getWeatherDetails() async {
-    await WeatherService.getWeatherDetails();
   }
 }
 

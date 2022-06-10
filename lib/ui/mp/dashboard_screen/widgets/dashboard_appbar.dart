@@ -67,28 +67,33 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
           Positioned(
               bottom: 10.h,
               right: 0.w,
-              child: Stack(
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/notification.svg',
-                    fit: BoxFit.fill,
-                    alignment: Alignment.center,
-                    height: 27.5.h,
-                    width: 27.5.h,
-                    color: Colors.white,
-                  ),
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      height: 12.5.h,
-                      width: 12.5.h,
-                      decoration: BoxDecoration(
-                          color: Colors.redAccent,
-                          borderRadius: BorderRadius.circular(6.25.h)),
+              child: GestureDetector(
+                onTap: () {
+                  print("Notification clicked");
+                },
+                child: Stack(
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/notification.svg',
+                      fit: BoxFit.fill,
+                      alignment: Alignment.center,
+                      height: 27.5.h,
+                      width: 27.5.h,
+                      color: Colors.white,
                     ),
-                  )
-                ],
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        height: 12.5.h,
+                        width: 12.5.h,
+                        decoration: BoxDecoration(
+                            color: Colors.redAccent,
+                            borderRadius: BorderRadius.circular(6.25.h)),
+                      ),
+                    )
+                  ],
+                ),
               )),
         ],
       ),
@@ -114,7 +119,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                 trailing: country == _selectedCountry
                     ? const Icon(
                         Icons.check,
-                        color: Colors.blue,
+                        color: Color(0xFFF23A02),
                       )
                     : null,
                 title: Text(
