@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:wisconsin_app/models/country.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/question.dart';
-import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/ui/landing/sign_up_page/sign_up_page.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
-import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class QuestionnairePage extends StatefulWidget {
   const QuestionnairePage({Key? key}) : super(key: key);
@@ -19,17 +17,18 @@ class QuestionnairePage extends StatefulWidget {
 
 class _QuestionnairePageState extends State<QuestionnairePage> {
   late bool _isInitialing;
+  bool _isExpanded = false;
   late List<Question>? _questions;
   int _currentIndex = 0;
   late PageController _pageController;
   late List<Answer> _selectedAnswers;
 
-  List<Country> countries = [];
-  List<Region> regions = [];
+  // List<Country> countries = [];
+  // List<Region> regions = [];
   List<County> counties = [];
 
-  Country? _selectedCountry;
-  Region? _selectedRegion;
+  // Country? _selectedCountry;
+  // Region? _selectedRegion;
   County? _selectedCounty;
 
   @override
@@ -48,14 +47,16 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   }
 
   _init() async {
-    countries = await QuestionnaireService.getCountries();
+    // countries = await QuestionnaireService.getCountries();
+
     // if (countries.isNotEmpty) {
     //   regions = await QuestionnaireService.getRegions(1);
+    //   _selectedCountry = countries[0];
     // }
     // if (regions.isNotEmpty) {
-    //   counties = await QuestionnaireService.getCounties(1, regions[0].id);
+    counties = await QuestionnaireService.getCounties(-1);
     // }
-    if (countries.isNotEmpty) {
+    if (counties.isNotEmpty) {
       final questionsResponse = await QuestionnaireService.getQuestionnarie();
       if (questionsResponse != null) {
         setState(() {
@@ -66,46 +67,46 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
     }
   }
 
-  _changeCountry(Country country) async {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    PageLoader.showLoader(context);
-    final regionsResponse = await QuestionnaireService.getRegions(1);
-    Navigator.pop(context);
-    if (regionsResponse.isNotEmpty) {
-      regions = regionsResponse;
-      setState(() {});
-    } else {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Unable to load data!",
-          type: SnackBarType.error));
-    }
-  }
+  // _changeCountry(Country country) async {
+  //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  //   PageLoader.showLoader(context);
+  //   final regionsResponse = await QuestionnaireService.getRegions(1);
+  //   Navigator.pop(context);
+  //   if (regionsResponse.isNotEmpty) {
+  //     regions = regionsResponse;
+  //     setState(() {});
+  //   } else {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Unable to load data!",
+  //         type: SnackBarType.error));
+  //   }
+  // }
 
-  _changeRegion(Region region) async {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    PageLoader.showLoader(context);
-    final countiesResponse =
-        await QuestionnaireService.getCounties(1, region.id);
-    Navigator.pop(context);
-    if (countiesResponse.isNotEmpty) {
-      counties = countiesResponse;
-      setState(() {});
-    } else {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Unable to load data!",
-          type: SnackBarType.error));
-    }
-  }
+  // _changeRegion(Region region) async {
+  //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  //   PageLoader.showLoader(context);
+  //   final countiesResponse =
+  //       await QuestionnaireService.getCounties(1, region.id);
+  //   Navigator.pop(context);
+  //   if (countiesResponse.isNotEmpty) {
+  //     counties = countiesResponse;
+  //     setState(() {});
+  //   } else {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Unable to load data!",
+  //         type: SnackBarType.error));
+  //   }
+  // }
 
   _validateFirstPageValues() {
-    if (_selectedCountry == null) {
-      return false;
-    }
-    if (_selectedRegion == null) {
-      return false;
-    }
+    // if (_selectedCountry == null) {
+    //   return false;
+    // }
+    // if (_selectedRegion == null) {
+    //   return false;
+    // }
     if (_selectedCounty == null) {
       return false;
     }
@@ -114,199 +115,145 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: _isInitialing
-            ? Center(
-                child: SizedBox(
-                  height: 50.w,
-                  width: 50.w,
-                  child: const LoadingIndicator(
-                      indicatorType: Indicator.lineSpinFadeLoader,
-                      colors: [Colors.black],
-                      strokeWidth: 2.0),
-                ),
-              )
-            : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 9.w),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 56.h,
-                        width: 428.w,
-                      ),
-                      _buildStepper(),
-                      SizedBox(
-                        height: 56.h,
-                      ),
-                      Expanded(
-                          child: PageView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: _pageController,
-                        itemCount: _questions!.length + 1,
-                        itemBuilder: (_, index) {
-                          if (_currentIndex == 0) {
-                            return _buildFirstPage();
-                          }
-                          return _buildQuestionPage();
-                        },
-                      )),
-                    ]),
-              ));
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0, .8],
+          colors: [AppColors.secondaryColor, AppColors.primaryColor],
+        ),
+      ),
+      child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: _isInitialing
+              ? Center(
+                  child: SizedBox(
+                    height: 50.w,
+                    width: 50.w,
+                    child: const LoadingIndicator(
+                        indicatorType: Indicator.lineSpinFadeLoader,
+                        colors: [AppColors.btnColor],
+                        strokeWidth: 2.0),
+                  ),
+                )
+              : Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 9.w),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 56.h,
+                          width: 428.w,
+                        ),
+                        _buildStepper(),
+                        SizedBox(
+                          height: 56.h,
+                        ),
+                        Expanded(
+                            child: PageView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: _pageController,
+                          itemCount: _questions!.length + 1,
+                          itemBuilder: (_, index) {
+                            if (_currentIndex == 0) {
+                              return _buildFirstPage();
+                            }
+                            return _buildQuestionPage();
+                          },
+                        )),
+                      ]),
+                )),
+    );
   }
 
   _buildFirstPage() {
     return Column(
       children: [
-        Expanded(
-          child: SizedBox(
-            width: 410.w,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Theme(
-                      data: Theme.of(context).copyWith(
-                        dividerColor: Colors.transparent,
-                        // unselectedWidgetColor: Colors.white
-                      ),
-                      child: ExpansionTile(
-                        title: Text(
-                          _selectedCountry?.name ?? "Country",
-                          style: TextStyle(
-                              fontSize: 20.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.left,
-                        ),
-                        children: [
-                          ...countries.map((country) => ListTile(
-                                title: Text(
-                                  country.name,
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.left,
-                                ),
-                                trailing: _selectedCountry == country
-                                    ? Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20.w),
-                                        child: Icon(
-                                          Icons.check,
-                                          color: const Color(0xFFF23A02),
-                                          size: 25.h,
-                                        ),
-                                      )
-                                    : null,
-                                onTap: () {
-                                  if (_selectedCountry != country) {
-                                    _selectedCounty = null;
-                                    _selectedRegion = null;
-                                    setState(() {
-                                      _selectedCountry = country;
-                                    });
-                                    _changeCountry(country);
-                                  }
-                                },
-                              ))
-                        ],
-                      )),
-                  Theme(
-                      data: Theme.of(context).copyWith(
-                        dividerColor: Colors.transparent,
-                      ),
-                      child: ExpansionTile(
-                        title: Text(
-                          _selectedRegion?.name ?? "Region",
-                          style: TextStyle(
-                              fontSize: 20.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.left,
-                        ),
-                        children: [
-                          ...regions.map((region) => ListTile(
-                                title: Text(
-                                  region.name,
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.left,
-                                ),
-                                trailing: _selectedRegion == region
-                                    ? Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20.w),
-                                        child: Icon(
-                                          Icons.check,
-                                          color: const Color(0xFFF23A02),
-                                          size: 25.h,
-                                        ),
-                                      )
-                                    : null,
-                                onTap: () {
-                                  if (_selectedRegion != region) {
-                                    _selectedCounty = null;
-                                    setState(() {
-                                      _selectedRegion = region;
-                                      _changeRegion(region);
-                                    });
-                                  }
-                                },
-                              ))
-                        ],
-                      )),
-                  Theme(
-                      data: Theme.of(context).copyWith(
-                        dividerColor: Colors.transparent,
-                        // unselectedWidgetColor: Colors.white
-                      ),
-                      child: ExpansionTile(
-                        title: Text(
-                          _selectedCounty?.name ?? "County",
-                          style: TextStyle(
-                              fontSize: 20.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.left,
-                        ),
-                        children: [
-                          ...counties.map((county) => ListTile(
-                                title: Text(
-                                  county.name,
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.left,
-                                ),
-                                trailing: _selectedCounty == county
-                                    ? Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 20.w),
-                                        child: Icon(
-                                          Icons.check,
-                                          color: const Color(0xFFF23A02),
-                                          size: 25.h,
-                                        ),
-                                      )
-                                    : null,
-                                onTap: () {
-                                  setState(() {
-                                    _selectedCounty = county;
-                                  });
-                                },
-                              ))
-                        ],
-                      )),
-                ],
+        SizedBox(
+          width: 410.w,
+          child: Theme(
+              data: Theme.of(context).copyWith(
+                dividerColor: Colors.transparent,
+                unselectedWidgetColor: AppColors.btnColor,
               ),
-            ),
-          ),
+              child: ExpansionTile(
+                title: Text(
+                  _selectedCounty?.name ?? "County",
+                  style: TextStyle(
+                      fontSize: 22.sp,
+                      color: AppColors.btnColor,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.left,
+                ),
+                iconColor: AppColors.btnColor,
+                onExpansionChanged: (bool value) {
+                  setState(() {
+                    _isExpanded = value;
+                  });
+                },
+              )),
+        ),
+        Flexible(
+          child: _isExpanded
+              ? SizedBox(
+                  width: 410.w,
+                  child: Card(
+                    color: Colors.white.withOpacity(0.15),
+                    margin: EdgeInsets.symmetric(horizontal: 20.w),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.w)),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 25.h),
+                      child: ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        itemCount: counties.length,
+                        itemBuilder: (_, index) {
+                          return ListTile(
+                            title: Text(
+                              counties[index].name,
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: Colors.grey[200]!,
+                                  fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.left,
+                            ),
+                            trailing: _selectedCounty == counties[index]
+                                ? Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 0.w),
+                                    child: Icon(
+                                      Icons.check,
+                                      color: AppColors.btnColor,
+                                      size: 30.h,
+                                    ),
+                                  )
+                                : null,
+                            onTap: () {
+                              setState(() {
+                                _selectedCounty = counties[index];
+                              });
+                            },
+                          );
+                        },
+                        separatorBuilder: (_, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
+                            child: Divider(
+                              // color: Colors.white.withOpacity(0.3),
+                              color: Colors.blueGrey,
+                              thickness: 1.25.h,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
         ),
         SizedBox(
           height: 36.h,
@@ -326,7 +273,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
             width: 192.w,
             decoration: BoxDecoration(
                 color: _validateFirstPageValues()
-                    ? const Color(0xFFF23A02)
+                    ? AppColors.btnColor
                     : Colors.grey[600],
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
@@ -361,7 +308,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
             _questions![index].prompt,
             style: TextStyle(
                 fontSize: 30.sp,
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold),
             textAlign: TextAlign.left,
           ),
@@ -396,7 +343,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                 "Back",
                 style: TextStyle(
                     fontSize: 20.sp,
-                    color: Colors.black,
+                    color: Colors.white,
                     fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center,
               ),
@@ -438,8 +385,8 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
               context,
               MaterialPageRoute(
                   builder: (_) => SignUpPage(
-                        country: _selectedCountry!,
-                        region: _selectedRegion!,
+                        // country: _selectedCountry!,
+                        // region: _selectedRegion!,
                         county: _selectedCounty!,
                         selectedAnswers: _selectedAnswers,
                         questions: _questions!,
@@ -454,17 +401,15 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.w),
         decoration: BoxDecoration(
             border: Border.all(
-                color: isSelected
-                    ? const Color(0xFFF23A02)
-                    : Colors.black.withOpacity(.2),
+                color: isSelected ? AppColors.btnColor : Colors.grey[300]!,
                 width: 3.w),
-            color: isSelected ? const Color(0xFFF23A02) : Colors.transparent,
+            color: isSelected ? AppColors.btnColor : Colors.transparent,
             borderRadius: BorderRadius.circular(10.w)),
         child: Text(
           answer.optionValue,
           style: TextStyle(
               fontSize: 20.sp,
-              color: isSelected ? Colors.white : Colors.black,
+              color: isSelected ? Colors.white : Colors.grey[300],
               fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
@@ -489,11 +434,110 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
               margin: EdgeInsets.symmetric(horizontal: 5.w),
               decoration: BoxDecoration(
                   color: index <= _currentIndex
-                      ? const Color(0xFFF23A02)
-                      : Colors.black.withOpacity(.2),
+                      ? AppColors.btnColor
+                      : Colors.grey[300]!,
                   borderRadius: BorderRadius.circular(2.w)),
             );
           }),
     );
   }
 }
+
+
+
+// Theme(
+                  //     data: Theme.of(context).copyWith(
+                  //       dividerColor: Colors.transparent,
+                  //       // unselectedWidgetColor: Colors.white
+                  //     ),
+                  //     child: ExpansionTile(
+                  //       title: Text(
+                  //         _selectedCountry?.name ?? "Country",
+                  //         style: TextStyle(
+                  //             fontSize: 20.sp,
+                  //             color: Colors.black,
+                  //             fontWeight: FontWeight.w600),
+                  //         textAlign: TextAlign.left,
+                  //       ),
+                  //       children: [
+                  //         ...countries.map((country) => ListTile(
+                  //               title: Text(
+                  //                 country.name,
+                  //                 style: TextStyle(
+                  //                     fontSize: 16.sp,
+                  //                     color: Colors.black,
+                  //                     fontWeight: FontWeight.w500),
+                  //                 textAlign: TextAlign.left,
+                  //               ),
+                  //               trailing: _selectedCountry == country
+                  //                   ? Padding(
+                  //                       padding: EdgeInsets.symmetric(
+                  //                           horizontal: 20.w),
+                  //                       child: Icon(
+                  //                         Icons.check,
+                  //                         color: const Color(0xFFF23A02),
+                  //                         size: 25.h,
+                  //                       ),
+                  //                     )
+                  //                   : null,
+                  //               onTap: () {
+                  //                 if (_selectedCountry != country) {
+                  //                   _selectedCounty = null;
+                  //                   _selectedRegion = null;
+                  //                   setState(() {
+                  //                     _selectedCountry = country;
+                  //                   });
+                  //                   _changeCountry(country);
+                  //                 }
+                  //               },
+                  //             ))
+                  //       ],
+                  //     )),
+                  // Theme(
+                  //     data: Theme.of(context).copyWith(
+                  //       dividerColor: Colors.transparent,
+                  //       unselectedWidgetColor: AppColors.btnColor,
+                  //     ),
+                  //     child: ExpansionTile(
+                  //       title: Text(
+                  //         _selectedRegion?.name ?? "Region",
+                  //         style: TextStyle(
+                  //             fontSize: 20.sp,
+                  //             color: AppColors.btnColor,
+                  //             fontWeight: FontWeight.w600),
+                  //         textAlign: TextAlign.left,
+                  //       ),
+                  //       iconColor: AppColors.btnColor,
+                  //       children: [
+                  //         ...regions.map((region) => ListTile(
+                  //               title: Text(
+                  //                 region.name,
+                  //                 style: TextStyle(
+                  //                     fontSize: 16.sp,
+                  //                     color: Colors.grey[200]!,
+                  //                     fontWeight: FontWeight.w500),
+                  //                 textAlign: TextAlign.left,
+                  //               ),
+                  //               trailing: _selectedRegion == region
+                  //                   ? Padding(
+                  //                       padding: EdgeInsets.symmetric(
+                  //                           horizontal: 20.w),
+                  //                       child: Icon(
+                  //                         Icons.check,
+                  //                         color: AppColors.btnColor,
+                  //                         size: 25.h,
+                  //                       ),
+                  //                     )
+                  //                   : null,
+                  //               onTap: () {
+                  //                 if (_selectedRegion != region) {
+                  //                   _selectedCounty = null;
+                  //                   setState(() {
+                  //                     _selectedRegion = region;
+                  //                     _changeRegion(region);
+                  //                   });
+                  //                 }
+                  //               },
+                  //             ))
+                  //       ],
+                  //     )),

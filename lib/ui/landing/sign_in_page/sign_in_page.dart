@@ -1,8 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
@@ -85,19 +89,25 @@ class _SignInPageState extends State<SignInPage> {
       PageLoader.showLoader(context);
       final res = await UserService.signIn(
           _emailController.text, _passwordController.text);
-      Navigator.pop(context);
 
-      res.when(success: (User user) {
+      res.when(success: (User user) async {
+        final countyProvider =
+            Provider.of<CountyProvider>(context, listen: false);
+        await countyProvider.getAllCounties();
+        Provider.of<UserProvider>(context, listen: false).setUser(user);
+        Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
+            MaterialPageRoute(builder: (context) => const BottomNavBar()),
             (route) => false);
       }, failure: (NetworkExceptions error) {
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
       }, responseError: (ResponseError responseError) {
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: responseError.error,
@@ -161,7 +171,7 @@ class _SignInPageState extends State<SignInPage> {
                       child: Container(
                         decoration: BoxDecoration(
                             border: Border.all(
-                              color: const Color(0xFFF23A02),
+                              color: AppColors.btnColor,
                               style: BorderStyle.solid,
                               width: 2.5.w,
                             ),
@@ -170,7 +180,7 @@ class _SignInPageState extends State<SignInPage> {
                         child: _saveAccountInfo
                             ? Icon(
                                 Icons.check,
-                                color: const Color(0xFFF23A02),
+                                color: AppColors.btnColor,
                                 size: 20.w,
                               )
                             : null,
@@ -200,7 +210,7 @@ class _SignInPageState extends State<SignInPage> {
                 height: 50.h,
                 width: 190.w,
                 decoration: BoxDecoration(
-                    color: const Color(0xFFF23A02),
+                    color: AppColors.btnColor,
                     borderRadius: BorderRadius.circular(5.w)),
                 child: Text(
                   "SIGN IN",
@@ -243,7 +253,7 @@ class _SignInPageState extends State<SignInPage> {
                               builder: (_) => const QuestionnairePage()))),
                     style: TextStyle(
                         fontSize: 16.sp,
-                        color: const Color(0xFFF23A02),
+                        color: AppColors.btnColor,
                         fontWeight: FontWeight.w400),
                   )
                 ]))

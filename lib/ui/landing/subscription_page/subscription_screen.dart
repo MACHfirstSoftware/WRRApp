@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:loading_indicator/loading_indicator.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/subscription.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
@@ -76,7 +77,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           height: 600.h,
           padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 50.h),
           decoration: BoxDecoration(
-              color: const Color(0xFF262626),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0, .8],
+                colors: [AppColors.secondaryColor, AppColors.primaryColor],
+              ),
               borderRadius: BorderRadius.circular(20.w)),
           child: isLoading
               ? _buildLoader()
@@ -97,7 +103,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           errorMessage,
           style: TextStyle(
               fontSize: 25.sp,
-              color: const Color(0xFFF23A02),
+              color: AppColors.btnColor,
               fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
@@ -113,7 +119,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             height: 60.h,
             width: 190.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
               "Try Again",
@@ -136,7 +142,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           "Choose your plan".toUpperCase(),
           style: TextStyle(
               fontSize: 25.sp,
-              color: const Color(0xFFF23A02),
+              color: AppColors.btnColor,
               fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
@@ -177,7 +183,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             height: 60.h,
             width: 190.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
               "CONTINUE",
@@ -200,7 +206,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         width: 50.w,
         child: const LoadingIndicator(
             indicatorType: Indicator.lineSpinFadeLoader,
-            colors: [Color(0xFFF23A02)],
+            colors: [AppColors.btnColor],
             strokeWidth: 2.0),
       ),
     );
@@ -212,7 +218,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       decoration: BoxDecoration(
           border: Border.all(
               color: _selectedIndex == index
-                  ? const Color(0xFFF23A02)
+                  ? AppColors.btnColor
                   : Colors.grey[300]!,
               width: 5.w),
           borderRadius: BorderRadius.circular(20.w)),
@@ -223,9 +229,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           SvgPicture.asset(
             // "assets/icons/free-label.svg",
             iconPath,
-            color: _selectedIndex == index
-                ? const Color(0xFFF23A02)
-                : Colors.grey[300],
+            color:
+                _selectedIndex == index ? AppColors.btnColor : Colors.grey[300],
             width: 100.w,
             height: 100.w,
           ),
@@ -235,7 +240,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             style: TextStyle(
                 fontSize: 30.sp,
                 color: _selectedIndex == index
-                    ? const Color(0xFFF23A02)
+                    ? AppColors.btnColor
                     : Colors.grey[300],
                 fontWeight: FontWeight.w700),
             textAlign: TextAlign.center,

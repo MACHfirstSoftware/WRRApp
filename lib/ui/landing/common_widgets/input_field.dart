@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wisconsin_app/config.dart';
 
 class InputField extends StatefulWidget {
   final String hintText;
@@ -35,7 +36,7 @@ class _InputFieldState extends State<InputField> {
             fontSize: 16.sp,
             decoration: TextDecoration.none),
         textAlignVertical: TextAlignVertical.center,
-        cursorColor: const Color(0xFFF23A02),
+        cursorColor: AppColors.btnColor,
         keyboardType: widget.textInputType,
         obscureText: widget.obscureText ? isHide : widget.obscureText,
         decoration: InputDecoration(

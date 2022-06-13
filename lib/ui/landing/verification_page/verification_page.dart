@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
@@ -199,7 +200,7 @@ class _VerificationPageState extends State<VerificationPage> {
             height: 50.h,
             width: 190.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
               "SUBMIT",
@@ -262,7 +263,7 @@ class _VerificationPageState extends State<VerificationPage> {
             height: 50.h,
             width: 190.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
               "CONTINUE",

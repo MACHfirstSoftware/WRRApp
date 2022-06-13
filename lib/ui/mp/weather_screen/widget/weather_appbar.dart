@@ -9,16 +9,15 @@ import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 
-class DashboardAppBar extends StatefulWidget {
-  const DashboardAppBar({Key? key}) : super(key: key);
+class WeatherAppBar extends StatefulWidget {
+  const WeatherAppBar({Key? key}) : super(key: key);
 
   @override
-  State<DashboardAppBar> createState() => _DashboardAppBarState();
+  State<WeatherAppBar> createState() => _WeatherAppBarState();
 }
 
-class _DashboardAppBarState extends State<DashboardAppBar> {
+class _WeatherAppBarState extends State<WeatherAppBar> {
   late List<County> _counties;
-
   @override
   void initState() {
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
@@ -60,60 +59,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                     fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
-            ),
-            Positioned(
-                bottom: 10.h,
-                right: 80.w,
-                child: SvgPicture.asset(
-                  'assets/icons/search.svg',
-                  fit: BoxFit.fill,
-                  alignment: Alignment.center,
-                  height: 30.h,
-                  width: 30.h,
-                  color: Colors.white,
-                )),
-            Positioned(
-                bottom: 10.h,
-                right: 40.w,
-                child: SvgPicture.asset(
-                  'assets/icons/trophy-bold.svg',
-                  fit: BoxFit.fill,
-                  alignment: Alignment.center,
-                  height: 30.h,
-                  width: 30.h,
-                  color: Colors.white,
-                )),
-            Positioned(
-                bottom: 10.h,
-                right: 0.w,
-                child: GestureDetector(
-                  onTap: () {
-                    print("Notification clicked");
-                  },
-                  child: Stack(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/notification.svg',
-                        fit: BoxFit.fill,
-                        alignment: Alignment.center,
-                        height: 27.5.h,
-                        width: 27.5.h,
-                        color: Colors.white,
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          height: 12.5.h,
-                          width: 12.5.h,
-                          decoration: BoxDecoration(
-                              color: Colors.redAccent,
-                              borderRadius: BorderRadius.circular(6.25.h)),
-                        ),
-                      )
-                    ],
-                  ),
-                )),
+            )
           ],
         ),
       );

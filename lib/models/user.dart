@@ -11,11 +11,12 @@ class User {
     required this.firstName,
     required this.emailAddress,
     required this.username,
-    this.country,
-    this.stateOrTerritory,
-    this.countyId,
-    this.regionId,
-    this.isOptIn,
+    required this.country,
+    required this.stateOrTerritory,
+    required this.countyId,
+    this.countyName,
+    required this.regionId,
+    required this.isOptIn,
   });
 
   String id;
@@ -23,11 +24,12 @@ class User {
   String lastName;
   String emailAddress;
   String username;
-  String? country;
-  String? stateOrTerritory;
-  int? countyId;
-  int? regionId;
-  bool? isOptIn;
+  String country;
+  String stateOrTerritory;
+  int countyId;
+  String? countyName;
+  int regionId;
+  bool isOptIn;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],

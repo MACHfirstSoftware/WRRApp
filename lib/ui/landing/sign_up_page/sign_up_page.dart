@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:wisconsin_app/models/country.dart';
+import 'package:provider/provider.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/question.dart';
-import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
@@ -23,15 +25,15 @@ import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class SignUpPage extends StatefulWidget {
-  final Country country;
-  final Region region;
+  // final Country country;
+  // final Region region;
   final County county;
   final List<Answer> selectedAnswers;
   final List<Question> questions;
   const SignUpPage(
       {Key? key,
-      required this.country,
-      required this.region,
+      // required this.country,
+      // required this.region,
       required this.county,
       required this.selectedAnswers,
       required this.questions})
@@ -179,9 +181,9 @@ class _SignUpPageState extends State<SignUpPage> {
         "emailAddress": _emailController.text.trim(),
         "username": _emailController.text.trim(),
         "password": _passwordController.text,
-        "country": widget.country.code,
+        "country": "US",
         "countyId": widget.county.id,
-        "regionId": widget.region.id,
+        "regionId": widget.county.regionId,
         "isOptIn": _sendMeUpdates
       };
       final res = await UserService.signUp(person);
@@ -191,17 +193,17 @@ class _SignUpPageState extends State<SignUpPage> {
             _createQuestionnaireDataList(userId));
         _userId = userId;
         Navigator.pop(context);
-        Navigator.push(
+        await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => VerificationPage(
                       userId: userId,
-                    ))).then((value) {
-          setState(() {
-            _currentStep++;
-          });
-          _onPageChange();
+                    )));
+        setState(() {
+          _currentStep++;
         });
+        _onPageChange();
+        _subscription();
       }, failure: (NetworkExceptions error) {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         Navigator.pop(context);
@@ -220,8 +222,7 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  _goDashborad() async {
-    print(_userId);
+  _subscription() async {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     int sId = await Navigator.of(context).push(
       HeroDialogRoute(builder: (context) => const SubscriptionScreen()),
@@ -229,28 +230,13 @@ class _SignUpPageState extends State<SignUpPage> {
     PageLoader.showLoader(context);
     final subscriptionResponse =
         await SubscriptionService.addSubscription(_userId, sId);
+    Navigator.pop(context);
     subscriptionResponse.when(success: (bool success) async {
-      final res = await UserService.signIn(
-          _emailController.text, _passwordController.text);
-      Navigator.pop(context);
-      res.when(success: (User user) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => BottomNavBar(user: user)),
-            (route) => false);
-      }, failure: (NetworkExceptions error) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const SignInPage()),
-            (route) => false);
-      }, responseError: (ResponseError responseError) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const SignInPage()),
-            (route) => false);
-      });
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Successfully subscribed!",
+          type: SnackBarType.success));
     }, failure: (NetworkExceptions error) async {
-      Navigator.pop(context);
       PageLoader.showTransparentLoader(context);
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -259,9 +245,8 @@ class _SignUpPageState extends State<SignUpPage> {
       await Future.delayed(const Duration(milliseconds: 2200), () {
         Navigator.pop(context);
       });
-      _goDashborad();
+      _subscription();
     }, responseError: (ResponseError responseError) async {
-      Navigator.pop(context);
       PageLoader.showTransparentLoader(context);
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -270,7 +255,37 @@ class _SignUpPageState extends State<SignUpPage> {
       await Future.delayed(const Duration(milliseconds: 2200), () {
         Navigator.pop(context);
       });
-      _goDashborad();
+      _subscription();
+    });
+  }
+
+  _goDashborad() async {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    PageLoader.showLoader(context);
+    final res = await UserService.signIn(
+        _emailController.text, _passwordController.text);
+    res.when(success: (User user) async {
+      final countyProvider =
+          Provider.of<CountyProvider>(context, listen: false);
+      await countyProvider.getAllCounties();
+      Provider.of<UserProvider>(context, listen: false).setUser(user);
+      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          (route) => false);
+    }, failure: (NetworkExceptions error) {
+      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInPage()),
+          (route) => false);
+    }, responseError: (ResponseError responseError) {
+      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInPage()),
+          (route) => false);
     });
   }
 
@@ -391,7 +406,7 @@ class _SignUpPageState extends State<SignUpPage> {
         height: 50.h,
         width: 130.w,
         decoration: BoxDecoration(
-            color: const Color(0xFFF23A02),
+            color: AppColors.btnColor,
             borderRadius: BorderRadius.circular(5.w)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -447,7 +462,7 @@ class _SignUpPageState extends State<SignUpPage> {
             height: 50.h,
             width: 190.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
               "Go to Dashboard",
@@ -486,11 +501,11 @@ class CustomStepper extends StatelessWidget {
             height: 20.w,
             width: 20.w,
             decoration: BoxDecoration(
-                color: const Color(0xFFF23A02),
+                color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(10.w)),
           ),
           Container(
-            color: const Color(0xFFF23A02),
+            color: AppColors.btnColor,
             height: 2.h,
             width: 75.w,
           ),
@@ -498,12 +513,11 @@ class CustomStepper extends StatelessWidget {
             height: 20.w,
             width: 20.w,
             decoration: BoxDecoration(
-                color:
-                    _currentStep == 0 ? Colors.white : const Color(0xFFF23A02),
+                color: _currentStep == 0 ? Colors.white : AppColors.btnColor,
                 borderRadius: BorderRadius.circular(10.w)),
           ),
           Container(
-            color: _currentStep == 2 ? const Color(0xFFF23A02) : Colors.white,
+            color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
             height: 2.h,
             width: 75.w,
           ),
@@ -511,8 +525,7 @@ class CustomStepper extends StatelessWidget {
             height: 20.w,
             width: 20.w,
             decoration: BoxDecoration(
-                color:
-                    _currentStep == 2 ? const Color(0xFFF23A02) : Colors.white,
+                color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
                 borderRadius: BorderRadius.circular(10.w)),
           ),
         ],
@@ -602,7 +615,7 @@ class _StepTwoState extends State<StepTwo> {
                   child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(
-                          color: const Color(0xFFF23A02),
+                          color: AppColors.btnColor,
                           style: BorderStyle.solid,
                           width: 2.5.w,
                         ),
@@ -611,7 +624,7 @@ class _StepTwoState extends State<StepTwo> {
                     child: widget._sendMeUpdates
                         ? Icon(
                             Icons.check,
-                            color: const Color(0xFFF23A02),
+                            color: AppColors.btnColor,
                             size: 20.w,
                           )
                         : null,
