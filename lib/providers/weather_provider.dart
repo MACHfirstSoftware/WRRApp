@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
+import 'package:wisconsin_app/models/astro.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -10,11 +11,13 @@ class WeatherProvider with ChangeNotifier {
   ApiStatus _apiStatus = ApiStatus.isInitial;
   County? _county;
   CurrentWeather? _currentWeather;
+  Astro? _astro;
   String errorMessage = '';
 
   ApiStatus get apiStatus => _apiStatus;
   County get county => _county!;
   CurrentWeather get currentWeather => _currentWeather!;
+  Astro get astro => _astro!;
 
   void changeCounty(County _countyValue) {
     _county = _countyValue;
@@ -48,13 +51,23 @@ class WeatherProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getWeatherDetails() async {
-    _apiStatus = ApiStatus.isBusy;
+  Future<void> getWeatherDetails({bool isInit = false}) async {
+    isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
     final current = await WeatherService.getCurrentWeather(_county!.name);
-    current.when(success: (CurrentWeather currentWeather) {
+    current.when(success: (CurrentWeather currentWeather) async {
       _currentWeather = currentWeather;
-      errorMessage = '';
-      setIdle();
+      final astro = await WeatherService.getAstroDetails(_county!.name);
+      astro.when(success: (Astro astro) {
+        _astro = astro;
+        errorMessage = '';
+        setIdle();
+      }, failure: (NetworkExceptions error) {
+        errorMessage = NetworkExceptions.getErrorMessage(error);
+        setError();
+      }, responseError: (ResponseError responseError) {
+        errorMessage = responseError.error;
+        setError();
+      });
     }, failure: (NetworkExceptions error) {
       errorMessage = NetworkExceptions.getErrorMessage(error);
       setError();

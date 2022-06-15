@@ -10,9 +10,11 @@ import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class VerificationPage extends StatefulWidget {
   final String userId;
+  final String phoneNumber;
   const VerificationPage({
     Key? key,
     required this.userId,
+    required this.phoneNumber,
   }) : super(key: key);
 
   @override
@@ -21,27 +23,27 @@ class VerificationPage extends StatefulWidget {
 
 class _VerificationPageState extends State<VerificationPage> {
   late TextEditingController _codeController;
-  late TextEditingController _phoneController;
-  bool codeSendSuccess = false;
+  // late TextEditingController _phoneController;
+  // bool codeSendSuccess = false;
 
   @override
   void initState() {
     _codeController = TextEditingController();
-    _phoneController = TextEditingController();
+    // _phoneController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _codeController.dispose();
-    _phoneController.dispose();
+    // _phoneController.dispose();
     super.dispose();
   }
 
   _reSend() async {
     PageLoader.showLoader(context);
-    final res = await VerficationService.reSendCode(
-        widget.userId, _phoneController.text.trim());
+    final res =
+        await VerficationService.reSendCode(widget.userId, widget.phoneNumber);
     Navigator.pop(context);
     if (res) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -64,7 +66,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
       if (res) {
         await VerficationService.personPhonePatch(
-            widget.userId, _phoneController.text.trim());
+            widget.userId, widget.phoneNumber);
         // await VerficationService.personActivePatch(widget.userId);
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -86,24 +88,24 @@ class _VerificationPageState extends State<VerificationPage> {
     }
   }
 
-  _sendCode() async {
-    if (_validatePhoneNumber()) {
-      PageLoader.showLoader(context);
-      final res = await VerficationService.sendCode(
-          widget.userId, _phoneController.text.trim());
-      Navigator.pop(context);
-      if (res) {
-        setState(() {
-          codeSendSuccess = true;
-        });
-      } else {
-        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-            context: context,
-            messageText: "Something went wrong!",
-            type: SnackBarType.error));
-      }
-    }
-  }
+  // _sendCode() async {
+  //   if (_validatePhoneNumber()) {
+  //     PageLoader.showLoader(context);
+  //     final res = await VerficationService.sendCode(
+  //         widget.userId, _phoneController.text.trim());
+  //     Navigator.pop(context);
+  //     if (res) {
+  //       setState(() {
+  //         codeSendSuccess = true;
+  //       });
+  //     } else {
+  //       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //           context: context,
+  //           messageText: "Something went wrong!",
+  //           type: SnackBarType.error));
+  //     }
+  //   }
+  // }
 
   _validateCode() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -117,24 +119,24 @@ class _VerificationPageState extends State<VerificationPage> {
     return true;
   }
 
-  _validatePhoneNumber() {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    if (_phoneController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (_phoneController.text.trimRight().length != 10) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is invalid",
-          type: SnackBarType.error));
-      return false;
-    }
-    return true;
-  }
+  // _validatePhoneNumber() {
+  //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  //   if (_phoneController.text.isEmpty) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Phone number is required",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   if (_phoneController.text.trimRight().length != 10) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Phone number is invalid",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   return true;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -150,19 +152,9 @@ class _VerificationPageState extends State<VerificationPage> {
         SizedBox(
           height: 120.h,
         ),
-        // Text(
-        //   "VERIFY YOUR \nPHONE NUMBER",
-        //   style: TextStyle(
-        //       fontSize: 24.sp,
-        //       color: Colors.white,
-        //       fontWeight: FontWeight.bold),
-        //   textAlign: TextAlign.center,
-        // ),
-        // SizedBox(
-        //   height: 45.h,
-        // ),
-        if (codeSendSuccess) _buildCodeUI(),
-        if (!codeSendSuccess) _buildPhoneUI()
+        // if (codeSendSuccess)
+        _buildCodeUI(),
+        // if (!codeSendSuccess) _buildPhoneUI()
       ])),
     ));
   }
@@ -203,7 +195,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
-              "SUBMIT",
+              "Next",
               style: TextStyle(
                   fontSize: 24.sp,
                   color: Colors.white,
@@ -230,52 +222,52 @@ class _VerificationPageState extends State<VerificationPage> {
     );
   }
 
-  _buildPhoneUI() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Text(
-            "Congratulations, you have joined the Wisconsin Rut Report. Please verify you phone number to continue your account setup.",
-            style: TextStyle(
-                fontSize: 22.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        SizedBox(
-          height: 45.h,
-        ),
-        InputField(
-          hintText: "Phone Number",
-          controller: _phoneController,
-          prefixIconPath: "assets/icons/phone.svg",
-          textInputType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 60.h,
-        ),
-        GestureDetector(
-          onTap: () => _sendCode(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 50.h,
-            width: 190.w,
-            decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "CONTINUE",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // _buildPhoneUI() {
+  //   return Column(
+  //     children: [
+  //       Padding(
+  //         padding: EdgeInsets.symmetric(horizontal: 20.w),
+  //         child: Text(
+  //           "Congratulations, you have joined the Wisconsin Rut Report. Please verify you phone number to continue your account setup.",
+  //           style: TextStyle(
+  //               fontSize: 22.sp,
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.bold),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //       SizedBox(
+  //         height: 45.h,
+  //       ),
+  //       InputField(
+  //         hintText: "Phone Number",
+  //         controller: _phoneController,
+  //         prefixIconPath: "assets/icons/phone.svg",
+  //         textInputType: TextInputType.number,
+  //       ),
+  //       SizedBox(
+  //         height: 60.h,
+  //       ),
+  //       GestureDetector(
+  //         onTap: () => _sendCode(),
+  //         child: Container(
+  //           alignment: Alignment.center,
+  //           height: 50.h,
+  //           width: 190.w,
+  //           decoration: BoxDecoration(
+  //               color: AppColors.btnColor,
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           child: Text(
+  //             "CONTINUE",
+  //             style: TextStyle(
+  //                 fontSize: 24.sp,
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.bold),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

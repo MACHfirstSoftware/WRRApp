@@ -223,7 +223,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
             SizedBox(
-              height: 45.h,
+              height: 25.h,
             ),
             Text(
               "Forgot your password?",
@@ -236,27 +236,27 @@ class _SignInPageState extends State<SignInPage> {
             SizedBox(
               height: 10.h,
             ),
-            RichText(
-                text: TextSpan(
-                    text: "Don't Have an Account?",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    children: <TextSpan>[
-                  TextSpan(
-                    text: "  SIGN UP",
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = (() => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const QuestionnairePage()))),
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: AppColors.btnColor,
-                        fontWeight: FontWeight.w400),
-                  )
-                ]))
+            // RichText(
+            //     text: TextSpan(
+            //         text: "Don't Have an Account?",
+            //         style: TextStyle(
+            //             fontSize: 16.sp,
+            //             color: Colors.white,
+            //             fontWeight: FontWeight.w400),
+            //         children: <TextSpan>[
+            //       TextSpan(
+            //         text: "  SIGN UP",
+            //         recognizer: TapGestureRecognizer()
+            //           ..onTap = (() => Navigator.push(
+            //               context,
+            //               MaterialPageRoute(
+            //                   builder: (_) => const QuestionnairePage()))),
+            //         style: TextStyle(
+            //             fontSize: 16.sp,
+            //             color: AppColors.btnColor,
+            //             fontWeight: FontWeight.w400),
+            //       )
+            //     ]))
           ],
         ),
       ),

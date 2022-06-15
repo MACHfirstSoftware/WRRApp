@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 
 class MyAccount extends StatefulWidget {
@@ -16,7 +17,7 @@ class _MyAccountState extends State<MyAccount> {
   _doLogout() {
     Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const SignInPage()),
+        MaterialPageRoute(builder: (context) => const AuthMainPage()),
         (route) => false);
   }
 

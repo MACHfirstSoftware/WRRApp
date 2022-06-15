@@ -79,12 +79,14 @@ flutter_icons:
 
 # Splash Screen configurations
 flutter_native_splash:
-  color: "#FFFFFF"
-  image: "assets/images/splash_screen.png"
+  color: "#0E131D"
+  # branding: "assets/images/app-logo.png"
+  image: "assets/images/logo-1080.png"
   android: true
   ios: true
-  android_gravity: fill
-  ios_content_mode: scaleAspectFill
+  # branding_mode: center
+  android_gravity: center
+  ios_content_mode: center
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

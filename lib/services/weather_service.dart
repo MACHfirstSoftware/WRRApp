@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/astro.dart';
 import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
@@ -77,6 +78,25 @@ class WeatherService {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  static Future<ApiResult<Astro>> getAstroDetails(String countyName) async {
+    try {
+      final response = await _dio.get(
+          "http://api.weatherapi.com/v1/astronomy.json?key=${Constant.weatherApiKey}&q=$countyName");
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: Astro.fromJson(response.data["astronomy"]["astro"]));
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 }

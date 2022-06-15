@@ -50,20 +50,8 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
             //   ),
             // ),
             Positioned(
-              bottom: 10.h,
-              left: 50.h,
-              child: Text(
-                userProvider.user.countyName!,
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            Positioned(
                 bottom: 10.h,
-                right: 80.w,
+                left: 40.w,
                 child: SvgPicture.asset(
                   'assets/icons/search.svg',
                   fit: BoxFit.fill,
@@ -72,6 +60,30 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                   width: 30.h,
                   color: Colors.white,
                 )),
+            // Positioned(
+            //   bottom: 10.h,
+            //   left: 50.h,
+            //   child: Text(
+            //     userProvider.user.countyName!,
+            //     style: TextStyle(
+            //         fontSize: 20.sp,
+            //         color: Colors.white,
+            //         fontWeight: FontWeight.bold),
+            //     textAlign: TextAlign.center,
+            //   ),
+            // ),
+            // Align(
+            //   alignment: Alignment.center,
+            //   child: SvgPicture.asset(
+            //     'assets/icons/Logo-orange.svg',
+            //     fit: BoxFit.fill,
+            //     // alignment: Alignment.center,
+            //     height: 50.h,
+            //     // width: 200.w,
+            //     // color: Colors.red,
+            //   ),
+            // ),
+
             Positioned(
                 bottom: 10.h,
                 right: 40.w,

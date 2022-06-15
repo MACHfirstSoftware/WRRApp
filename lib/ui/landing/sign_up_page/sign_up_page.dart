@@ -12,6 +12,8 @@ import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
+import 'package:wisconsin_app/services/verfication_service.dart';
+import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
@@ -25,15 +27,11 @@ import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class SignUpPage extends StatefulWidget {
-  // final Country country;
-  // final Region region;
   final County county;
   final List<Answer> selectedAnswers;
   final List<Question> questions;
   const SignUpPage(
       {Key? key,
-      // required this.country,
-      // required this.region,
       required this.county,
       required this.selectedAnswers,
       required this.questions})
@@ -51,7 +49,7 @@ class _SignUpPageState extends State<SignUpPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  // late TextEditingController _phoneController;
+  late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
 
@@ -61,7 +59,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    // _phoneController = TextEditingController();
+    _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     super.initState();
@@ -74,7 +72,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _emailController.dispose();
-    // _phoneController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
   }
@@ -89,23 +87,58 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  _validateStepOne() {
+  // _validateStepOne() {
+  //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+  //   if (_firstNameController.text.isEmpty) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "First name is required",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   if (_lastNameController.text.isEmpty) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Last name is required",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   if (_emailController.text.isEmpty) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Email is required",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   if (!RegExp(
+  //           r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+  //       .hasMatch(_emailController.text)) {
+  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Email is invalid",
+  //         type: SnackBarType.error));
+  //     return false;
+  //   }
+  //   return true;
+  // }
+
+  _validateRegister() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    if (_firstNameController.text.isEmpty) {
+    if (_firstNameController.text.trim().isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "First name is required",
           type: SnackBarType.error));
       return false;
     }
-    if (_lastNameController.text.isEmpty) {
+    if (_lastNameController.text.trim().isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Last name is required",
           type: SnackBarType.error));
       return false;
     }
-    if (_emailController.text.isEmpty) {
+    if (_emailController.text.trim().isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Email is required",
@@ -114,19 +147,28 @@ class _SignUpPageState extends State<SignUpPage> {
     }
     if (!RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-        .hasMatch(_emailController.text)) {
+        .hasMatch(_emailController.text.trim())) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Email is invalid",
           type: SnackBarType.error));
       return false;
     }
-    return true;
-  }
-
-  _validateStepTwo() {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-
+    if (_phoneController.text.trim().isEmpty) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Phone number is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (!RegExp(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
+        .hasMatch(_phoneController.text.trim())) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Phone number is invalid",
+          type: SnackBarType.error));
+      return false;
+    }
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -173,7 +215,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   _doSignUp() async {
-    if (_validateStepTwo()) {
+    if (_validateRegister()) {
       PageLoader.showLoader(context);
       Map<String, dynamic> person = {
         "firstName": _firstNameController.text.trim(),
@@ -192,12 +234,14 @@ class _SignUpPageState extends State<SignUpPage> {
         await QuestionnaireService.saveQuestionnaire(
             _createQuestionnaireDataList(userId));
         _userId = userId;
+        await VerficationService.sendCode(userId, _phoneController.text.trim());
         Navigator.pop(context);
         await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (_) => VerificationPage(
                       userId: userId,
+                      phoneNumber: _phoneController.text,
                     )));
         setState(() {
           _currentStep++;
@@ -259,7 +303,7 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  _goDashborad() async {
+  _letsGo() async {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     PageLoader.showLoader(context);
     final res = await UserService.signIn(
@@ -278,13 +322,13 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.pop(context);
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const SignInPage()),
+          MaterialPageRoute(builder: (context) => const AuthMainPage()),
           (route) => false);
     }, responseError: (ResponseError responseError) {
       Navigator.pop(context);
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const SignInPage()),
+          MaterialPageRoute(builder: (context) => const AuthMainPage()),
           (route) => false);
     });
   }
@@ -300,51 +344,62 @@ class _SignUpPageState extends State<SignUpPage> {
               height: 56.h,
             ),
             const LogoImage(),
-            CustomStepper(currentStep: _currentStep),
+            // CustomStepper(currentStep: _currentStep),
             SizedBox(
-              height: 375.h,
-              width: 310.w,
-              child: PageView(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  StepOne(
-                      firstNameController: _firstNameController,
-                      lastNameController: _lastNameController,
-                      emailController: _emailController),
-                  StepTwo(
-                      // phoneController: _phoneController,
-                      sendMeUpdates: _sendMeUpdates,
-                      onTap: _sendMeUpdatesFunc,
-                      passwordController: _passwordController,
-                      confirmPasswordController: _confirmPasswordController),
-                  _buildStepThree(),
-                ],
+              height: _currentStep == 0 ? 40.h : 150.h,
+            ),
+            Expanded(
+              child: SizedBox(
+                // height: 375.h,
+                width: 310.w,
+                child: PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    // StepOne(
+                    //     firstNameController: _firstNameController,
+                    //     lastNameController: _lastNameController,
+                    //     emailController: _emailController),
+                    StepTwo(
+                        firstNameController: _firstNameController,
+                        lastNameController: _lastNameController,
+                        emailController: _emailController,
+                        phoneController: _phoneController,
+                        sendMeUpdates: _sendMeUpdates,
+                        onTap: _sendMeUpdatesFunc,
+                        passwordController: _passwordController,
+                        confirmPasswordController: _confirmPasswordController),
+                    _buildStepThree(),
+                  ],
+                ),
               ),
             ),
-            if (_currentStep != 2)
+            if (_currentStep == 0)
               SizedBox(
                 width: 310.w,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     _buildBackwardButton(),
-                    if (_currentStep == 0)
-                      _buildForwardButton(() {
-                        if (_validateStepOne()) {
-                          setState(() {
-                            _currentStep++;
-                            _onPageChange();
-                          });
-                        }
-                      }),
-                    if (_currentStep == 1)
-                      _buildForwardButton(() {
-                        _doSignUp();
-                      }),
+                    // if (_currentStep == 0)
+                    //   _buildForwardButton(() {
+                    //     if (_validateStepOne()) {
+                    //       setState(() {
+                    //         _currentStep++;
+                    //         _onPageChange();
+                    //       });
+                    //     }
+                    //   }),
+                    // if (_currentStep == 1)
+                    _buildForwardButton(() {
+                      _doSignUp();
+                    }),
                   ],
                 ),
               ),
+            SizedBox(
+              height: 40.h,
+            ),
           ],
         ),
       ),
@@ -359,6 +414,8 @@ class _SignUpPageState extends State<SignUpPage> {
             _currentStep--;
             _onPageChange();
           });
+        } else {
+          Navigator.pop(context);
         }
       },
       child: Container(
@@ -443,20 +500,23 @@ class _SignUpPageState extends State<SignUpPage> {
         SizedBox(
           height: 40.h,
         ),
-        Text(
-          "Welcome \nto \nWisconsin Rut report",
-          style: TextStyle(
-              fontSize: 24.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              height: 1.5),
-          textAlign: TextAlign.center,
+        SizedBox(
+          width: 310.w,
+          child: Text(
+            "Welcome to the Wisconsin Rut Report!",
+            style: TextStyle(
+                fontSize: 24.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                height: 1.5),
+            textAlign: TextAlign.center,
+          ),
         ),
         SizedBox(
           height: 50.h,
         ),
         GestureDetector(
-          onTap: () => _goDashborad(),
+          onTap: () => _letsGo(),
           child: Container(
             alignment: Alignment.center,
             height: 50.h,
@@ -465,7 +525,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
-              "Go to Dashboard",
+              "Let's go!",
               style: TextStyle(
                   fontSize: 18.sp,
                   color: Colors.white,
@@ -479,78 +539,86 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 }
 
-class CustomStepper extends StatelessWidget {
-  const CustomStepper({
-    Key? key,
-    required int currentStep,
-  })  : _currentStep = currentStep,
-        super(key: key);
+// class CustomStepper extends StatelessWidget {
+//   const CustomStepper({
+//     Key? key,
+//     required int currentStep,
+//   })  : _currentStep = currentStep,
+//         super(key: key);
 
-  final int _currentStep;
+//   final int _currentStep;
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 145.h,
-      width: 300.w,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 20.w,
-            width: 20.w,
-            decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(10.w)),
-          ),
-          Container(
-            color: AppColors.btnColor,
-            height: 2.h,
-            width: 75.w,
-          ),
-          Container(
-            height: 20.w,
-            width: 20.w,
-            decoration: BoxDecoration(
-                color: _currentStep == 0 ? Colors.white : AppColors.btnColor,
-                borderRadius: BorderRadius.circular(10.w)),
-          ),
-          Container(
-            color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
-            height: 2.h,
-            width: 75.w,
-          ),
-          Container(
-            height: 20.w,
-            width: 20.w,
-            decoration: BoxDecoration(
-                color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
-                borderRadius: BorderRadius.circular(10.w)),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return SizedBox(
+//       height: 145.h,
+//       width: 300.w,
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         crossAxisAlignment: CrossAxisAlignment.center,
+//         children: [
+//           Container(
+//             height: 20.w,
+//             width: 20.w,
+//             decoration: BoxDecoration(
+//                 color: AppColors.btnColor,
+//                 borderRadius: BorderRadius.circular(10.w)),
+//           ),
+//           Container(
+//             color: AppColors.btnColor,
+//             height: 2.h,
+//             width: 75.w,
+//           ),
+//           Container(
+//             height: 20.w,
+//             width: 20.w,
+//             decoration: BoxDecoration(
+//                 color: _currentStep == 0 ? Colors.white : AppColors.btnColor,
+//                 borderRadius: BorderRadius.circular(10.w)),
+//           ),
+//           Container(
+//             color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
+//             height: 2.h,
+//             width: 75.w,
+//           ),
+//           Container(
+//             height: 20.w,
+//             width: 20.w,
+//             decoration: BoxDecoration(
+//                 color: _currentStep == 2 ? AppColors.btnColor : Colors.white,
+//                 borderRadius: BorderRadius.circular(10.w)),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class StepTwo extends StatefulWidget {
   const StepTwo(
       {Key? key,
-      // required TextEditingController phoneController,
+      required TextEditingController firstNameController,
+      required TextEditingController lastNameController,
+      required TextEditingController emailController,
+      required TextEditingController phoneController,
       required TextEditingController passwordController,
       required TextEditingController confirmPasswordController,
       required bool sendMeUpdates,
       required VoidCallback onTap})
-      :
-        // _phoneController = phoneController,
+      : _firstNameController = firstNameController,
+        _lastNameController = lastNameController,
+        _emailController = emailController,
+        _phoneController = phoneController,
         _passwordController = passwordController,
         _confirmPasswordController = confirmPasswordController,
         _sendMeUpdates = sendMeUpdates,
         _onTap = onTap,
         super(key: key);
 
-  // final TextEditingController _phoneController;
+  final TextEditingController _firstNameController;
+  final TextEditingController _lastNameController;
+  final TextEditingController _emailController;
+  final TextEditingController _phoneController;
   final TextEditingController _passwordController;
   final TextEditingController _confirmPasswordController;
   final bool _sendMeUpdates;
@@ -566,7 +634,7 @@ class _StepTwoState extends State<StepTwo> {
     return Column(
       children: [
         Text(
-          "SIGN UP",
+          "Create Account",
           style: TextStyle(
               fontSize: 24.sp,
               color: Colors.white,
@@ -574,17 +642,44 @@ class _StepTwoState extends State<StepTwo> {
           textAlign: TextAlign.center,
         ),
         SizedBox(
-          height: 45.h,
+          height: 25.h,
         ),
-        // InputField(
-        //   hintText: "Phone Number",
-        //   prefixIconPath: "assets/icons/lock.svg",
-        //   controller: _phoneController,
-        //   textInputType: TextInputType.number,
-        // ),
-        // SizedBox(
-        //   height: 20.h,
-        // ),
+        InputField(
+          hintText: "First Name",
+          prefixIconPath: "assets/icons/user.svg",
+          controller: widget._firstNameController,
+          textInputType: TextInputType.text,
+        ),
+        SizedBox(
+          height: 20.h,
+        ),
+        InputField(
+          hintText: "Last Name",
+          prefixIconPath: "assets/icons/user.svg",
+          controller: widget._lastNameController,
+          textInputType: TextInputType.text,
+        ),
+        SizedBox(
+          height: 20.h,
+        ),
+        InputField(
+          hintText: "Email",
+          prefixIconPath: "assets/icons/mail.svg",
+          controller: widget._emailController,
+          textInputType: TextInputType.emailAddress,
+        ),
+        SizedBox(
+          height: 20.h,
+        ),
+        InputField(
+          hintText: "Phone Number",
+          prefixIconPath: "assets/icons/lock.svg",
+          controller: widget._phoneController,
+          textInputType: TextInputType.number,
+        ),
+        SizedBox(
+          height: 20.h,
+        ),
         InputField(
             hintText: "Password",
             prefixIconPath: "assets/icons/lock.svg",
@@ -648,61 +743,61 @@ class _StepTwoState extends State<StepTwo> {
   }
 }
 
-class StepOne extends StatelessWidget {
-  const StepOne({
-    Key? key,
-    required TextEditingController firstNameController,
-    required TextEditingController lastNameController,
-    required TextEditingController emailController,
-  })  : _firstNameController = firstNameController,
-        _lastNameController = lastNameController,
-        _emailController = emailController,
-        super(key: key);
+// class StepOne extends StatelessWidget {
+//   const StepOne({
+//     Key? key,
+//     required TextEditingController firstNameController,
+//     required TextEditingController lastNameController,
+//     required TextEditingController emailController,
+//   })  : _firstNameController = firstNameController,
+//         _lastNameController = lastNameController,
+//         _emailController = emailController,
+//         super(key: key);
 
-  final TextEditingController _firstNameController;
-  final TextEditingController _lastNameController;
-  final TextEditingController _emailController;
+//   final TextEditingController _firstNameController;
+//   final TextEditingController _lastNameController;
+//   final TextEditingController _emailController;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "SIGN UP",
-          style: TextStyle(
-              fontSize: 24.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 45.h,
-        ),
-        InputField(
-          hintText: "First Name",
-          prefixIconPath: "assets/icons/user.svg",
-          controller: _firstNameController,
-          textInputType: TextInputType.text,
-        ),
-        SizedBox(
-          height: 20.h,
-        ),
-        InputField(
-          hintText: "Last Name",
-          prefixIconPath: "assets/icons/user.svg",
-          controller: _lastNameController,
-          textInputType: TextInputType.text,
-        ),
-        SizedBox(
-          height: 20.h,
-        ),
-        InputField(
-          hintText: "Email",
-          prefixIconPath: "assets/icons/mail.svg",
-          controller: _emailController,
-          textInputType: TextInputType.emailAddress,
-        ),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         Text(
+//           "Create Account",
+//           style: TextStyle(
+//               fontSize: 24.sp,
+//               color: Colors.white,
+//               fontWeight: FontWeight.bold),
+//           textAlign: TextAlign.center,
+//         ),
+//         SizedBox(
+//           height: 45.h,
+//         ),
+//         InputField(
+//           hintText: "First Name",
+//           prefixIconPath: "assets/icons/user.svg",
+//           controller: _firstNameController,
+//           textInputType: TextInputType.text,
+//         ),
+//         SizedBox(
+//           height: 20.h,
+//         ),
+//         InputField(
+//           hintText: "Last Name",
+//           prefixIconPath: "assets/icons/user.svg",
+//           controller: _lastNameController,
+//           textInputType: TextInputType.text,
+//         ),
+//         SizedBox(
+//           height: 20.h,
+//         ),
+//         InputField(
+//           hintText: "Email",
+//           prefixIconPath: "assets/icons/mail.svg",
+//           controller: _emailController,
+//           textInputType: TextInputType.emailAddress,
+//         ),
+//       ],
+//     );
+//   }
+// }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
             home: child,
           );
         },
-        child: const SignInPage(),
+        child: const AuthMainPage(),
       ),
     );
   }

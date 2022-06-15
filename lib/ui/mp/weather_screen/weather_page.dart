@@ -27,15 +27,12 @@ class _WeatherPageState extends State<WeatherPage>
   }
 
   _init() {
-    final weatherProvider =
-        Provider.of<WeatherProvider>(context, listen: false);
-    // county = weatherProvider.county;
-    weatherProvider.getWeatherDetails();
+    Provider.of<WeatherProvider>(context, listen: false)
+        .getWeatherDetails(isInit: true);
   }
 
   @override
   void didUpdateWidget(WeatherPage oldWidget) {
-    print('didUpdateWidget');
     if (oldWidget.county != widget.county) {
       setState(() {
         keepAlive = false;
@@ -47,27 +44,8 @@ class _WeatherPageState extends State<WeatherPage>
       });
       updateKeepAlive();
     }
-
     super.didUpdateWidget(oldWidget);
   }
-
-  // @override
-  // void didUpdateWidget(covariant WeatherPage oldWidget) {
-  //   if (county != Provider.of<WeatherProvider>(context, listen: false).county) {
-  //     print("calllllll");
-  //   setState(() {
-  //     keepAlive = false;
-  //   });
-  //   updateKeepAlive();
-  // } else {
-  //   setState(() {
-  //     keepAlive = true;
-  //   });
-  //   updateKeepAlive();
-  // }
-
-  //   super.didUpdateWidget(oldWidget);
-  // }
 
   @override
   bool get wantKeepAlive => keepAlive;
@@ -104,7 +82,9 @@ class _WeatherPageState extends State<WeatherPage>
           return TabBarView(
             children: [
               CurrentWeatherDetails(
-                  currentWeather: weatherProvider.currentWeather),
+                currentWeather: weatherProvider.currentWeather,
+                astro: weatherProvider.astro,
+              ),
               const SizedBox(),
               const SizedBox()
               // WeatherDetails(),

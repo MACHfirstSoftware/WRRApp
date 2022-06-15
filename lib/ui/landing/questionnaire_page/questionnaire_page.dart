@@ -149,7 +149,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                         ),
                         _buildStepper(),
                         SizedBox(
-                          height: 56.h,
+                          height: 30.h,
                         ),
                         Expanded(
                             child: PageView.builder(
@@ -171,6 +171,17 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   _buildFirstPage() {
     return Column(
       children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 9.w),
+          child: Text(
+            "Which county do you typically hunt in?",
+            style: TextStyle(
+                fontSize: 30.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.bold),
+            textAlign: TextAlign.left,
+          ),
+        ),
         SizedBox(
           width: 410.w,
           child: Theme(
@@ -222,14 +233,10 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                               textAlign: TextAlign.left,
                             ),
                             trailing: _selectedCounty == counties[index]
-                                ? Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 0.w),
-                                    child: Icon(
-                                      Icons.check,
-                                      color: AppColors.btnColor,
-                                      size: 30.h,
-                                    ),
+                                ? Icon(
+                                    Icons.check,
+                                    color: AppColors.btnColor,
+                                    size: 30.h,
                                   )
                                 : null,
                             onTap: () {
@@ -258,34 +265,19 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         SizedBox(
           height: 36.h,
         ),
-        GestureDetector(
-          onTap: () {
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _buildBackButton(() {
+            Navigator.pop(context);
+          }),
+          _buildNextButton(() {
             if (_validateFirstPageValues()) {
               _pageController.jumpToPage(_currentIndex);
               setState(() {
                 _currentIndex++;
               });
             }
-          },
-          child: Container(
-            alignment: Alignment.center,
-            height: 50.h,
-            width: 192.w,
-            decoration: BoxDecoration(
-                color: _validateFirstPageValues()
-                    ? AppColors.btnColor
-                    : Colors.grey[600],
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "CONTINUE",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
+          }, _validateFirstPageValues()),
+        ]),
         SizedBox(
           height: 36.h,
         ),
@@ -330,29 +322,139 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         SizedBox(
           height: 36.h,
         ),
-        if (_currentIndex != 0)
-          GestureDetector(
-            onTap: () {
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildBackButton(() {
               _pageController.jumpToPage(_currentIndex);
               setState(() {
                 _currentIndex--;
               });
-            },
-            child: Center(
-              child: Text(
-                "Back",
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
+            }),
+            _buildNextButton(() {
+              if (index < _questions!.length - 1) {
+                _pageController.jumpToPage(_currentIndex);
+                _currentIndex++;
+              }
+              if (index == _questions!.length - 1) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => SignUpPage(
+                              county: _selectedCounty!,
+                              selectedAnswers: _selectedAnswers,
+                              questions: _questions!,
+                            )));
+              }
+            }, _selectedAnswers.asMap().containsKey(index))
+          ],
+        ),
+        // if (_currentIndex != 0)
+        // GestureDetector(
+        //   onTap: () {
+        //     _pageController.jumpToPage(_currentIndex);
+        //     setState(() {
+        //       _currentIndex--;
+        //     });
+        //   },
+        //   child: Center(
+        //     child: Text(
+        //       "Back",
+        //       style: TextStyle(
+        //           fontSize: 20.sp,
+        //           color: Colors.white,
+        //           fontWeight: FontWeight.w400),
+        //       textAlign: TextAlign.center,
+        //     ),
+        //   ),
+        // ),
         SizedBox(
           height: 36.h,
         ),
       ],
+    );
+  }
+
+  _buildNextButton(VoidCallback onTap, bool isValid) {
+    return GestureDetector(
+      onTap: isValid ? onTap : null,
+      // () {
+      // if (_validateFirstPageValues()) {
+      //   _pageController.jumpToPage(_currentIndex);
+      //   setState(() {
+      //     _currentIndex++;
+      //   });
+      // }
+      // },
+      child: Container(
+        alignment: Alignment.center,
+        height: 50.h,
+        width: 130.w,
+        decoration: BoxDecoration(
+            color: isValid ? AppColors.btnColor : Colors.grey[600],
+            borderRadius: BorderRadius.circular(5.w)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Next",
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 10.w,
+            ),
+            Icon(
+              Icons.arrow_forward_rounded,
+              color: Colors.white,
+              size: 24.w,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  GestureDetector _buildBackButton(VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        height: 50.h,
+        width: 130.w,
+        decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.white,
+              style: BorderStyle.solid,
+              width: 2.5.w,
+            ),
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(5.w)),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+              size: 24.w,
+            ),
+            SizedBox(
+              width: 10.w,
+            ),
+            Text(
+              "Back",
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -366,32 +468,32 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
           _selectedAnswers.removeAt(index);
         }
         _selectedAnswers.insert(index, answer);
-        if (index < _questions!.length - 1) {
-          PageLoader.showTransparentLoader(context);
-          await Future.delayed(const Duration(milliseconds: 500));
-          Navigator.pop(context);
-          // print("Next call");
-          _pageController.jumpToPage(_currentIndex);
-          _currentIndex++;
-        }
+        // if (index < _questions!.length - 1) {
+        //   PageLoader.showTransparentLoader(context);
+        //   await Future.delayed(const Duration(milliseconds: 500));
+        //   Navigator.pop(context);
+        //   // print("Next call");
+        //   _pageController.jumpToPage(_currentIndex);
+        //   _currentIndex++;
+        // }
         setState(() {});
 
-        if (index == _questions!.length - 1) {
-          // print("Navigate call");
-          PageLoader.showTransparentLoader(context);
-          await Future.delayed(const Duration(milliseconds: 500));
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (_) => SignUpPage(
-                        // country: _selectedCountry!,
-                        // region: _selectedRegion!,
-                        county: _selectedCounty!,
-                        selectedAnswers: _selectedAnswers,
-                        questions: _questions!,
-                      )));
-        }
+        // if (index == _questions!.length - 1) {
+        //   // print("Navigate call");
+        //   PageLoader.showTransparentLoader(context);
+        //   await Future.delayed(const Duration(milliseconds: 500));
+        //   Navigator.pop(context);
+        //   Navigator.pushReplacement(
+        //       context,
+        //       MaterialPageRoute(
+        //           builder: (_) => SignUpPage(
+        //                 // country: _selectedCountry!,
+        //                 // region: _selectedRegion!,
+        //                 county: _selectedCounty!,
+        //                 selectedAnswers: _selectedAnswers,
+        //                 questions: _questions!,
+        //               )));
+        // }
       },
       child: Container(
         alignment: Alignment.center,
@@ -433,7 +535,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
                   (_questions!.length + 1),
               margin: EdgeInsets.symmetric(horizontal: 5.w),
               decoration: BoxDecoration(
-                  color: index <= _currentIndex
+                  color: index == _currentIndex
                       ? AppColors.btnColor
                       : Colors.grey[300]!,
                   borderRadius: BorderRadius.circular(2.w)),

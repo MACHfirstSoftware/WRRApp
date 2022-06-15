@@ -19,7 +19,8 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
-  int _selectedIndex = 0;
+  // int _selectedIndex = 0;
+  int radioValue = 2;
   late bool isLoading;
   late bool showTryAgain;
   late String errorMessage;
@@ -60,11 +61,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     });
   }
 
-  callbackFunction(int value, dynamic reason) {
-    setState(() {
-      _selectedIndex = value;
-    });
-  }
+  // callbackFunction(int value, dynamic reason) {
+  //   setState(() {
+  //     _selectedIndex = value;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.w)),
         child: Container(
           width: 400.w,
-          height: 600.h,
+          height: 550.h,
           padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 50.h),
           decoration: BoxDecoration(
               gradient: const LinearGradient(
@@ -137,6 +138,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   _buildView() {
     return Column(
+      // crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           "Choose your plan".toUpperCase(),
@@ -147,36 +150,105 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           textAlign: TextAlign.center,
         ),
         const Spacer(),
-        CarouselSlider(
-            items: [
-              for (int i = 0; i < subscriptions.length; i++)
-                _buildPlan(
-                    subscriptions[i].isPremium
-                        ? "assets/icons/premium.svg"
-                        : "assets/icons/free-label.svg",
-                    subscriptions[i].displayName,
-                    i)
-            ],
-            options: CarouselOptions(
-              height: 300.h,
-              aspectRatio: 16 / 9,
-              viewportFraction: 0.75,
-              initialPage: 0,
-              enableInfiniteScroll: true,
-              reverse: false,
-              autoPlay: false,
-              autoPlayInterval: const Duration(seconds: 3),
-              autoPlayAnimationDuration: const Duration(milliseconds: 800),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              enlargeCenterPage: true,
-              onPageChanged: callbackFunction,
-              scrollDirection: Axis.horizontal,
-            )),
+        SizedBox(
+          width: 200.w,
+          child: Theme(
+            data: ThemeData(
+              unselectedWidgetColor: Colors.grey[300],
+            ),
+            child: RadioListTile(
+              value: 2,
+              groupValue: radioValue,
+              onChanged: (int? ind) => setState(() {
+                radioValue = ind!;
+              }),
+              title: Text(
+                "Premium",
+                style: TextStyle(
+                    fontSize: 24.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              subtitle: Text(
+                "\$29.99",
+                style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              activeColor: AppColors.btnColor,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 20.h,
+          width: 330.w,
+        ),
+        SizedBox(
+          width: 200.w,
+          child: Theme(
+            data: ThemeData(
+              //here change to your color
+              unselectedWidgetColor: Colors.grey[300],
+            ),
+            child: RadioListTile(
+              value: 0,
+              groupValue: radioValue,
+              onChanged: (int? ind) => setState(() {
+                radioValue = ind!;
+              }),
+              title: Text(
+                "Free",
+                style: TextStyle(
+                    fontSize: 24.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              subtitle: Text(
+                "\$00.00",
+                style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.left,
+              ),
+              activeColor: AppColors.btnColor,
+            ),
+          ),
+        ),
+        // CarouselSlider(
+        //     items: [
+        //       for (int i = 0; i < subscriptions.length; i++)
+        //         _buildPlan(
+        //             subscriptions[i].isPremium
+        //                 ? "assets/icons/premium.svg"
+        //                 : "assets/icons/free-label.svg",
+        //             subscriptions[i].displayName,
+        //             i)
+        //     ],
+        //     options: CarouselOptions(
+        //       height: 300.h,
+        //       aspectRatio: 16 / 9,
+        //       viewportFraction: 0.75,
+        //       initialPage: 0,
+        //       enableInfiniteScroll: true,
+        //       reverse: false,
+        //       autoPlay: false,
+        //       autoPlayInterval: const Duration(seconds: 3),
+        //       autoPlayAnimationDuration: const Duration(milliseconds: 800),
+        //       autoPlayCurve: Curves.fastOutSlowIn,
+        //       enlargeCenterPage: true,
+        //       onPageChanged: callbackFunction,
+        //       scrollDirection: Axis.horizontal,
+        //     )),
         const Spacer(),
         GestureDetector(
           onTap: () {
-            print(subscriptions[_selectedIndex].isPremium);
-            Navigator.pop(context, subscriptions[_selectedIndex].id);
+            // print(subscriptions[_selectedIndex].isPremium);
+            Navigator.pop(context, subscriptions[radioValue].id);
           },
           child: Container(
             alignment: Alignment.center,
@@ -186,7 +258,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: Text(
-              "CONTINUE",
+              "Next",
               style: TextStyle(
                   fontSize: 24.sp,
                   color: Colors.white,
@@ -212,41 +284,41 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  _buildPlan(String iconPath, String planName, int index) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-          border: Border.all(
-              color: _selectedIndex == index
-                  ? AppColors.btnColor
-                  : Colors.grey[300]!,
-              width: 5.w),
-          borderRadius: BorderRadius.circular(20.w)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SvgPicture.asset(
-            // "assets/icons/free-label.svg",
-            iconPath,
-            color:
-                _selectedIndex == index ? AppColors.btnColor : Colors.grey[300],
-            width: 100.w,
-            height: 100.w,
-          ),
-          Text(
-            // "FREE",
-            planName,
-            style: TextStyle(
-                fontSize: 30.sp,
-                color: _selectedIndex == index
-                    ? AppColors.btnColor
-                    : Colors.grey[300],
-                fontWeight: FontWeight.w700),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+  // _buildPlan(String iconPath, String planName, int index) {
+  //   return Container(
+  //     alignment: Alignment.center,
+  //     decoration: BoxDecoration(
+  //         border: Border.all(
+  //             color: _selectedIndex == index
+  //                 ? AppColors.btnColor
+  //                 : Colors.grey[300]!,
+  //             width: 5.w),
+  //         borderRadius: BorderRadius.circular(20.w)),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.center,
+  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //       children: [
+  //         SvgPicture.asset(
+  //           // "assets/icons/free-label.svg",
+  //           iconPath,
+  //           color:
+  //               _selectedIndex == index ? AppColors.btnColor : Colors.grey[300],
+  //           width: 100.w,
+  //           height: 100.w,
+  //         ),
+  //         Text(
+  //           // "FREE",
+  //           planName,
+  //           style: TextStyle(
+  //               fontSize: 30.sp,
+  //               color: _selectedIndex == index
+  //                   ? AppColors.btnColor
+  //                   : Colors.grey[300],
+  //               fontWeight: FontWeight.w700),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
