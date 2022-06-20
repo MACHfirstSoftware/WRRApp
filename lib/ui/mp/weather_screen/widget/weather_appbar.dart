@@ -99,7 +99,8 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
       ],
       onSelected: (County value) {
         User _user = userProvider.user;
-        _user.countyId = value.id;
+        // _user.countyId = value.id;
+        // print(_user.countyId);
         _user.countyName = value.name;
         userProvider.setUser(_user);
         Provider.of<WeatherProvider>(context, listen: false)

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
-import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 
 class MyAccount extends StatefulWidget {
   const MyAccount({Key? key}) : super(key: key);

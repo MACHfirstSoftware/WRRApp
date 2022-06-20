@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisconsin_app/ui/mp/dashboard_screen/widgets/dashboard_appbar.dart';
+import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_page_appbar.dart';
 
-class DashBorad extends StatefulWidget {
-  const DashBorad({Key? key}) : super(key: key);
+class ReportPage extends StatefulWidget {
+  const ReportPage({Key? key}) : super(key: key);
 
   @override
-  State<DashBorad> createState() => _DashBoradState();
+  State<ReportPage> createState() => _ReportPageState();
 }
 
-class _DashBoradState extends State<DashBorad> {
+class _ReportPageState extends State<ReportPage> {
   @override
   void initState() {
     super.initState();
@@ -21,7 +21,7 @@ class _DashBoradState extends State<DashBorad> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: const DashboardAppBar(),
+        title: const ReportPageAppBar(),
         elevation: 0,
         toolbarHeight: 70.h,
         automaticallyImplyLeading: false,

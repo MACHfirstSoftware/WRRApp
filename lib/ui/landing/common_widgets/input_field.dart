@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/config.dart';
@@ -24,6 +25,7 @@ class InputField extends StatefulWidget {
 
 class _InputFieldState extends State<InputField> {
   bool isHide = true;
+  String separator = "-";
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -31,6 +33,23 @@ class _InputFieldState extends State<InputField> {
       width: 310.w,
       child: TextField(
         controller: widget.controller,
+        inputFormatters: widget.hintText == "Phone Number"
+            ? <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp("[0-9$separator]")),
+                MaskedTextInputFormatter(
+                  mask: "###-###-####",
+                  separator: separator,
+                )
+              ]
+            : null,
+        toolbarOptions: widget.hintText == "Phone Number"
+            ? const ToolbarOptions(
+                copy: true,
+                cut: true,
+                paste: false,
+                selectAll: false,
+              )
+            : null,
         style: TextStyle(
             color: Colors.white,
             fontSize: 16.sp,
@@ -85,5 +104,34 @@ class _InputFieldState extends State<InputField> {
         ),
       ),
     );
+  }
+}
+
+class MaskedTextInputFormatter extends TextInputFormatter {
+  final String mask;
+  final String separator;
+  MaskedTextInputFormatter({
+    required this.mask,
+    required this.separator,
+  });
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isNotEmpty) {
+      if (newValue.text.length > oldValue.text.length) {
+        if (newValue.text.length > mask.length) return oldValue;
+        if (newValue.text.length < mask.length &&
+            mask[newValue.text.length - 1] == separator) {
+          return TextEditingValue(
+            text:
+                '${oldValue.text}$separator${newValue.text.substring(newValue.text.length - 1)}',
+            selection: TextSelection.collapsed(
+              offset: newValue.selection.end + 1,
+            ),
+          );
+        }
+      }
+    }
+    return newValue;
   }
 }

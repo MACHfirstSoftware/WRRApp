@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wisconsin_app/config.dart';
 
 class CustomHttp {
   static final Dio _dio = Dio();
 
   static setInterceptor() {
-    print("Intercept called...............");
+    if (kDebugMode) {
+      print("Intercept called...............");
+    }
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
         // if (subscriptionKey != null) {

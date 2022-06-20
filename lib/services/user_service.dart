@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
@@ -30,6 +32,7 @@ class UserService {
   }
 
   static Future<ApiResult<String>> signUp(Map<String, dynamic> person) async {
+    log(person.toString());
     try {
       final response = await CustomHttp.getDio().post(
         Constant.baseUrl + "/Person",

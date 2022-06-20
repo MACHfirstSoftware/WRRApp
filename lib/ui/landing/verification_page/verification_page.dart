@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/services/verfication_service.dart';
-import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/ui/landing/register_page/lets_go_page.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class VerificationPage extends StatefulWidget {
   final String userId;
   final String phoneNumber;
+  final String email;
+  final String password;
   const VerificationPage({
     Key? key,
     required this.userId,
     required this.phoneNumber,
+    required this.email,
+    required this.password,
   }) : super(key: key);
 
   @override
@@ -23,20 +27,16 @@ class VerificationPage extends StatefulWidget {
 
 class _VerificationPageState extends State<VerificationPage> {
   late TextEditingController _codeController;
-  // late TextEditingController _phoneController;
-  // bool codeSendSuccess = false;
 
   @override
   void initState() {
     _codeController = TextEditingController();
-    // _phoneController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
     _codeController.dispose();
-    // _phoneController.dispose();
     super.dispose();
   }
 
@@ -77,7 +77,15 @@ class _VerificationPageState extends State<VerificationPage> {
         await Future.delayed(const Duration(milliseconds: 2100), () {
           Navigator.pop(context);
         });
-        Navigator.pop(context);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => LetsGoPage(
+                      userId: widget.userId,
+                      email: widget.email,
+                      password: widget.password,
+                    )),
+            (route) => false);
       } else {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -87,25 +95,6 @@ class _VerificationPageState extends State<VerificationPage> {
       }
     }
   }
-
-  // _sendCode() async {
-  //   if (_validatePhoneNumber()) {
-  //     PageLoader.showLoader(context);
-  //     final res = await VerficationService.sendCode(
-  //         widget.userId, _phoneController.text.trim());
-  //     Navigator.pop(context);
-  //     if (res) {
-  //       setState(() {
-  //         codeSendSuccess = true;
-  //       });
-  //     } else {
-  //       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-  //           context: context,
-  //           messageText: "Something went wrong!",
-  //           type: SnackBarType.error));
-  //     }
-  //   }
-  // }
 
   _validateCode() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -119,108 +108,152 @@ class _VerificationPageState extends State<VerificationPage> {
     return true;
   }
 
-  // _validatePhoneNumber() {
-  //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-  //   if (_phoneController.text.isEmpty) {
-  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-  //         context: context,
-  //         messageText: "Phone number is required",
-  //         type: SnackBarType.error));
-  //     return false;
-  //   }
-  //   if (_phoneController.text.trimRight().length != 10) {
-  //     ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-  //         context: context,
-  //         messageText: "Phone number is invalid",
-  //         type: SnackBarType.error));
-  //     return false;
-  //   }
-  //   return true;
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: WillPopScope(
+    return WillPopScope(
       onWillPop: () => Future.value(false),
-      child: Background(
-          child: Column(children: [
-        SizedBox(
-          height: 56.h,
-        ),
-        const LogoImage(),
-        SizedBox(
-          height: 120.h,
-        ),
-        // if (codeSendSuccess)
-        _buildCodeUI(),
-        // if (!codeSendSuccess) _buildPhoneUI()
-      ])),
-    ));
-  }
-
-  _buildCodeUI() {
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Text(
-            "We have sent your phone a verification code, please enter it to complete your account.",
-            style: TextStyle(
-                fontSize: 22.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0, .8],
+            colors: [AppColors.secondaryColor, AppColors.primaryColor],
           ),
         ),
-        SizedBox(
-          height: 45.h,
-        ),
-        InputField(
-          hintText: "Verification Code",
-          controller: _codeController,
-          prefixIconPath: "assets/icons/pin-code.svg",
-          textInputType: TextInputType.number,
-        ),
-        SizedBox(
-          height: 60.h,
-        ),
-        GestureDetector(
-          onTap: () => _verifyCode(),
-          child: Container(
-            alignment: Alignment.center,
-            height: 50.h,
-            width: 190.w,
-            decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Next",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 20.h,
-        ),
-        GestureDetector(
-          onTap: () => _reSend(),
-          child: Text(
-            "Resend",
-            style: TextStyle(
-                fontSize: 20.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w400),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
+        child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Column(children: [
+              SizedBox(
+                height: 56.h,
+              ),
+              const LogoImage(),
+              SizedBox(
+                height: 120.h,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Text(
+                  "We have sent your phone a verification code, please enter it to complete your account.",
+                  style: TextStyle(
+                      fontSize: 22.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(
+                height: 45.h,
+              ),
+              InputField(
+                hintText: "Verification Code",
+                controller: _codeController,
+                prefixIconPath: "assets/icons/pin-code.svg",
+                textInputType: TextInputType.number,
+              ),
+              SizedBox(
+                height: 60.h,
+              ),
+              GestureDetector(
+                onTap: () => _verifyCode(),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 50.h,
+                  width: 190.w,
+                  decoration: BoxDecoration(
+                      color: AppColors.btnColor,
+                      borderRadius: BorderRadius.circular(5.w)),
+                  child: Text(
+                    "Next",
+                    style: TextStyle(
+                        fontSize: 24.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              GestureDetector(
+                onTap: () => _reSend(),
+                child: Text(
+                  "Resend",
+                  style: TextStyle(
+                      fontSize: 20.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ])),
+      ),
     );
   }
+
+  // _buildCodeUI() {
+  //   return Column(
+  //     children: [
+  //       Padding(
+  //         padding: EdgeInsets.symmetric(horizontal: 20.w),
+  //         child: Text(
+  //           "We have sent your phone a verification code, please enter it to complete your account.",
+  //           style: TextStyle(
+  //               fontSize: 22.sp,
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.bold),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //       SizedBox(
+  //         height: 45.h,
+  //       ),
+  //       InputField(
+  //         hintText: "Verification Code",
+  //         controller: _codeController,
+  //         prefixIconPath: "assets/icons/pin-code.svg",
+  //         textInputType: TextInputType.number,
+  //       ),
+  //       SizedBox(
+  //         height: 60.h,
+  //       ),
+  //       GestureDetector(
+  //         onTap: () => _verifyCode(),
+  //         child: Container(
+  //           alignment: Alignment.center,
+  //           height: 50.h,
+  //           width: 190.w,
+  //           decoration: BoxDecoration(
+  //               color: AppColors.btnColor,
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           child: Text(
+  //             "Next",
+  //             style: TextStyle(
+  //                 fontSize: 24.sp,
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.bold),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //       ),
+  //       SizedBox(
+  //         height: 20.h,
+  //       ),
+  //       GestureDetector(
+  //         onTap: () => _reSend(),
+  //         child: Text(
+  //           "Resend",
+  //           style: TextStyle(
+  //               fontSize: 20.sp,
+  //               color: Colors.white,
+  //               fontWeight: FontWeight.w400),
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // _buildPhoneUI() {
   //   return Column(

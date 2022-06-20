@@ -9,14 +9,14 @@ import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 
-class DashboardAppBar extends StatefulWidget {
-  const DashboardAppBar({Key? key}) : super(key: key);
+class ReportPageAppBar extends StatefulWidget {
+  const ReportPageAppBar({Key? key}) : super(key: key);
 
   @override
-  State<DashboardAppBar> createState() => _DashboardAppBarState();
+  State<ReportPageAppBar> createState() => _ReportPageAppBarState();
 }
 
-class _DashboardAppBarState extends State<DashboardAppBar> {
+class _ReportPageAppBarState extends State<ReportPageAppBar> {
   late List<County> _counties;
 
   @override
@@ -72,17 +72,17 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
             //     textAlign: TextAlign.center,
             //   ),
             // ),
-            // Align(
-            //   alignment: Alignment.center,
-            //   child: SvgPicture.asset(
-            //     'assets/icons/Logo-orange.svg',
-            //     fit: BoxFit.fill,
-            //     // alignment: Alignment.center,
-            //     height: 50.h,
-            //     // width: 200.w,
-            //     // color: Colors.red,
-            //   ),
-            // ),
+            Align(
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                'assets/icons/WRR.svg',
+                // fit: BoxFit.fill,
+                alignment: Alignment.center,
+                height: 55.h,
+                // width: 100.w,
+                // color: Colors.red,
+              ),
+            ),
 
             Positioned(
                 bottom: 10.h,
@@ -100,7 +100,7 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
                 right: 0.w,
                 child: GestureDetector(
                   onTap: () {
-                    print("Notification clicked");
+                    // print("Notification clicked");
                   },
                   child: Stack(
                     children: [
@@ -165,7 +165,8 @@ class _DashboardAppBarState extends State<DashboardAppBar> {
       ],
       onSelected: (County value) {
         User _user = userProvider.user;
-        _user.countyId = value.id;
+        // _user.countyId = value.id;
+        // print(_user.countyId);
         _user.countyName = value.name;
         userProvider.setUser(_user);
         Provider.of<WeatherProvider>(context, listen: false)

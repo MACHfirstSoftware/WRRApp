@@ -8,7 +8,6 @@ class CountyProvider with ChangeNotifier {
   List<County> get counties => _counties;
 
   Future<void> getAllCounties() async {
-    print("counties get call");
     // List<Region> regions = await QuestionnaireService.getRegions(1);
     // if (regions.isNotEmpty) {
     //   List<County> list = [];

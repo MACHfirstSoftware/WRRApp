@@ -101,7 +101,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               ),
               Text(
                 // "64° f",
-                widget.currentWeather.current.tempF.toString(),
+                "${widget.currentWeather.current.tempF.toString()}° f",
                 style: TextStyle(
                     fontSize: 40.sp,
                     color: Colors.white,

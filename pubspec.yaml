@@ -53,6 +53,10 @@ dependencies:
   loading_indicator: ^3.0.3
   #Carousel Slider
   carousel_slider: ^4.1.1
+  #Input field auto formating 
+  flutter_multi_formatter: ^2.5.7
+  #picking image from store
+  image_picker: ^0.8.5+3
 
   freezed_annotation: ^0.14.0
 

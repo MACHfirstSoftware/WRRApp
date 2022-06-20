@@ -6,7 +6,6 @@ import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/question.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/ui/landing/sign_up_page/sign_up_page.dart';
-import 'package:wisconsin_app/widgets/page_loader.dart';
 
 class QuestionnairePage extends StatefulWidget {
   const QuestionnairePage({Key? key}) : super(key: key);
@@ -526,13 +525,13 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
       width: 410.w,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: _questions!.length + 1,
+          itemCount: _questions!.length + 2,
           itemBuilder: (_, index) {
             // print("$index , $_currentIndex");
             return Container(
               height: 1.h,
-              width: (410.w - ((_questions!.length + 1) * 10.w)) /
-                  (_questions!.length + 1),
+              width: (410.w - ((_questions!.length + 2) * 10.w)) /
+                  (_questions!.length + 2),
               margin: EdgeInsets.symmetric(horizontal: 5.w),
               decoration: BoxDecoration(
                   color: index == _currentIndex

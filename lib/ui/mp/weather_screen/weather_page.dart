@@ -77,7 +77,7 @@ class _WeatherPageState extends State<WeatherPage>
             return _buildLoader();
           }
           if (weatherProvider.apiStatus == ApiStatus.isError) {
-            _buildErrorWidget(weatherProvider.errorMessage);
+            return _buildErrorWidget(weatherProvider.errorMessage);
           }
           return TabBarView(
             children: [
@@ -124,6 +124,7 @@ class _WeatherPageState extends State<WeatherPage>
         ),
         SizedBox(
           height: 15.h,
+          width: 428.w,
         ),
         GestureDetector(
           onTap: () {

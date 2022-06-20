@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/ui/landing/questionnaire_page/questionnaire_page.dart';
+import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
 
 class AuthMainPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class _AuthMainPageState extends State<AuthMainPage> {
 
   _goRegister() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (_) => const QuestionnairePage()));
+        context, MaterialPageRoute(builder: (_) => const RegisterPage()));
   }
 
   @override

@@ -14,10 +14,9 @@ import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
-import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
-import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
+import 'package:wisconsin_app/ui/landing/register_page/widgets/page_stepper.dart';
 import 'package:wisconsin_app/ui/landing/subscription_page/subscription_screen.dart';
 import 'package:wisconsin_app/ui/landing/verification_page/verification_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
@@ -242,6 +241,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 builder: (_) => VerificationPage(
                       userId: userId,
                       phoneNumber: _phoneController.text,
+                      email: "",
+                      password: "",
                     )));
         setState(() {
           _currentStep++;
@@ -335,71 +336,78 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Background(
-        child: Column(
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0, .8],
+          colors: [AppColors.secondaryColor, AppColors.primaryColor],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: 56.h,
+              width: 428.w,
             ),
-            const LogoImage(),
-            // CustomStepper(currentStep: _currentStep),
-            SizedBox(
-              height: _currentStep == 0 ? 40.h : 150.h,
-            ),
+            PageStepper(
+                length: widget.selectedAnswers.length + 2,
+                currentStep: widget.selectedAnswers.length + 1),
             Expanded(
-              child: SizedBox(
-                // height: 375.h,
-                width: 310.w,
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    // StepOne(
-                    //     firstNameController: _firstNameController,
-                    //     lastNameController: _lastNameController,
-                    //     emailController: _emailController),
-                    StepTwo(
-                        firstNameController: _firstNameController,
-                        lastNameController: _lastNameController,
-                        emailController: _emailController,
-                        phoneController: _phoneController,
-                        sendMeUpdates: _sendMeUpdates,
-                        onTap: _sendMeUpdatesFunc,
-                        passwordController: _passwordController,
-                        confirmPasswordController: _confirmPasswordController),
-                    _buildStepThree(),
-                  ],
-                ),
+                child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const LogoImage(),
+                  SizedBox(
+                    height: _currentStep == 0 ? 40.h : 150.h,
+                  ),
+                  SizedBox(
+                    // color: Colors.red,
+                    height: 600.h,
+                    width: 310.w,
+                    child: PageView(
+                      controller: _pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        StepTwo(
+                            firstNameController: _firstNameController,
+                            lastNameController: _lastNameController,
+                            emailController: _emailController,
+                            phoneController: _phoneController,
+                            sendMeUpdates: _sendMeUpdates,
+                            onTap: _sendMeUpdatesFunc,
+                            passwordController: _passwordController,
+                            confirmPasswordController:
+                                _confirmPasswordController),
+                        _buildStepThree(),
+                      ],
+                    ),
+                  ),
+                  if (_currentStep == 0)
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 9.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          _buildBackwardButton(),
+                          _buildForwardButton(() {
+                            _doSignUp();
+                          }),
+                        ],
+                      ),
+                    ),
+                  SizedBox(
+                    height: 36.h,
+                  )
+                ],
               ),
-            ),
-            if (_currentStep == 0)
-              SizedBox(
-                width: 310.w,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildBackwardButton(),
-                    // if (_currentStep == 0)
-                    //   _buildForwardButton(() {
-                    //     if (_validateStepOne()) {
-                    //       setState(() {
-                    //         _currentStep++;
-                    //         _onPageChange();
-                    //       });
-                    //     }
-                    //   }),
-                    // if (_currentStep == 1)
-                    _buildForwardButton(() {
-                      _doSignUp();
-                    }),
-                  ],
-                ),
-              ),
-            SizedBox(
-              height: 40.h,
-            ),
+            )),
           ],
         ),
       ),
@@ -492,7 +500,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Column _buildStepThree() {
+  _buildStepThree() {
     return Column(
       children: [
         SvgPicture.asset("assets/icons/check-circle.svg",
@@ -673,7 +681,7 @@ class _StepTwoState extends State<StepTwo> {
         ),
         InputField(
           hintText: "Phone Number",
-          prefixIconPath: "assets/icons/lock.svg",
+          prefixIconPath: "assets/icons/phone.svg",
           controller: widget._phoneController,
           textInputType: TextInputType.number,
         ),

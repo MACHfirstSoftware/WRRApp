@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +7,8 @@ import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/user_service.dart';
-import 'package:wisconsin_app/ui/landing/common_widgets/background.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
-import 'package:wisconsin_app/ui/landing/questionnaire_page/questionnaire_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -118,146 +115,156 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Background(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 56.h,
-            ),
-            const LogoImage(),
-            SizedBox(
-              height: 145.h,
-            ),
-            Text(
-              "SIGN IN",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 45.h,
-            ),
-            InputField(
-              hintText: "Email",
-              prefixIconPath: "assets/icons/user.svg",
-              controller: _emailController,
-              textInputType: TextInputType.emailAddress,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            InputField(
-                hintText: "Password",
-                prefixIconPath: "assets/icons/lock.svg",
-                controller: _passwordController,
-                textInputType: TextInputType.visiblePassword,
-                obscureText: true),
-            SizedBox(
-              height: 25.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => _saveAccountInfoFunc(),
-                  child: SizedBox(
-                      height: 25.w,
-                      width: 25.w,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.btnColor,
-                              style: BorderStyle.solid,
-                              width: 2.5.w,
-                            ),
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5.w)),
-                        child: _saveAccountInfo
-                            ? Icon(
-                                Icons.check,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0, .8],
+          colors: [AppColors.secondaryColor, AppColors.primaryColor],
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 56.h,
+              ),
+              const LogoImage(),
+              SizedBox(
+                height: 145.h,
+              ),
+              Text(
+                "SIGN IN",
+                style: TextStyle(
+                    fontSize: 24.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 45.h,
+              ),
+              InputField(
+                hintText: "Email",
+                prefixIconPath: "assets/icons/user.svg",
+                controller: _emailController,
+                textInputType: TextInputType.emailAddress,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              InputField(
+                  hintText: "Password",
+                  prefixIconPath: "assets/icons/lock.svg",
+                  controller: _passwordController,
+                  textInputType: TextInputType.visiblePassword,
+                  obscureText: true),
+              SizedBox(
+                height: 25.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => _saveAccountInfoFunc(),
+                    child: SizedBox(
+                        height: 25.w,
+                        width: 25.w,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
                                 color: AppColors.btnColor,
-                                size: 20.w,
-                              )
-                            : null,
-                      )),
-                ),
-                SizedBox(
-                  width: 15.w,
-                ),
-                Text(
-                  "Save Account Info ?",
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-            SizedBox(
-              // height: 60.h,
-              height: 145.h,
-            ),
-            GestureDetector(
-              onTap: () => _doSignIn(),
-              child: Container(
-                alignment: Alignment.center,
-                height: 50.h,
-                width: 190.w,
-                decoration: BoxDecoration(
-                    color: AppColors.btnColor,
-                    borderRadius: BorderRadius.circular(5.w)),
-                child: Text(
-                  "SIGN IN",
-                  style: TextStyle(
-                      fontSize: 24.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                                style: BorderStyle.solid,
+                                width: 2.5.w,
+                              ),
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(5.w)),
+                          child: _saveAccountInfo
+                              ? Icon(
+                                  Icons.check,
+                                  color: AppColors.btnColor,
+                                  size: 20.w,
+                                )
+                              : null,
+                        )),
+                  ),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  Text(
+                    "Save Account Info ?",
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+              SizedBox(
+                // height: 60.h,
+                height: 145.h,
+              ),
+              GestureDetector(
+                onTap: () => _doSignIn(),
+                child: Container(
+                  alignment: Alignment.center,
+                  height: 50.h,
+                  width: 190.w,
+                  decoration: BoxDecoration(
+                      color: AppColors.btnColor,
+                      borderRadius: BorderRadius.circular(5.w)),
+                  child: Text(
+                    "SIGN IN",
+                    style: TextStyle(
+                        fontSize: 24.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 25.h,
-            ),
-            Text(
-              "Forgot your password?",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            // RichText(
-            //     text: TextSpan(
-            //         text: "Don't Have an Account?",
-            //         style: TextStyle(
-            //             fontSize: 16.sp,
-            //             color: Colors.white,
-            //             fontWeight: FontWeight.w400),
-            //         children: <TextSpan>[
-            //       TextSpan(
-            //         text: "  SIGN UP",
-            //         recognizer: TapGestureRecognizer()
-            //           ..onTap = (() => Navigator.push(
-            //               context,
-            //               MaterialPageRoute(
-            //                   builder: (_) => const QuestionnairePage()))),
-            //         style: TextStyle(
-            //             fontSize: 16.sp,
-            //             color: AppColors.btnColor,
-            //             fontWeight: FontWeight.w400),
-            //       )
-            //     ]))
-          ],
+              SizedBox(
+                height: 25.h,
+              ),
+              Text(
+                "Forgot your password?",
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              // RichText(
+              //     text: TextSpan(
+              //         text: "Don't Have an Account?",
+              //         style: TextStyle(
+              //             fontSize: 16.sp,
+              //             color: Colors.white,
+              //             fontWeight: FontWeight.w400),
+              //         children: <TextSpan>[
+              //       TextSpan(
+              //         text: "  SIGN UP",
+              //         recognizer: TapGestureRecognizer()
+              //           ..onTap = (() => Navigator.push(
+              //               context,
+              //               MaterialPageRoute(
+              //                   builder: (_) => const QuestionnairePage()))),
+              //         style: TextStyle(
+              //             fontSize: 16.sp,
+              //             color: AppColors.btnColor,
+              //             fontWeight: FontWeight.w400),
+              //       )
+              //     ]))
+            ],
+          ),
         ),
       ),
     );

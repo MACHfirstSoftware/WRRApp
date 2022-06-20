@@ -7,9 +7,9 @@ import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
-import 'package:wisconsin_app/ui/mp/dashboard_screen/dashboard_page.dart';
-import 'package:wisconsin_app/ui/mp/feed_screen/feed_page.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/my_account_page.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_page.dart';
+import 'package:wisconsin_app/ui/mp/report_screen/report_page.dart';
 import 'package:wisconsin_app/ui/mp/shop_screen/shop_page.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/weather_page.dart';
 
@@ -26,7 +26,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   List<String> listOfIcons = [
     "assets/icons/news-feed.svg",
-    "assets/icons/report.svg",
+    "assets/icons/WRR-icon.svg",
     "assets/icons/weather.svg",
     "assets/icons/shop-bag.svg",
     "assets/icons/account.svg",
@@ -74,8 +74,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              const FeedPage(),
-              const DashBorad(),
+              const PostPage(),
+              const ReportPage(),
               WeatherPage(
                 county: weatherProvider.county,
               ),
