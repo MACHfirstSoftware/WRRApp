@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
@@ -83,7 +84,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
             child: SizedBox(
               width: 200.w,
               child: ListTile(
-                trailing: county.id == userProvider.user.countyId
+                trailing: county.name == userProvider.user.countyName
                     ? const Icon(
                         Icons.check,
                         color: AppColors.btnColor,
@@ -105,6 +106,8 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
         userProvider.setUser(_user);
         Provider.of<WeatherProvider>(context, listen: false)
             .changeCounty(value);
+        Provider.of<CountyPostProvider>(context, listen: false)
+            .chnageCounty(value.id);
       },
     );
   }

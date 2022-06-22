@@ -5,12 +5,14 @@ import 'package:wisconsin_app/config.dart';
 class CustomInputField extends StatelessWidget {
   final String label;
   final String hintText;
+  final int? maxLines;
   final TextEditingController controller;
 
   const CustomInputField({
     Key? key,
     required this.label,
     required this.hintText,
+    this.maxLines,
     required this.controller,
   }) : super(key: key);
 
@@ -24,9 +26,11 @@ class CustomInputField extends StatelessWidget {
             color: Colors.white,
             fontSize: 16.sp,
             decoration: TextDecoration.none),
-        textAlignVertical: TextAlignVertical.center,
+        textAlignVertical: TextAlignVertical.top,
+        // textAlign: TextAlign.end,
         cursorColor: AppColors.btnColor,
         keyboardType: TextInputType.text,
+        maxLines: maxLines,
         decoration: InputDecoration(
           label: Text(
             label,
@@ -35,14 +39,16 @@ class CustomInputField extends StatelessWidget {
                 fontSize: 16.sp,
                 decoration: TextDecoration.none),
           ),
-          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.h),
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
           fillColor: Colors.transparent,
           filled: true,
           hintText: hintText,
+          alignLabelWithHint: true,
           hintStyle: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              decoration: TextDecoration.none),
+            color: Colors.white,
+            fontSize: 16.sp,
+            decoration: TextDecoration.none,
+          ),
           border: OutlineInputBorder(
               borderSide: const BorderSide(color: Colors.white),
               borderRadius: BorderRadius.circular(5.w)),

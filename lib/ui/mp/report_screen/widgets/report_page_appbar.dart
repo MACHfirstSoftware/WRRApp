@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_page.dart';
 
 class ReportPageAppBar extends StatefulWidget {
   const ReportPageAppBar({Key? key}) : super(key: key);
@@ -52,13 +54,18 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
             Positioned(
                 bottom: 10.h,
                 left: 40.w,
-                child: SvgPicture.asset(
-                  'assets/icons/search.svg',
-                  fit: BoxFit.fill,
-                  alignment: Alignment.center,
-                  height: 30.h,
-                  width: 30.h,
-                  color: Colors.white,
+                child: GestureDetector(
+                  onTap: (() {
+                    showSearch(context: context, delegate: SearchHunters());
+                  }),
+                  child: SvgPicture.asset(
+                    'assets/icons/search.svg',
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                    height: 30.h,
+                    width: 30.h,
+                    color: Colors.white,
+                  ),
                 )),
             // Positioned(
             //   bottom: 10.h,
@@ -149,7 +156,7 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
             child: SizedBox(
               width: 200.w,
               child: ListTile(
-                trailing: county.id == userProvider.user.countyId
+                trailing: county.name == userProvider.user.countyName
                     ? const Icon(
                         Icons.check,
                         color: AppColors.btnColor,
@@ -166,11 +173,15 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
       onSelected: (County value) {
         User _user = userProvider.user;
         // _user.countyId = value.id;
+        // print(_user.id);
+        // print(_user.regionId);
         // print(_user.countyId);
         _user.countyName = value.name;
         userProvider.setUser(_user);
         Provider.of<WeatherProvider>(context, listen: false)
             .changeCounty(value);
+        Provider.of<CountyPostProvider>(context, listen: false)
+            .chnageCounty(value.id);
       },
     );
   }

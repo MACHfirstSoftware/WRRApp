@@ -42,21 +42,24 @@ dependencies:
   #Svg file view
   flutter_svg: ^1.0.3
   #Bottom navigation bar 
-  google_nav_bar: ^5.0.6
+  google_nav_bar: ^5.0.6 #Not use
   #Icons8 icon pack
-  line_icons: ^2.0.1
+  line_icons: ^2.0.1 #Not use
   #Show toast message
-  animated_snack_bar: ^0.2.0
+  animated_snack_bar: ^0.2.0 #Not use
   #HTTP request package
   dio: ^4.0.6
   #Loading spinner
   loading_indicator: ^3.0.3
   #Carousel Slider
-  carousel_slider: ^4.1.1
+  carousel_slider: ^4.1.1 #Not use
   #Input field auto formating 
-  flutter_multi_formatter: ^2.5.7
+  flutter_multi_formatter: ^2.5.7 #Not use
   #picking image from store
-  image_picker: ^0.8.5+3
+  image_picker: ^0.8.5+3 #Need to add ios config
+  #page pull to refresh
+  pull_to_refresh: ^2.0.0
+  intl: ^0.17.0
 
   freezed_annotation: ^0.14.0
 

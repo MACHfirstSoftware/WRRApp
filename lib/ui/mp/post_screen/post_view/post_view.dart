@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/post.dart';
+import 'package:wisconsin_app/utils/common.dart';
 
 class PostView extends StatefulWidget {
-  const PostView({Key? key}) : super(key: key);
+  final Post post;
+  const PostView({Key? key, required this.post}) : super(key: key);
 
   @override
   State<PostView> createState() => _PostViewState();
@@ -48,7 +52,7 @@ class _PostViewState extends State<PostView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "standman",
+                        widget.post.firstName + " " + widget.post.lastName,
                         style: TextStyle(
                             fontSize: 18.sp,
                             color: Colors.black,
@@ -56,7 +60,9 @@ class _PostViewState extends State<PostView> {
                         textAlign: TextAlign.left,
                       ),
                       Text(
-                        "14 minutes ago",
+                        UtilCommon.convertToAgo(
+                            DateFormat("MM/dd/yyyy HH:mm:ss a")
+                                .parse(widget.post.createdOn)),
                         style: TextStyle(
                             fontSize: 14.sp,
                             color: Colors.grey,
@@ -139,7 +145,7 @@ class _PostViewState extends State<PostView> {
             color: Colors.white,
             height: 40.h,
             child: Text(
-              "${2} likes",
+              "${widget.post.likes.length} likes",
               style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.black,

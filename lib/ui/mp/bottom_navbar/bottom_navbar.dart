@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
@@ -36,6 +37,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   void initState() {
     _pageController = PageController(initialPage: 0);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    Provider.of<CountyPostProvider>(context, listen: false)
+        .setCountyId(userProvider.user.countyId);
     final weatherProvider =
         Provider.of<WeatherProvider>(context, listen: false);
     List<County> _counties =

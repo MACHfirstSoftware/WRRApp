@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
@@ -32,6 +34,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
         ChangeNotifierProvider<WeatherProvider>(
             create: (_) => WeatherProvider()),
+        ChangeNotifierProvider<WRRPostProvider>(
+            create: (_) => WRRPostProvider()),
+        ChangeNotifierProvider<CountyPostProvider>(
+            create: (_) => CountyPostProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),

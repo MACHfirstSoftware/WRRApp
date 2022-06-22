@@ -146,7 +146,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 height: 45.h,
               ),
               InputField(
-                hintText: "Verification Code",
+                hintText: "WRR Verification Code",
                 controller: _codeController,
                 prefixIconPath: "assets/icons/pin-code.svg",
                 textInputType: TextInputType.number,

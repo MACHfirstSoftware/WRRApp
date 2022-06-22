@@ -137,12 +137,15 @@ class SnackBarContent extends StatelessWidget {
                 Text(
                   titleText ?? title,
                   style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.w600),
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
                 ),
                 Text(
                   messageText,
                   style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         color: Colors.white,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w300,
                       ),
                   maxLines: 2,

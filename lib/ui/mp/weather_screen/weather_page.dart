@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/current_weather_details.dart';
+import 'package:wisconsin_app/widgets/view_models.dart';
 
 class WeatherPage extends StatefulWidget {
   final County county;
@@ -74,10 +72,11 @@ class _WeatherPageState extends State<WeatherPage>
         ),
         body: Consumer<WeatherProvider>(builder: (context, weatherProvider, _) {
           if (weatherProvider.apiStatus == ApiStatus.isBusy) {
-            return _buildLoader();
+            return ViewModels.buildLoader();
           }
           if (weatherProvider.apiStatus == ApiStatus.isError) {
-            return _buildErrorWidget(weatherProvider.errorMessage);
+            return ViewModels.buildErrorWidget(
+                weatherProvider.errorMessage, _init);
           }
           return TabBarView(
             children: [
@@ -93,61 +92,6 @@ class _WeatherPageState extends State<WeatherPage>
           );
         }),
       ),
-    );
-  }
-
-  Center _buildLoader() {
-    return Center(
-      child: SizedBox(
-        height: 50.w,
-        width: 50.w,
-        child: const LoadingIndicator(
-            indicatorType: Indicator.lineSpinFadeLoader,
-            colors: [AppColors.btnColor],
-            strokeWidth: 2.0),
-      ),
-    );
-  }
-
-  _buildErrorWidget(String errorMessage) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          errorMessage,
-          style: TextStyle(
-              fontSize: 25.sp,
-              color: AppColors.btnColor,
-              fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 15.h,
-          width: 428.w,
-        ),
-        GestureDetector(
-          onTap: () {
-            _init();
-          },
-          child: Container(
-            alignment: Alignment.center,
-            height: 60.h,
-            width: 190.w,
-            decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Try Again",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

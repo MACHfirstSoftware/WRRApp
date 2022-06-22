@@ -1,12 +1,23 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
+import 'package:wisconsin_app/widgets/page_loader.dart';
+import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class AddPost extends StatefulWidget {
   const AddPost({Key? key}) : super(key: key);
@@ -16,9 +27,11 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  File? _image;
+  XFile? _image;
 
   @override
   void initState() {
@@ -35,6 +48,124 @@ class _AddPostState extends State<AddPost> {
     super.dispose();
   }
 
+  _validatePostDetails() {
+    scaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+    if (_titleController.text.isEmpty) {
+      scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Title is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_bodyController.text.isEmpty) {
+      scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Body is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    // if () {
+    //   scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Password is incorrect",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    return true;
+  }
+
+  String _getImageName(String str) {
+    str = str.replaceAll('.jpg', '');
+    str = str.replaceAll('.png', '');
+    str = str.replaceAll('.jpeg', '');
+    return str;
+  }
+
+  String _getImageExtension(String str) {
+    // if(str.contains(".jpg")){return ".jpg";}
+    if (str.contains(".jpeg")) {
+      return ".jpeg";
+    }
+    if (str.contains(".png")) {
+      return ".png";
+    }
+    return ".jpg";
+  }
+
+  _publishPost() async {
+    if (_validatePostDetails()) {
+      scaffoldMessengerKey.currentState?.removeCurrentSnackBar();
+      User _user = Provider.of<UserProvider>(context, listen: false).user;
+      final data = {
+        "personId": _user.id,
+        "postTypeId": 1,
+        "regionId": _user.regionId,
+        "countyId": _user.countyId,
+        "title": _titleController.text,
+        "body": _bodyController.text,
+        "isFlagged": false
+      };
+
+      PageLoader.showLoader(context);
+      final postResponse = await PostService.postPublish(data);
+
+      postResponse.when(success: (String id) async {
+        if (_image != null) {
+          final bytes = File(_image!.path).readAsBytesSync();
+          String img64 = base64Encode(bytes);
+          final imageData = {
+            "postId": id,
+            "caption": "No Caption",
+            "image": img64,
+            "fileName": _getImageName(_image!.name),
+            "type": _getImageExtension(_image!.name),
+            "sortOrder": 0
+          };
+          final imageResponse = await PostService.addPostImage(imageData);
+          imageResponse.when(success: (String url) {
+            Navigator.pop(context);
+            ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                context: context,
+                messageText: "Successfully published",
+                type: SnackBarType.success));
+            Navigator.pop(context);
+          }, failure: (NetworkExceptions error) {
+            Navigator.pop(context);
+            scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+                context: context,
+                messageText: NetworkExceptions.getErrorMessage(error),
+                type: SnackBarType.error));
+          }, responseError: (ResponseError responseError) {
+            Navigator.pop(context);
+            scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+                context: context,
+                messageText: responseError.error,
+                type: SnackBarType.error));
+          });
+        } else {
+          Navigator.pop(context);
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Successfully published",
+              type: SnackBarType.success));
+          Navigator.pop(context);
+        }
+      }, failure: (NetworkExceptions error) {
+        Navigator.pop(context);
+        scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: NetworkExceptions.getErrorMessage(error),
+            type: SnackBarType.error));
+      }, responseError: (ResponseError responseError) {
+        Navigator.pop(context);
+        scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: responseError.error,
+            type: SnackBarType.error));
+      });
+    }
+  }
+
   final picker = ImagePicker();
 
   Future getImage(ImageSource source) async {
@@ -44,13 +175,17 @@ class _AddPostState extends State<AddPost> {
         return;
       } else {
         setState(() {
-          _image = File(pickedFile.path);
+          _image = pickedFile;
         });
       }
     } on PlatformException catch (e) {
-      print("Failed to pick image : $e");
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
     } catch (e) {
-      print("Failed to pick image : $e");
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
     }
   }
 
@@ -91,133 +226,132 @@ class _AddPostState extends State<AddPost> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        alignment: Alignment.center,
-        width: 400.w,
-        height: 650.h,
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: [0, .8],
-              colors: [AppColors.secondaryColor, AppColors.primaryColor],
-            ),
-            borderRadius: BorderRadius.circular(20.w)),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
+    return ScaffoldMessenger(
+      key: scaffoldMessengerKey,
+      child: Center(
+        child: Container(
+          alignment: Alignment.center,
+          width: 400.w,
+          height: 700.h,
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: [0, .8],
+                colors: [AppColors.secondaryColor, AppColors.primaryColor],
+              ),
+              borderRadius: BorderRadius.circular(20.w)),
+          child: Scaffold(
             backgroundColor: Colors.transparent,
-            title: Text(
-              "Add Post",
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  color: AppColors.btnColor,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            centerTitle: true,
-            elevation: 0,
-            toolbarHeight: 30.h,
-            automaticallyImplyLeading: false,
-          ),
-          body: Column(
-            children: [
-              SizedBox(
-                height: 10.h,
-              ),
-              CustomInputField(
-                controller: _titleController,
-                label: "Title",
-                hintText: "Title",
-              ),
-              CustomInputField(
-                controller: _titleController,
-                label: "Body",
-                hintText: "Body",
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Container(
-                height: 300.h,
-                width: 360.w,
-                color: Colors.grey[100],
-                child: Stack(
-                  children: [
-                    Center(
-                      child: _image != null
-                          ? Image.file(
-                              _image!,
-                              height: 300.h,
-                              width: 360.w,
-                              fit: BoxFit.fill,
-                            )
-                          : const SizedBox(),
-                    ),
-                    if (_image != null)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _image = null;
-                            });
-                          },
-                          // splashColor: AppColors.btnColor.withOpacity(0.5),
-                          // // splashColor: AppColors.btnColor.withOpacity(0.5),
-                          // hoverColor: AppColors.btnColor.withOpacity(0.5),
-                          child: SizedBox(
-                            height: 50.w,
-                            width: 50.w,
-                            child: Icon(
-                              Icons.cancel_outlined,
-                              size: 30.w,
-                              color: AppColors.btnColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (_image == null)
-                      Center(
-                        child: InkWell(
-                          onTap: () async {
-                            ImageSource? source =
-                                await showImageSource(context);
-                            if (source != null) {
-                              getImage(source);
-                            } else {
-                              print("Get image source failed");
-                            }
-                          },
-                          child: SizedBox(
-                            height: 60.w,
-                            width: 60.w,
-                            child: Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 40.w,
-                              color: AppColors.btnColor,
-                            ),
-                          ),
-                        ),
-                      )
-                  ],
+            resizeToAvoidBottomInset: false,
+            body: Column(
+              children: [
+                const Spacer(),
+                Text(
+                  "Add Post",
+                  style: TextStyle(
+                      fontSize: 20.sp,
+                      color: AppColors.btnColor,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-              SizedBox(
-                height: 25.h,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [_cancel(), _publish()],
-              ),
-              SizedBox(
-                height: 25.h,
-              )
-            ],
+                SizedBox(
+                  height: 15.h,
+                ),
+                CustomInputField(
+                  controller: _titleController,
+                  label: "Title",
+                  hintText: "Title",
+                ),
+                CustomInputField(
+                  controller: _bodyController,
+                  label: "Body",
+                  hintText: "Body",
+                  maxLines: 5,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Container(
+                  height: 300.h,
+                  width: 360.w,
+                  color: Colors.grey[100],
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: _image != null
+                            ? Image.file(
+                                File(_image!.path),
+                                height: 300.h,
+                                width: 360.w,
+                                fit: BoxFit.fill,
+                              )
+                            : const SizedBox(),
+                      ),
+                      if (_image != null)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                _image = null;
+                              });
+                            },
+                            // splashColor: AppColors.btnColor.withOpacity(0.5),
+                            // // splashColor: AppColors.btnColor.withOpacity(0.5),
+                            // hoverColor: AppColors.btnColor.withOpacity(0.5),
+                            child: SizedBox(
+                              height: 50.w,
+                              width: 50.w,
+                              child: Icon(
+                                Icons.cancel_outlined,
+                                size: 30.w,
+                                color: AppColors.btnColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (_image == null)
+                        Center(
+                          child: InkWell(
+                            onTap: () async {
+                              ImageSource? source =
+                                  await showImageSource(context);
+                              if (source != null) {
+                                getImage(source);
+                              } else {
+                                if (kDebugMode) {
+                                  print("Get image source failed");
+                                }
+                              }
+                            },
+                            child: SizedBox(
+                              height: 60.w,
+                              width: 60.w,
+                              child: Icon(
+                                Icons.add_a_photo_outlined,
+                                size: 40.w,
+                                color: AppColors.btnColor,
+                              ),
+                            ),
+                          ),
+                        )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 25.h,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [_cancel(), _publish()],
+                ),
+                const Spacer(),
+              ],
+            ),
           ),
         ),
       ),
@@ -268,7 +402,16 @@ class _AddPostState extends State<AddPost> {
 
   _publish() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // final bytes = File(_image!.path).readAsBytesSync();
+        // String img64 = base64Encode(bytes);
+        // log(img64);
+        // log(_getImageName(_image!.name));
+        // log(_image!.name);
+        // log(_getImageExtension(_image!.name));
+        FocusScope.of(context).requestFocus(FocusNode());
+        _publishPost();
+      },
       child: Container(
         alignment: Alignment.center,
         height: 50.h,

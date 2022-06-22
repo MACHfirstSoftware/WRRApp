@@ -1,6 +1,7 @@
 class UtilCommon {
   static String convertToAgo(DateTime input) {
     Duration diff = DateTime.now().difference(input);
+
     if (diff.inDays >= 1) {
       return '${diff.inDays} days ago';
     } else if (diff.inHours >= 1) {
