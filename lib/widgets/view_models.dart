@@ -17,6 +17,19 @@ class ViewModels {
     );
   }
 
+  static postLoader() {
+    return Center(
+      child: SizedBox(
+        height: 30.w,
+        width: 30.w,
+        child: const LoadingIndicator(
+            indicatorType: Indicator.lineSpinFadeLoader,
+            colors: [AppColors.btnColor],
+            strokeWidth: 1.0),
+      ),
+    );
+  }
+
   static buildErrorWidget(String errorMessage, VoidCallback onTap) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

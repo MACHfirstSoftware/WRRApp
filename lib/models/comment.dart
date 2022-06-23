@@ -1,4 +1,9 @@
 import 'package:wisconsin_app/models/reply_comment.dart';
+import 'dart:convert';
+
+Comment commentFromJson(String str) => Comment.fromJson(json.decode(str));
+
+String commentToJson(Comment data) => json.encode(data.toJson());
 
 class Comment {
   Comment({

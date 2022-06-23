@@ -1,3 +1,10 @@
+import 'dart:convert';
+
+ReplyComment replyCommentFromJson(String str) =>
+    ReplyComment.fromJson(json.decode(str));
+
+String replyCommentToJson(ReplyComment data) => json.encode(data.toJson());
+
 class ReplyComment {
   ReplyComment({
     required this.id,

@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+Like likeFromJson(String str) => Like.fromJson(json.decode(str));
+
+String likeToJson(Like data) => json.encode(data.toJson());
+
 class Like {
   Like({
     required this.id,
