@@ -9,7 +9,7 @@ import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_page.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
 
 class ReportPageAppBar extends StatefulWidget {
   const ReportPageAppBar({Key? key}) : super(key: key);
@@ -56,7 +56,11 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                 left: 40.w,
                 child: GestureDetector(
                   onTap: (() {
-                    showSearch(context: context, delegate: SearchHunters());
+                    // showSearch(context: context, delegate: SearchHunters());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SearchHunters()));
                   }),
                   child: SvgPicture.asset(
                     'assets/icons/search.svg',
@@ -181,7 +185,7 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
         Provider.of<WeatherProvider>(context, listen: false)
             .changeCounty(value);
         Provider.of<CountyPostProvider>(context, listen: false)
-            .chnageCounty(value.id);
+            .chnageCounty(_user.id, value.id);
       },
     );
   }

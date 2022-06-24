@@ -20,25 +20,86 @@ class PostView extends StatefulWidget {
 }
 
 class _PostViewState extends State<PostView> {
-  bool _isMeLike() {
-    bool likeMe = false;
-    User _user = Provider.of<UserProvider>(context, listen: false).user;
-    for (Like like in widget.post.likes) {
-      if (like.personId == _user.id) {
-        likeMe = true;
+  int? likeIndex;
+  late bool _isApiCall;
+  late User _user;
+  @override
+  void initState() {
+    _isApiCall = false;
+    _user = Provider.of<UserProvider>(context, listen: false).user;
+    _setLikeIndex();
+    super.initState();
+  }
+
+  _setLikeIndex() {
+    for (int i = 0; i < widget.post.likes.length; i++) {
+      if (widget.post.likes[i].personId == _user.id) {
+        likeIndex = i;
         break;
       }
     }
-    return likeMe;
+  }
+
+  // bool _isMeLike() {
+  //   bool likeMe = false;
+  //   for (Like like in widget.post.likes) {
+  //     if (like.personId == _user.id) {
+  //       likeMe = true;
+  //       break;
+  //     }
+  //   }
+  //   return likeMe;
+  // }
+
+  _postLike() async {
+    setState(() {
+      _isApiCall = true;
+    });
+    Like _like = Like(
+        id: -1,
+        personId: _user.id,
+        firstName: _user.firstName,
+        lastName: _user.lastName,
+        createdOn: UtilCommon.getDateTimeNow(),
+        postId: widget.post.id);
+
+    final res = await PostService.postLike(_like);
+    if (res != null) {
+      _like.id = res;
+      setState(() {
+        likeIndex = widget.post.likes.length;
+        widget.post.likes.add(_like);
+        _isApiCall = false;
+      });
+    } else {
+      setState(() {
+        _isApiCall = false;
+      });
+    }
+  }
+
+  _postLikeDelete() async {
+    setState(() {
+      _isApiCall = true;
+    });
+    final res =
+        await PostService.postLikeDelete(widget.post.likes[likeIndex!].id);
+    if (res) {
+      setState(() {
+        widget.post.likes.removeAt(likeIndex!);
+        likeIndex = null;
+        _isApiCall = false;
+      });
+    } else {
+      setState(() {
+        _isApiCall = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.post.media.isNotEmpty) {
-      print(widget.post.media[0].imageUrl);
-    }
     return Container(
-      // margin: EdgeInsets.symmetric(vertical: 2.5.w, horizontal: 5.w),
       margin: EdgeInsets.only(bottom: 4.h),
       color: Colors.white,
       width: 428.w,
@@ -160,35 +221,23 @@ class _PostViewState extends State<PostView> {
             height: 50.h,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                    onPressed: () async {
-                      if (!_isMeLike()) {
-                        User _user =
-                            Provider.of<UserProvider>(context, listen: false)
-                                .user;
-                        Like _like = Like(
-                            id: -1,
-                            personId: _user.id,
-                            firstName: _user.firstName,
-                            lastName: _user.lastName,
-                            createdOn: UtilCommon.getDateTimeNow(),
-                            postId: widget.post.id);
-
-                        final res = await PostService.postLike(_like);
-                        if (res) {
-                          setState(() {
-                            widget.post.likes.add(_like);
-                          });
-                        }
-                      }
-                    },
+                    onPressed: _isApiCall
+                        ? null
+                        : () {
+                            if (likeIndex == null) {
+                              _postLike();
+                            } else {
+                              _postLikeDelete();
+                            }
+                          },
                     icon: Icon(
                       Icons.thumb_up_off_alt_rounded,
                       size: 40.h,
-                      color:
-                          _isMeLike() ? AppColors.btnColor : AppColors.iconGrey,
+                      color: likeIndex != null
+                          ? AppColors.btnColor
+                          : AppColors.iconGrey,
                     )),
                 IconButton(
                     onPressed: () {
@@ -236,19 +285,6 @@ class _PostViewState extends State<PostView> {
               textAlign: TextAlign.left,
             ),
           ),
-          // Container(
-          //   alignment: Alignment.center,
-          //   color: Colors.white,
-          //   height: 80.h,
-          //   child: Text(
-          //     "Comments appeare here",
-          //     style: TextStyle(
-          //         fontSize: 16.sp,
-          //         color: Colors.black,
-          //         fontWeight: FontWeight.w600),
-          //     textAlign: TextAlign.left,
-          //   ),
-          // ),
           CommentSection(
             comments: widget.post.comments,
             postId: widget.post.id,

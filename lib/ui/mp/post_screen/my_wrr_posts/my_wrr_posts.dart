@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/widgets/my_wrr_post_appbar.dart';
@@ -22,12 +24,14 @@ class _MyWRRPostsState extends State<MyWRRPosts>
     with AutomaticKeepAliveClientMixin {
   bool keepAlive = true;
   late ScrollController scrollController;
-  int _lastId = 0;
+  String? _lastRecordTime;
   bool allLoaded = false;
   bool onLoading = false;
+  late User _user;
 
   @override
   void initState() {
+    _user = Provider.of<UserProvider>(context, listen: false).user;
     scrollController = ScrollController();
     _init(isInit: true);
     scrollController.addListener(() async {
@@ -35,16 +39,19 @@ class _MyWRRPostsState extends State<MyWRRPosts>
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !allLoaded) {
-        print("data loading");
-        _lastId = postProvider.postsOfWRR.last.id;
+        print("----------DATA LOADING----------------");
+        _lastRecordTime = postProvider.postsOfWRR.last.createdOn;
+        print("Last Record Time : $_lastRecordTime");
+        print("Total Post : ${postProvider.postsOfWRR.length}");
         setState(() {
           onLoading = true;
         });
-        final postResponse = await PostService.getMyWRRPosts(_lastId);
+        final postResponse = await PostService.getMyWRRPosts(_user.id,
+            lastRecordTime: _lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
-          print(postsList.length);
+          print("Incomming posts : ${postsList.length}");
           postProvider.postsOfWRR.addAll(postsList);
-          if (postsList.isEmpty) {
+          if (postsList.length < 10) {
             allLoaded = true;
           }
           setState(() {
@@ -77,7 +84,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
 
   _init({bool isInit = false}) async {
     await Provider.of<WRRPostProvider>(context, listen: false)
-        .getMyWRRPosts(_lastId, isInit: isInit);
+        .getMyWRRPosts(_user.id, isInit: isInit);
   }
 
   // _scrollListner() async {
@@ -126,31 +133,31 @@ class _MyWRRPostsState extends State<MyWRRPosts>
             return ViewModels.buildErrorWidget(model.errorMessage, _init);
           }
 
+          if (model.postsOfWRR.isEmpty) {
+            return ViewModels.postEmply();
+          }
+
           return ListView(
             controller: scrollController,
             padding: const EdgeInsets.all(0),
             children: [
               ...model.postsOfWRR.map((post) => PostView(post: post)).toList(),
-              if (onLoading)
-                Center(
-                  child: SizedBox(
-                    height: 5.h,
-                    width: 428.w,
-                    child: const LinearProgressIndicator(),
-                  ),
-                ),
+              Container(
+                color: Colors.transparent,
+                height: 5.h,
+                width: 428.w,
+                child: onLoading ? const LinearProgressIndicator() : null,
+              ),
               if (allLoaded)
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.h),
-                    child: Text(
-                      "No more data",
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
-                      textAlign: TextAlign.center,
-                    ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 5.h),
+                  child: Text(
+                    "No more data",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
                   ),
                 )
             ],

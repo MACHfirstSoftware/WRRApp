@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
             // You can use the library anywhere in the app even in theme
             theme: ThemeData(
               fontFamily: 'Poppins',
+              primaryColor: AppColors.btnColor,
+              // brightness: Brightness.dark,
               primarySwatch: const MaterialColor(0xFFF23A02, <int, Color>{
                 50: Color(0xFFF23A02),
                 100: Color(0xFFF23A02),

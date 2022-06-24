@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:focused_menu/focused_menu.dart';
+import 'package:focused_menu/modals.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
@@ -34,12 +36,15 @@ class _CommentSectionState extends State<CommentSection> {
   bool _isComment = true;
   String replyTo = '';
   int? _postCommentId;
+  int? _commentIndex;
+  late User _user;
   late TextEditingController _commentController;
   late List<Comment> _comments;
   FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
+    _user = Provider.of<UserProvider>(context, listen: false).user;
     _comments = widget.comments;
     _commentController = TextEditingController();
     super.initState();
@@ -67,7 +72,7 @@ class _CommentSectionState extends State<CommentSection> {
     setState(() {
       _isSubmiting = true;
     });
-    User _user = Provider.of<UserProvider>(context, listen: false).user;
+    // User _user = Provider.of<UserProvider>(context, listen: false).user;
     Comment commentData = Comment(
         id: -1,
         personId: _user.id,
@@ -80,7 +85,8 @@ class _CommentSectionState extends State<CommentSection> {
         replyComments: []);
     final res = await PostService.postComment(commentData);
 
-    if (res) {
+    if (res != null) {
+      commentData.id = res;
       setState(() {
         _comments.add(commentData);
         _isSubmiting = false;
@@ -108,16 +114,19 @@ class _CommentSectionState extends State<CommentSection> {
         body: _commentController.text,
         createdOn: UtilCommon.getDateTimeNow());
     final res = await PostService.postCommentReply(replyCommentData);
-    if (res) {
-      for (int i = 0; i < _comments.length; i++) {
-        if (_comments[i].id == _postCommentId) {
-          _comments[i].replyComments.add(replyCommentData);
-          break;
-        }
-      }
+    if (res != null) {
+      replyCommentData.id = res;
+      // for (int i = 0; i < _comments.length; i++) {
+      //   if (_comments[i].id == _postCommentId) {
+      //     _comments[i].replyComments.add(replyCommentData);
+      //     break;
+      //   }
+      // }
+      _comments[_commentIndex!].replyComments.add(replyCommentData);
       setState(() {
         _isComment = true;
         _postCommentId = null;
+        _commentIndex = null;
         replyTo = '';
         _isSubmiting = false;
       });
@@ -130,11 +139,31 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
+  _deleteComment(int commentId, int commentIndex) async {
+    final res = await PostService.postCommentDelete(commentId);
+    if (res) {
+      setState(() {
+        _comments.removeAt(commentIndex);
+      });
+    }
+  }
+
+  _deleteCommentReply(
+      int commentReplyId, int commentIndex, int replyIndex) async {
+    final res = await PostService.postCommentReplyDelete(commentReplyId);
+    if (res) {
+      setState(() {
+        _comments[commentIndex].replyComments.removeAt(replyIndex);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (!_isSeeAll && _comments.isNotEmpty) _buildCommentTile(_comments[0]),
+        if (!_isSeeAll && _comments.isNotEmpty)
+          _buildCommentTile(_comments[0], 0),
         if (_isSeeAll) _buildSeeAll(),
         if (_comments.length > 1) _buildShowMoreIcon(),
         _buildWriteComment(),
@@ -142,7 +171,7 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  _buildCommentTile(Comment _comment) {
+  _buildCommentTile(Comment _comment, int commentIndex) {
     return Container(
       color: Colors.transparent,
       child: Padding(
@@ -154,10 +183,50 @@ class _CommentSectionState extends State<CommentSection> {
             Material(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(15.w),
-              child: ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                title: Text(_comment.firstName + " " + _comment.lastName),
-                subtitle: Text(_comment.body),
+              child: FocusedMenuHolder(
+                onPressed: () {},
+                menuWidth: 200.w,
+                blurSize: 0.0,
+                menuItemExtent: 45.h,
+                menuBoxDecoration: const BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                duration: const Duration(milliseconds: 100),
+                animateMenuItems: true,
+                blurBackgroundColor: Colors.black12,
+                menuItems: [
+                  FocusedMenuItem(
+                      title: const Text("Reply"),
+                      trailingIcon: const Icon(Icons.reply_rounded),
+                      onPressed: () {
+                        setState(() {
+                          _isComment = false;
+                          _postCommentId = _comment.id;
+                          _commentIndex = commentIndex;
+                          replyTo =
+                              _comment.firstName + " " + _comment.lastName;
+                        });
+                        FocusScope.of(context).requestFocus(focusNode);
+                      }),
+                  if (_user.id == _comment.personId)
+                    FocusedMenuItem(
+                        title: const Text(
+                          "Delete",
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                        trailingIcon: const Icon(
+                          Icons.delete,
+                          color: Colors.redAccent,
+                        ),
+                        onPressed: () {
+                          _deleteComment(_comment.id, commentIndex);
+                        }),
+                ],
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                  title: Text(_comment.firstName + " " + _comment.lastName),
+                  subtitle: Text(_comment.body),
+                ),
               ),
             ),
             Row(
@@ -178,6 +247,7 @@ class _CommentSectionState extends State<CommentSection> {
                       setState(() {
                         _isComment = false;
                         _postCommentId = _comment.id;
+                        _commentIndex = commentIndex;
                         replyTo = _comment.firstName + " " + _comment.lastName;
                       });
                       FocusScope.of(context).requestFocus(focusNode);
@@ -195,7 +265,7 @@ class _CommentSectionState extends State<CommentSection> {
                     itemCount: _comment.replyComments.length,
                     itemBuilder: (_, index) {
                       return _buildReplyCommentTile(
-                          _comment.replyComments[index]);
+                          _comment.replyComments[index], commentIndex, index);
                     }),
               ),
             )
@@ -205,7 +275,8 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  _buildReplyCommentTile(ReplyComment replyComment) {
+  _buildReplyCommentTile(
+      ReplyComment replyComment, int commentIndex, int replyIndex) {
     return Container(
       color: Colors.transparent,
       child: Padding(
@@ -217,12 +288,48 @@ class _CommentSectionState extends State<CommentSection> {
             Material(
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(15.w),
-              child: ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                title:
-                    Text(replyComment.firstName + " " + replyComment.lastName),
-                subtitle: Text(replyComment.body),
-              ),
+              child: _user.id == replyComment.personId
+                  ? FocusedMenuHolder(
+                      onPressed: () {},
+                      menuWidth: 200.w,
+                      blurSize: 0.0,
+                      menuItemExtent: 45.h,
+                      menuBoxDecoration: const BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(15.0))),
+                      duration: const Duration(milliseconds: 100),
+                      animateMenuItems: true,
+                      blurBackgroundColor: Colors.black12,
+                      menuItems: [
+                        FocusedMenuItem(
+                            title: const Text(
+                              "Delete",
+                              style: TextStyle(color: Colors.redAccent),
+                            ),
+                            trailingIcon: const Icon(
+                              Icons.delete,
+                              color: Colors.redAccent,
+                            ),
+                            onPressed: () {
+                              _deleteCommentReply(
+                                  replyComment.id, commentIndex, replyIndex);
+                            }),
+                      ],
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                        title: Text(replyComment.firstName +
+                            " " +
+                            replyComment.lastName),
+                        subtitle: Text(replyComment.body),
+                      ),
+                    )
+                  : ListTile(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                      title: Text(
+                          replyComment.firstName + " " + replyComment.lastName),
+                      subtitle: Text(replyComment.body),
+                    ),
             ),
             Padding(
               padding: EdgeInsets.only(left: 15.w),
@@ -278,6 +385,7 @@ class _CommentSectionState extends State<CommentSection> {
                           setState(() {
                             _isComment = true;
                             _postCommentId = null;
+                            _commentIndex = null;
                             replyTo = '';
                           });
                         },
@@ -315,7 +423,6 @@ class _CommentSectionState extends State<CommentSection> {
                           _submitReplyComment();
                         }
                       }
-                      print("send..........");
                     },
                     child: const Icon(
                       Icons.send_rounded,
@@ -359,7 +466,7 @@ class _CommentSectionState extends State<CommentSection> {
           shrinkWrap: true,
           itemCount: _comments.length,
           itemBuilder: (_, index) {
-            return _buildCommentTile(_comments[index]);
+            return _buildCommentTile(_comments[index], index);
           }),
     );
   }

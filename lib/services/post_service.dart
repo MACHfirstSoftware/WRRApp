@@ -1,9 +1,8 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/like.dart';
+import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/reply_comment.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -12,10 +11,12 @@ import 'package:wisconsin_app/utils/custom_http.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
 class PostService {
-  static Future<ApiResult<List<Post>>> getMyWRRPosts(int lastId) async {
+  static Future<ApiResult<List<Post>>> getMyWRRPosts(String userId,
+      {String? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/B4C9ABBF-747B-436D-8541-01ABB51702F2/$lastId");
+          "/Post/$userId" +
+          (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -34,10 +35,14 @@ class PostService {
   }
 
   static Future<ApiResult<List<Post>>> getMyCountyPosts(
-      int lastId, int countyId) async {
+      String userId, int countyId,
+      {String? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/B4C9ABBF-747B-436D-8541-01ABB51702F2/$lastId?countyId=$countyId");
+          "/Post/$userId" +
+          (lastRecordTime != null
+              ? "?lastRecordTime=$lastRecordTime&countyId=$countyId"
+              : "?countyId=$countyId"));
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -55,15 +60,14 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<String>> postPublish(
+  static Future<ApiResult<int>> postPublish(
       Map<String, dynamic> postDetails) async {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/Post", data: postDetails);
       if (response.statusCode == 201) {
         print(response.data);
-        return ApiResult.success(
-            data: response.data.toString().replaceAll("Id :", ""));
+        return ApiResult.success(data: response.data["id"] as int);
       } else {
         print(response.data);
         return ApiResult.responseError(
@@ -77,9 +81,9 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<String>> addPostImage(
+  static Future<ApiResult<List<Media>>> addPostImage(
       Map<String, dynamic> postImageDetails) async {
-    inspect(postImageDetails.toString());
+    // log(postImageDetails.toString());
     try {
       final response = await CustomHttp.getDio().post(
           Constant.baseUrl + "/PostImage",
@@ -88,7 +92,11 @@ class PostService {
       print(response);
       if (response.statusCode == 200) {
         print(response.data);
-        return ApiResult.success(data: response.data["imageUrl"]);
+        List<dynamic> res = response.data["media"];
+        return ApiResult.success(
+            data: res
+                .map((d) => Media.fromJson(d as Map<String, dynamic>))
+                .toList());
       } else {
         print(response.data);
         return ApiResult.responseError(
@@ -102,12 +110,29 @@ class PostService {
     }
   }
 
-  static Future<bool> postLike(Like like) async {
+  static Future<int?> postLike(Like like) async {
     try {
       final response = await CustomHttp.getDio().post(
           Constant.baseUrl + "/PostLike",
           data: {"personId": like.personId, "postId": like.postId});
       if (response.statusCode == 201) {
+        print(response.data);
+        return response.data["id"];
+      } else {
+        print(response.data);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<bool> postLikeDelete(int id) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/DeleteLike?id=$id");
+      if (response.statusCode == 200) {
         print(response.data);
         return true;
       } else {
@@ -120,7 +145,7 @@ class PostService {
     }
   }
 
-  static Future<bool> postComment(Comment comment) async {
+  static Future<int?> postComment(Comment comment) async {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/PostComment", data: {
@@ -130,6 +155,23 @@ class PostService {
         "isFlagged": true
       });
       if (response.statusCode == 201) {
+        print(response.data["id"]);
+        return response.data["id"];
+      } else {
+        print(response.data);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<bool> postCommentDelete(int id) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/DeleteComment?id=$id");
+      if (response.statusCode == 200) {
         print(response.data);
         return true;
       } else {
@@ -142,7 +184,7 @@ class PostService {
     }
   }
 
-  static Future<bool> postCommentReply(ReplyComment replyComment) async {
+  static Future<int?> postCommentReply(ReplyComment replyComment) async {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/PostCommentReply", data: {
@@ -152,6 +194,23 @@ class PostService {
         "isFlagged": true
       });
       if (response.statusCode == 201) {
+        print(response.data["id"]);
+        return response.data["id"];
+      } else {
+        print(response.data);
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<bool> postCommentReplyDelete(int id) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/DeleteCommentReply?id=$id");
+      if (response.statusCode == 200) {
         print(response.data);
         return true;
       } else {

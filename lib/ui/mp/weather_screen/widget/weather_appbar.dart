@@ -107,7 +107,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
         Provider.of<WeatherProvider>(context, listen: false)
             .changeCounty(value);
         Provider.of<CountyPostProvider>(context, listen: false)
-            .chnageCounty(value.id);
+            .chnageCounty(_user.id, value.id);
       },
     );
   }

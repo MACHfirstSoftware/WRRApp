@@ -5,19 +5,19 @@ User userFromJson(String str) => User.fromJson(json.decode(str));
 String userToJson(User data) => json.encode(data.toJson());
 
 class User {
-  User({
-    required this.id,
-    required this.lastName,
-    required this.firstName,
-    required this.emailAddress,
-    required this.username,
-    required this.country,
-    required this.stateOrTerritory,
-    required this.countyId,
-    this.countyName,
-    required this.regionId,
-    required this.isOptIn,
-  });
+  User(
+      {required this.id,
+      required this.lastName,
+      required this.firstName,
+      required this.emailAddress,
+      required this.username,
+      required this.country,
+      required this.stateOrTerritory,
+      required this.countyId,
+      this.countyName,
+      required this.regionId,
+      required this.isOptIn,
+      this.isFallowed = false});
 
   String id;
   String firstName;
@@ -30,6 +30,7 @@ class User {
   String? countyName;
   int regionId;
   bool isOptIn;
+  bool isFallowed;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
@@ -42,6 +43,7 @@ class User {
         countyId: json["countyId"],
         regionId: json["regionId"],
         isOptIn: json["isOptIn"],
+        isFallowed: json["isFallowed"] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -55,5 +57,6 @@ class User {
         "countyId": countyId,
         "regionId": regionId,
         "isOptIn": isOptIn,
+        "isFallowed": isFallowed
       };
 }

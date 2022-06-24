@@ -10,7 +10,7 @@ class Media {
     required this.postId,
     required this.caption,
     required this.imageUrl,
-    required this.videoUrl,
+    this.videoUrl,
     required this.sortOrder,
     required this.createdOn,
   });
@@ -19,7 +19,7 @@ class Media {
   int postId;
   String caption;
   String imageUrl;
-  String videoUrl;
+  String? videoUrl;
   int sortOrder;
   String createdOn;
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -10,17 +9,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/media.dart';
+import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class AddPost extends StatefulWidget {
-  const AddPost({Key? key}) : super(key: key);
+  final bool isWRRPost;
+  const AddPost({Key? key, required this.isWRRPost}) : super(key: key);
 
   @override
   State<AddPost> createState() => _AddPostState();
@@ -32,6 +37,8 @@ class _AddPostState extends State<AddPost> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
   XFile? _image;
+  int? _postId;
+  bool _isPostPublished = false;
 
   @override
   void initState() {
@@ -109,7 +116,7 @@ class _AddPostState extends State<AddPost> {
       PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
 
-      postResponse.when(success: (String id) async {
+      postResponse.when(success: (int id) async {
         if (_image != null) {
           final bytes = File(_image!.path).readAsBytesSync();
           String img64 = base64Encode(bytes);
@@ -121,8 +128,35 @@ class _AddPostState extends State<AddPost> {
             "type": _getImageExtension(_image!.name),
             "sortOrder": 0
           };
+          setState(() {
+            _postId = id;
+            _isPostPublished = true;
+          });
           final imageResponse = await PostService.addPostImage(imageData);
-          imageResponse.when(success: (String url) {
+          imageResponse.when(success: (List<Media> media) {
+            Post _post = Post(
+                id: id,
+                personId: _user.id,
+                firstName: _user.firstName,
+                lastName: _user.lastName,
+                title: _titleController.text,
+                body: _bodyController.text,
+                createdOn: UtilCommon.getDateTimeNow(),
+                modifiedOn: UtilCommon.getDateTimeNow(),
+                likes: [],
+                comments: [],
+                media: media);
+            if (widget.isWRRPost) {
+              Provider.of<WRRPostProvider>(context, listen: false)
+                  .addingNewPost(_post);
+            } else {
+              final countyPostProvider =
+                  Provider.of<CountyPostProvider>(context, listen: false);
+              if (_user.countyId == countyPostProvider.countyId) {
+                countyPostProvider.addingNewPost(_post);
+              }
+            }
+
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
@@ -143,6 +177,28 @@ class _AddPostState extends State<AddPost> {
                 type: SnackBarType.error));
           });
         } else {
+          Post _post = Post(
+              id: id,
+              personId: _user.id,
+              firstName: _user.firstName,
+              lastName: _user.lastName,
+              title: _titleController.text,
+              body: _bodyController.text,
+              createdOn: UtilCommon.getDateTimeNow(),
+              modifiedOn: UtilCommon.getDateTimeNow(),
+              likes: [],
+              comments: [],
+              media: []);
+          if (widget.isWRRPost) {
+            Provider.of<WRRPostProvider>(context, listen: false)
+                .addingNewPost(_post);
+          } else {
+            final countyPostProvider =
+                Provider.of<CountyPostProvider>(context, listen: false);
+            if (_user.countyId == countyPostProvider.countyId) {
+              countyPostProvider.addingNewPost(_post);
+            }
+          }
           Navigator.pop(context);
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
               context: context,
@@ -150,6 +206,66 @@ class _AddPostState extends State<AddPost> {
               type: SnackBarType.success));
           Navigator.pop(context);
         }
+      }, failure: (NetworkExceptions error) {
+        Navigator.pop(context);
+        scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: NetworkExceptions.getErrorMessage(error),
+            type: SnackBarType.error));
+      }, responseError: (ResponseError responseError) {
+        Navigator.pop(context);
+        scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: responseError.error,
+            type: SnackBarType.error));
+      });
+    }
+  }
+
+  _uploadImage() async {
+    if (_image != null) {
+      PageLoader.showLoader(context);
+      User _user = Provider.of<UserProvider>(context, listen: false).user;
+      final bytes = File(_image!.path).readAsBytesSync();
+      String img64 = base64Encode(bytes);
+      final imageData = {
+        "postId": _postId!,
+        "caption": "No Caption",
+        "image": img64,
+        "fileName": _getImageName(_image!.name),
+        "type": _getImageExtension(_image!.name),
+        "sortOrder": 0
+      };
+      final imageResponse = await PostService.addPostImage(imageData);
+      imageResponse.when(success: (List<Media> media) {
+        Post _post = Post(
+            id: _postId!,
+            personId: _user.id,
+            firstName: _user.firstName,
+            lastName: _user.lastName,
+            title: _titleController.text,
+            body: _bodyController.text,
+            createdOn: UtilCommon.getDateTimeNow(),
+            modifiedOn: UtilCommon.getDateTimeNow(),
+            likes: [],
+            comments: [],
+            media: media);
+        if (widget.isWRRPost) {
+          Provider.of<WRRPostProvider>(context, listen: false)
+              .addingNewPost(_post);
+        } else {
+          final countyPostProvider =
+              Provider.of<CountyPostProvider>(context, listen: false);
+          if (_user.countyId == countyPostProvider.countyId) {
+            countyPostProvider.addingNewPost(_post);
+          }
+        }
+        Navigator.pop(context);
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "Successfully published",
+            type: SnackBarType.success));
+        Navigator.pop(context);
       }, failure: (NetworkExceptions error) {
         Navigator.pop(context);
         scaffoldMessengerKey.currentState?.showSnackBar(customSnackBar(
@@ -410,7 +526,11 @@ class _AddPostState extends State<AddPost> {
         // log(_image!.name);
         // log(_getImageExtension(_image!.name));
         FocusScope.of(context).requestFocus(FocusNode());
-        _publishPost();
+        if (_isPostPublished) {
+          _uploadImage();
+        } else {
+          _publishPost();
+        }
       },
       child: Container(
         alignment: Alignment.center,

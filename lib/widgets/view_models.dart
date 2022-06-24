@@ -38,9 +38,9 @@ class ViewModels {
         Text(
           errorMessage,
           style: TextStyle(
-              fontSize: 25.sp,
+              fontSize: 20.sp,
               color: AppColors.btnColor,
-              fontWeight: FontWeight.w700),
+              fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -59,14 +59,25 @@ class ViewModels {
             child: Text(
               "Try Again",
               style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 20.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
           ),
         ),
       ],
+    );
+  }
+
+  static postEmply() {
+    return Center(
+      child: Text(
+        "No Posts Available",
+        style: TextStyle(
+            fontSize: 20.sp, color: Colors.white, fontWeight: FontWeight.w500),
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

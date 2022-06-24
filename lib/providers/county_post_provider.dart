@@ -11,7 +11,7 @@ class CountyPostProvider with ChangeNotifier {
   List<Post> postsOfCounty = [];
   bool allCountyPostLoaded = false;
   int? _countyId;
-  int lastPostId = 0;
+  String? lastRecordTime;
 
   ApiStatus get apiStatus => _apiStatus;
   int get countyId => _countyId!;
@@ -20,12 +20,12 @@ class CountyPostProvider with ChangeNotifier {
     _countyId = id;
   }
 
-  void chnageCounty(int id) {
+  void chnageCounty(String userId, int id) {
     allCountyPostLoaded = false;
     postsOfCounty = [];
-    lastPostId = 0;
+    lastRecordTime = null;
     _countyId = id;
-    getMyCountyPosts();
+    getMyCountyPosts(userId);
   }
 
   void setBusy() {
@@ -49,14 +49,18 @@ class CountyPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMyCountyPosts({bool isInit = false}) async {
+  void addingNewPost(Post _post) {
+    postsOfCounty.insert(0, _post);
+    notifyListeners();
+  }
+
+  Future<void> getMyCountyPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final postResponse =
-        await PostService.getMyCountyPosts(lastPostId, _countyId!);
+    final postResponse = await PostService.getMyCountyPosts(userId, _countyId!);
     postResponse.when(success: (List<Post> postsList) async {
       postsOfCounty = postsList;
       if (postsList.isNotEmpty) {
-        lastPostId = postsList.last.id;
+        lastRecordTime = postsList.last.createdOn;
       }
       errorMessage = '';
       setIdle();

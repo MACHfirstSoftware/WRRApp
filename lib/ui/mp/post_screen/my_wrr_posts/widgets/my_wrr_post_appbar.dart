@@ -22,7 +22,10 @@ class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
         child: IconButton(
             onPressed: () {
               Navigator.of(context).push(
-                HeroDialogRoute(builder: (context) => const AddPost()),
+                HeroDialogRoute(
+                    builder: (context) => const AddPost(
+                          isWRRPost: true,
+                        )),
               );
             },
             icon: Icon(

@@ -63,6 +63,8 @@ dependencies:
 
   #Network Image Caching
   # cached_network_image: ^3.2.0
+  #Popup Menu Items
+  focused_menu: ^1.0.5
 
   freezed_annotation: ^0.14.0
 

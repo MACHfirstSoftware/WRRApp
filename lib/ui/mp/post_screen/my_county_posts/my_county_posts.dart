@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_county_posts/widgets/my_county_post_appbar.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
@@ -23,9 +25,11 @@ class _MyCountyPostsState extends State<MyCountyPosts>
   bool keepAlive = true;
   late ScrollController scrollController;
   bool onLoading = false;
+  late User _user;
 
   @override
   void initState() {
+    _user = Provider.of<UserProvider>(context, listen: false).user;
     scrollController = ScrollController();
     _init(isInit: true);
     scrollController.addListener(() async {
@@ -39,14 +43,15 @@ class _MyCountyPostsState extends State<MyCountyPosts>
           onLoading = true;
         });
         final postResponse = await PostService.getMyCountyPosts(
-            postProvider.lastPostId, postProvider.countyId);
+            _user.id, postProvider.countyId,
+            lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           print(postsList.length);
-          if (postsList.isEmpty) {
+          if (postsList.length < 10) {
             postProvider.allCountyPostLoaded = true;
           } else {
             postProvider.postsOfCounty.addAll(postsList);
-            postProvider.lastPostId = postsList.last.id;
+            postProvider.lastRecordTime = postsList.last.createdOn;
           }
           setState(() {
             onLoading = false;
@@ -78,7 +83,7 @@ class _MyCountyPostsState extends State<MyCountyPosts>
 
   _init({bool isInit = false}) async {
     await Provider.of<CountyPostProvider>(context, listen: false)
-        .getMyCountyPosts(isInit: isInit);
+        .getMyCountyPosts(_user.id, isInit: isInit);
   }
 
   @override
@@ -101,6 +106,10 @@ class _MyCountyPostsState extends State<MyCountyPosts>
             return ViewModels.buildErrorWidget(model.errorMessage, _init);
           }
 
+          if (model.postsOfCounty.isEmpty) {
+            return ViewModels.postEmply();
+          }
+
           return ListView(
             controller: scrollController,
             padding: const EdgeInsets.all(0),
@@ -108,26 +117,22 @@ class _MyCountyPostsState extends State<MyCountyPosts>
               ...model.postsOfCounty
                   .map((post) => PostView(post: post))
                   .toList(),
-              if (onLoading)
-                Center(
-                  child: SizedBox(
-                    height: 5.h,
-                    width: 428.w,
-                    child: const LinearProgressIndicator(),
-                  ),
-                ),
+              Container(
+                color: Colors.transparent,
+                height: 5.h,
+                width: 428.w,
+                child: onLoading ? const LinearProgressIndicator() : null,
+              ),
               if (model.allCountyPostLoaded)
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.h),
-                    child: Text(
-                      "No more data",
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
-                      textAlign: TextAlign.center,
-                    ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 5.h),
+                  child: Text(
+                    "No more data",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
                   ),
                 )
             ],

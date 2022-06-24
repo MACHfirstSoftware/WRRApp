@@ -33,9 +33,14 @@ class WRRPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMyWRRPosts(int lastId, {bool isInit = false}) async {
+  void addingNewPost(Post _post) {
+    postsOfWRR.insert(0, _post);
+    notifyListeners();
+  }
+
+  Future<void> getMyWRRPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final postResponse = await PostService.getMyWRRPosts(lastId);
+    final postResponse = await PostService.getMyWRRPosts(userId);
     postResponse.when(success: (List<Post> postsList) async {
       postsOfWRR = postsList;
       errorMessage = '';
