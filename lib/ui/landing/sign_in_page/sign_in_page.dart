@@ -9,6 +9,7 @@ import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -101,13 +102,15 @@ class _SignInPageState extends State<SignInPage> {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: NetworkExceptions.getErrorMessage(error),
+            // messageText: NetworkExceptions.getErrorMessage(error),
+            messageText: "Sorry, login unsuccessful",
             type: SnackBarType.error));
       }, responseError: (ResponseError responseError) {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: responseError.error,
+            // messageText: responseError.error,
+            messageText: "Sorry, login unsuccessful",
             type: SnackBarType.error));
       });
     }
@@ -126,99 +129,20 @@ class _SignInPageState extends State<SignInPage> {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 56.h,
-              ),
-              const LogoImage(),
-              SizedBox(
-                height: 145.h,
-              ),
-              Text(
-                "SIGN IN",
-                style: TextStyle(
-                    fontSize: 24.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 45.h,
-              ),
-              InputField(
-                hintText: "Email",
-                prefixIconPath: "assets/icons/user.svg",
-                controller: _emailController,
-                textInputType: TextInputType.emailAddress,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              InputField(
-                  hintText: "Password",
-                  prefixIconPath: "assets/icons/lock.svg",
-                  controller: _passwordController,
-                  textInputType: TextInputType.visiblePassword,
-                  obscureText: true),
-              SizedBox(
-                height: 25.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
                 children: [
-                  GestureDetector(
-                    onTap: () => _saveAccountInfoFunc(),
-                    child: SizedBox(
-                        height: 25.w,
-                        width: 25.w,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                color: AppColors.btnColor,
-                                style: BorderStyle.solid,
-                                width: 2.5.w,
-                              ),
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(5.w)),
-                          child: _saveAccountInfo
-                              ? Icon(
-                                  Icons.check,
-                                  color: AppColors.btnColor,
-                                  size: 20.w,
-                                )
-                              : null,
-                        )),
-                  ),
                   SizedBox(
-                    width: 15.w,
+                    height: 30.h,
                   ),
+                  const LogoImage(),
+                  const Spacer(),
                   Text(
-                    "Save Account Info ?",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-              SizedBox(
-                // height: 60.h,
-                height: 145.h,
-              ),
-              GestureDetector(
-                onTap: () => _doSignIn(),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50.h,
-                  width: 190.w,
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(5.w)),
-                  child: Text(
                     "SIGN IN",
                     style: TextStyle(
                         fontSize: 24.sp,
@@ -226,44 +150,144 @@ class _SignInPageState extends State<SignInPage> {
                         fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                ),
+                  SizedBox(
+                    height: 45.h,
+                  ),
+                  InputField(
+                    hintText: "Email",
+                    prefixIconPath: "assets/icons/user.svg",
+                    controller: _emailController,
+                    textInputType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  InputField(
+                      hintText: "Password",
+                      prefixIconPath: "assets/icons/lock.svg",
+                      controller: _passwordController,
+                      textInputType: TextInputType.visiblePassword,
+                      obscureText: true),
+                  SizedBox(
+                    height: 25.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _saveAccountInfoFunc(),
+                        child: SizedBox(
+                            height: 25.w,
+                            width: 25.w,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.btnColor,
+                                    style: BorderStyle.solid,
+                                    width: 2.5.w,
+                                  ),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(5.w)),
+                              child: _saveAccountInfo
+                                  ? Icon(
+                                      Icons.check,
+                                      color: AppColors.btnColor,
+                                      size: 20.w,
+                                    )
+                                  : null,
+                            )),
+                      ),
+                      SizedBox(
+                        width: 15.w,
+                      ),
+                      Text(
+                        "Save Account Info ?",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegisterPage()));
+                    },
+                    child: Text(
+                      "Register a New Account",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => _doSignIn(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 50.h,
+                      width: 190.w,
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(5.w)),
+                      child: Text(
+                        "SIGN IN",
+                        style: TextStyle(
+                            fontSize: 24.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 25.h,
+                  ),
+                  Text(
+                    "Forgot your password?",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 30.h,
+                  ),
+                  // RichText(
+                  //     text: TextSpan(
+                  //         text: "Don't Have an Account?",
+                  //         style: TextStyle(
+                  //             fontSize: 16.sp,
+                  //             color: Colors.white,
+                  //             fontWeight: FontWeight.w400),
+                  //         children: <TextSpan>[
+                  //       TextSpan(
+                  //         text: "  SIGN UP",
+                  //         recognizer: TapGestureRecognizer()
+                  //           ..onTap = (() => Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (_) => const QuestionnairePage()))),
+                  //         style: TextStyle(
+                  //             fontSize: 16.sp,
+                  //             color: AppColors.btnColor,
+                  //             fontWeight: FontWeight.w400),
+                  //       )
+                  //     ]))
+                ],
               ),
-              SizedBox(
-                height: 25.h,
-              ),
-              Text(
-                "Forgot your password?",
-                style: TextStyle(
-                    fontSize: 16.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              // RichText(
-              //     text: TextSpan(
-              //         text: "Don't Have an Account?",
-              //         style: TextStyle(
-              //             fontSize: 16.sp,
-              //             color: Colors.white,
-              //             fontWeight: FontWeight.w400),
-              //         children: <TextSpan>[
-              //       TextSpan(
-              //         text: "  SIGN UP",
-              //         recognizer: TapGestureRecognizer()
-              //           ..onTap = (() => Navigator.push(
-              //               context,
-              //               MaterialPageRoute(
-              //                   builder: (_) => const QuestionnairePage()))),
-              //         style: TextStyle(
-              //             fontSize: 16.sp,
-              //             color: AppColors.btnColor,
-              //             fontWeight: FontWeight.w400),
-              //       )
-              //     ]))
-            ],
+            ),
           ),
         ),
       ),

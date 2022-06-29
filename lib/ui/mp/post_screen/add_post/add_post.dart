@@ -132,13 +132,14 @@ class _AddPostState extends State<AddPost> {
             _postId = id;
             _isPostPublished = true;
           });
-          final imageResponse = await PostService.addPostImage(imageData);
+          final imageResponse = await PostService.addPostImage([]);
           imageResponse.when(success: (List<Media> media) {
             Post _post = Post(
                 id: id,
                 personId: _user.id,
                 firstName: _user.firstName,
                 lastName: _user.lastName,
+                isShare: false,
                 title: _titleController.text,
                 body: _bodyController.text,
                 createdOn: UtilCommon.getDateTimeNow(),
@@ -182,6 +183,7 @@ class _AddPostState extends State<AddPost> {
               personId: _user.id,
               firstName: _user.firstName,
               lastName: _user.lastName,
+              isShare: false,
               title: _titleController.text,
               body: _bodyController.text,
               createdOn: UtilCommon.getDateTimeNow(),
@@ -236,13 +238,14 @@ class _AddPostState extends State<AddPost> {
         "type": _getImageExtension(_image!.name),
         "sortOrder": 0
       };
-      final imageResponse = await PostService.addPostImage(imageData);
+      final imageResponse = await PostService.addPostImage([]);
       imageResponse.when(success: (List<Media> media) {
         Post _post = Post(
             id: _postId!,
             personId: _user.id,
             firstName: _user.firstName,
             lastName: _user.lastName,
+            isShare: false,
             title: _titleController.text,
             body: _bodyController.text,
             createdOn: UtilCommon.getDateTimeNow(),

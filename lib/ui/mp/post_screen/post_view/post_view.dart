@@ -4,12 +4,17 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/like.dart';
+import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_abuse.dart';
 import 'package:wisconsin_app/utils/common.dart';
+import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 
 class PostView extends StatefulWidget {
   final Post post;
@@ -39,17 +44,6 @@ class _PostViewState extends State<PostView> {
       }
     }
   }
-
-  // bool _isMeLike() {
-  //   bool likeMe = false;
-  //   for (Like like in widget.post.likes) {
-  //     if (like.personId == _user.id) {
-  //       likeMe = true;
-  //       break;
-  //     }
-  //   }
-  //   return likeMe;
-  // }
 
   _postLike() async {
     setState(() {
@@ -105,116 +99,45 @@ class _PostViewState extends State<PostView> {
       width: 428.w,
       child: Column(
         children: [
-          Container(
-            color: Colors.white,
-            height: 75.h,
-            width: 428.w,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 7.5.w,
-                ),
-                SizedBox(
-                    height: 60.h,
-                    width: 60.h,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(5.h),
-                        child: Image.asset(
-                          "assets/images/bg.png",
-                          fit: BoxFit.cover,
-                        ))),
-                SizedBox(
-                  width: 7.5.w,
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.post.firstName + " " + widget.post.lastName,
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w700),
-                        textAlign: TextAlign.left,
-                      ),
-                      Text(
-                        UtilCommon.convertToAgo(
-                            DateFormat("MM/dd/yyyy HH:mm:ss a")
-                                .parse(widget.post.createdOn)),
-                        style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w400),
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 60.h,
-                  width: 60.h,
-                  child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.person_add_alt_rounded,
-                        size: 40.h,
-                        color: AppColors.btnColor,
-                      )),
-                )
-              ],
+          _buildPersonRow(
+              widget.post.isShare
+                  ? (widget.post.sharePersonFirstName +
+                      " " +
+                      widget.post.sharePersonLastName)
+                  : (widget.post.firstName + " " + widget.post.lastName),
+              widget.post.createdOn),
+          if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
+          if (!widget.post.isShare)
+            _buildPostTitleAndBody(widget.post.body, isTitle: false),
+          if (widget.post.isShare)
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(color: Colors.black54, width: 1.w),
+                      left: BorderSide(color: Colors.black54, width: 1.w),
+                      right: BorderSide(color: Colors.black54, width: 1.w))),
+              child: Column(
+                children: [
+                  _buildPersonRow(
+                      widget.post.firstName + " " + widget.post.lastName,
+                      widget.post.createdOn),
+                  _buildPostTitleAndBody(widget.post.title),
+                  _buildPostTitleAndBody(widget.post.body, isTitle: false),
+                ],
+              ),
             ),
-          ),
-          Container(
-            color: Colors.transparent,
-            height: 300.h,
-            width: 428.w,
-            margin: EdgeInsets.symmetric(horizontal: 3.5.w),
-            child: widget.post.media.isNotEmpty
-                ? Image.network(
-                    widget.post.media[0].imageUrl,
-                    width: 421.w,
-                    height: 300.h,
-                    fit: BoxFit.fill,
-                  )
-                // ? CachedNetworkImage(
-                //     imageUrl:
-                //         "https://static.remove.bg/remove-bg-web/913b22608288cd03cc357799d0d4594e2d1c6b41/assets/start_remove-c851bdf8d3127a24e2d137a55b1b427378cd17385b01aec6e59d5d4b5f39d2ec.png",
-                //     // imageBuilder: (context, imageProvider) => SizedBox(
-                //     //   height: 300.h,
-                //     //   width: 421.w,
-                //     //   child: Image(
-                //     //     image: imageProvider,
-                //     //     fit: BoxFit.fill,
-                //     //   ),
-                //     // ),
-
-                //     imageBuilder: (context, imageProvider) => Container(
-                //       decoration: BoxDecoration(
-                //         image: DecorationImage(
-                //             image: imageProvider,
-                //             fit: BoxFit.cover,
-                //             colorFilter: const ColorFilter.mode(
-                //                 Colors.red, BlendMode.colorBurn)),
-                //       ),
-                //     ),
-                //     // placeholder: (context, url) => ViewModels.postLoader(),
-                //     progressIndicatorBuilder:
-                //         (context, url, downloadProgress) =>
-                //             CircularProgressIndicator(
-                //                 value: downloadProgress.progress),
-                //     errorWidget: (context, url, error) =>
-                //         const Icon(Icons.error),
-                //   )
-                : const Icon(Icons.warning_amber_rounded),
-            // child: Image.asset(
-            //   "assets/images/bg.png",
-            //   fit: BoxFit.fill,
-            // )
-          ),
+          if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
+          if (widget.post.isShare)
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              height: 10.h,
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(color: Colors.black54, width: 1.w),
+                      left: BorderSide(color: Colors.black54, width: 1.w),
+                      right: BorderSide(color: Colors.black54, width: 1.w))),
+            ),
           Container(
             alignment: Alignment.center,
             color: Colors.white,
@@ -250,7 +173,13 @@ class _PostViewState extends State<PostView> {
                       color: AppColors.iconGrey,
                     )),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        HeroDialogRoute(
+                            builder: (context) =>
+                                PostSharePage(postId: widget.post.id)),
+                      );
+                    },
                     icon: Icon(
                       Icons.redo_rounded,
                       size: 40.h,
@@ -260,7 +189,14 @@ class _PostViewState extends State<PostView> {
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            HeroDialogRoute(
+                                builder: (context) => PostAbuse(
+                                    personId: widget.post.personId,
+                                    postId: widget.post.id)),
+                          );
+                        },
                         icon: Icon(
                           Icons.more_horiz_rounded,
                           size: 40.h,
@@ -290,6 +226,274 @@ class _PostViewState extends State<PostView> {
             postId: widget.post.id,
           )
         ],
+      ),
+    );
+  }
+
+  _buildPostTitleAndBody(String text, {bool isTitle = true}) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 7.5.w),
+        child: Text(
+          text,
+          style: TextStyle(
+              fontSize: isTitle ? 18.sp : 16.sp,
+              color: isTitle ? Colors.black : Colors.grey[600],
+              fontWeight: isTitle ? FontWeight.w600 : FontWeight.w400),
+          textAlign: TextAlign.left,
+        ),
+      ),
+    );
+  }
+
+  Container _buildPersonRow(String name, String date) {
+    return Container(
+      color: Colors.white,
+      height: 75.h,
+      width: 428.w,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 7.5.w,
+          ),
+          SizedBox(
+              height: 60.h,
+              width: 60.h,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(5.h),
+                  child: Image.asset(
+                    "assets/images/bg.png",
+                    fit: BoxFit.cover,
+                  ))),
+          SizedBox(
+            width: 7.5.w,
+          ),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.left,
+                ),
+                Text(
+                  UtilCommon.convertToAgo(
+                      DateFormat("MM/dd/yyyy HH:mm:ss a").parse(date)),
+                  style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 60.h,
+            width: 60.h,
+            child: IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.person_add_alt_rounded,
+                  size: 40.h,
+                  color: AppColors.btnColor,
+                )),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class MediaView extends StatelessWidget {
+  const MediaView({
+    Key? key,
+    required this.media,
+  }) : super(key: key);
+
+  final List<Media> media;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.white,
+        height: 350.h,
+        width: 428.w,
+        margin: EdgeInsets.symmetric(horizontal: 4.w),
+        child: _mediaViewSelector(context));
+  }
+
+  _mediaViewSelector(BuildContext context) {
+    switch (media.length) {
+      case 1:
+        return _buildOneMedia(context);
+      // break;
+      case 2:
+        return _buildTwoMedia(context);
+      // break;
+      case 3:
+        return _buildThreeMedia(context);
+      // break;
+      default:
+        return _buildMoreThanThreeMedia(context);
+      // break;
+    }
+  }
+
+  _buildOneMedia(BuildContext context) {
+    return _imageTile(context, media[0].imageUrl, 0);
+  }
+
+  _buildTwoMedia(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 350.h,
+            child: _imageTile(context, media[0].imageUrl, 0),
+          ),
+        ),
+        SizedBox(
+          width: 3.w,
+        ),
+        Expanded(
+          child: SizedBox(
+            height: 350.h,
+            child: _imageTile(context, media[1].imageUrl, 1),
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildThreeMedia(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 350.h,
+            child: _imageTile(context, media[0].imageUrl, 0),
+          ),
+        ),
+        SizedBox(
+          width: 3.w,
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: _imageTile(context, media[1].imageUrl, 1),
+              ),
+              SizedBox(
+                height: 3.w,
+              ),
+              Expanded(
+                child: _imageTile(context, media[2].imageUrl, 2),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  _buildMoreThanThreeMedia(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 350.h,
+            child: _imageTile(context, media[0].imageUrl, 0),
+          ),
+        ),
+        SizedBox(
+          width: 3.w,
+        ),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  width: 210.w,
+                  child: _imageTile(context, media[1].imageUrl, 1),
+                ),
+              ),
+              SizedBox(
+                height: 3.w,
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 350.h / 2,
+                        child: _imageTile(context, media[2].imageUrl, 2),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 3.w,
+                    ),
+                    Expanded(
+                      child: Stack(
+                        children: [
+                          SizedBox(
+                            height: 350.h / 2,
+                            child: _imageTile(context, media[3].imageUrl, 0),
+                          ),
+                          Center(
+                            child: Text(
+                              "+${media.length - 4}",
+                              style: TextStyle(
+                                  color: Colors.grey[200],
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              "+${media.length - 4}",
+                              style: TextStyle(
+                                  foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = 1.sp
+                                    ..color = Colors.black38,
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  _imageTile(BuildContext context, String url, int index) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (_) => ImagePreview(medias: media, index: index)));
+      },
+      child: Image.network(
+        url,
+        fit: BoxFit.cover,
+        alignment: Alignment.topCenter,
       ),
     );
   }

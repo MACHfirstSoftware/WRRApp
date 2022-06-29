@@ -11,6 +11,7 @@ class User {
       required this.firstName,
       required this.emailAddress,
       required this.username,
+      required this.code,
       required this.country,
       required this.stateOrTerritory,
       required this.countyId,
@@ -24,6 +25,7 @@ class User {
   String lastName;
   String emailAddress;
   String username;
+  String code;
   String country;
   String stateOrTerritory;
   int countyId;
@@ -38,6 +40,7 @@ class User {
         lastName: json["lastName"],
         emailAddress: json["emailAddress"],
         username: json["username"],
+        code: json["code"],
         country: json["country"],
         stateOrTerritory: json["stateOrTerritory"],
         countyId: json["countyId"],
@@ -52,6 +55,7 @@ class User {
         "lastName": lastName,
         "emailAddress": emailAddress,
         "username": username,
+        "code": code,
         "country": country,
         "stateOrTerritory": stateOrTerritory,
         "countyId": countyId,

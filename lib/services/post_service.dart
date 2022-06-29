@@ -82,7 +82,7 @@ class PostService {
   }
 
   static Future<ApiResult<List<Media>>> addPostImage(
-      Map<String, dynamic> postImageDetails) async {
+      List<Map<String, dynamic>> postImageDetails) async {
     // log(postImageDetails.toString());
     try {
       final response = await CustomHttp.getDio().post(
@@ -92,9 +92,10 @@ class PostService {
       print(response);
       if (response.statusCode == 200) {
         print(response.data);
-        List<dynamic> res = response.data["media"];
+        List<dynamic> res = response.data;
+        List<dynamic> medias = res.last["media"];
         return ApiResult.success(
-            data: res
+            data: medias
                 .map((d) => Media.fromJson(d as Map<String, dynamic>))
                 .toList());
       } else {
@@ -107,6 +108,20 @@ class PostService {
     } catch (e) {
       print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<bool> postDelete(int postId) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/Post?id=$postId");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 
@@ -194,14 +209,11 @@ class PostService {
         "isFlagged": true
       });
       if (response.statusCode == 201) {
-        print(response.data["id"]);
         return response.data["id"];
       } else {
-        print(response.data);
         return null;
       }
     } catch (e) {
-      print(e);
       return null;
     }
   }
@@ -211,10 +223,63 @@ class PostService {
       final response = await CustomHttp.getDio()
           .delete(Constant.baseUrl + "/DeleteCommentReply?id=$id");
       if (response.statusCode == 200) {
-        print(response.data);
         return true;
       } else {
-        print(response.data);
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> postShare(
+      // String personId, String sharePersonId, int postId
+      List<Map<String, dynamic>> share) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .post(Constant.baseUrl + "/PostShare", data: share
+              //     [
+              //   {
+              //     "personId": personId,
+              //     "sharePersonId": sharePersonId,
+              //     "postId": postId
+              //   }
+              // ]
+              );
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> postAbuse(String personId, int postId) async {
+    try {
+      final response = await CustomHttp.getDio().post(
+          Constant.baseUrl + "/PostAbuse?personId=$personId&postId=$postId");
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> editComment(int id, String value) async {
+    print("$id : $value");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/PatchComment?id=$id", data: [
+        {"path": "/body", "op": "Add", "value": value}
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
         return false;
       }
     } catch (e) {
@@ -223,26 +288,18 @@ class PostService {
     }
   }
 
-  static Future<bool> postShare(
-      String postOwnerId, String sharePersonId, int postId) async {
+  static Future<bool> editCommentReply(int id, String value) async {
     try {
       final response = await CustomHttp.getDio()
-          .post(Constant.baseUrl + "/PostCommentReply", data: [
-        {
-          "personId": postOwnerId,
-          "sharePersonId": sharePersonId,
-          "postId": postId
-        }
+          .patch(Constant.baseUrl + "/PatchCommentReply?id=$id", data: [
+        {"path": "/body", "op": "Add", "value": value}
       ]);
-      if (response.statusCode == 201) {
-        print(response.data);
+      if (response.statusCode == 200) {
         return true;
       } else {
-        print(response.data);
         return false;
       }
     } catch (e) {
-      print(e);
       return false;
     }
   }

@@ -109,7 +109,7 @@ class _SearchHuntersState extends State<SearchHunters> {
               ]),
           body: isSearching
               ? ViewModels.postLoader()
-              : _searchController.text.isEmpty
+              : _searchController.text.length < 3
                   ? _buildMessage("Search hunters")
                   : users.isEmpty
                       ? _buildMessage('Nothing Found')
@@ -120,6 +120,7 @@ class _SearchHuntersState extends State<SearchHunters> {
   _buildSearchField() {
     return TextField(
       controller: _searchController,
+      autofocus: true,
       style: TextStyle(
           color: Colors.white,
           fontSize: 16.sp,
@@ -157,41 +158,56 @@ class _SearchHuntersState extends State<SearchHunters> {
   }
 
   _buildSearchSuccess() {
-    return ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (_, index) {
-          return ListTile(
-            title: Text(
-              users[index].firstName + " " + users[index].lastName,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
+    return ListView.separated(
+      padding: EdgeInsets.only(top: 10.h),
+      itemCount: users.length,
+      itemBuilder: (_, index) {
+        return Padding(
+          padding: EdgeInsets.only(left: 15.w, right: 15.w),
+          child: Material(
+            color: AppColors.secondaryColor,
+            child: ListTile(
+              contentPadding: EdgeInsets.only(left: 35.w, right: 15.w),
+              title: Text(
+                users[index].firstName + " " + users[index].lastName,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              trailing: SizedBox(
+                height: 60.h,
+                width: 60.h,
+                child: IconButton(
+                    onPressed: !isFollowing
+                        ? () {
+                            if (!users[index].isFallowed) {
+                              _personFollow(users[index].id, index);
+                            } else {
+                              _personUnfollow(users[index].id, index);
+                            }
+                          }
+                        : null,
+                    icon: Icon(
+                      Icons.person_add_alt_rounded,
+                      size: 40.h,
+                      color: users[index].isFallowed
+                          ? AppColors.btnColor
+                          : Colors.grey[350],
+                    )),
               ),
             ),
-            trailing: SizedBox(
-              height: 60.h,
-              width: 60.h,
-              child: IconButton(
-                  onPressed: !isFollowing
-                      ? () {
-                          if (!users[index].isFallowed) {
-                            _personFollow(users[index].id, index);
-                          } else {
-                            _personUnfollow(users[index].id, index);
-                          }
-                        }
-                      : null,
-                  icon: Icon(
-                    Icons.person_add_alt_rounded,
-                    size: 40.h,
-                    color: users[index].isFallowed
-                        ? AppColors.btnColor
-                        : Colors.grey[350],
-                  )),
-            ),
-          );
-        });
+          ),
+        );
+      },
+      separatorBuilder: (_, index) {
+        return Container(
+          // color: Colors.grey[200],
+          height: 5.h,
+        );
+      },
+    );
   }
 
   _buildMessage(String message) => Center(

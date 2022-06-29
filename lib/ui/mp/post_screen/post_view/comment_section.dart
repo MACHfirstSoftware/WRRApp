@@ -12,6 +12,7 @@ import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/utils/common.dart';
+import 'package:wisconsin_app/widgets/page_loader.dart';
 
 // GlobalKey<_CommentSectionState> globalKey = GlobalKey();
 
@@ -34,13 +35,16 @@ class _CommentSectionState extends State<CommentSection> {
   bool _isSeeAll = false;
   bool _isSubmiting = false;
   bool _isComment = true;
+  bool _isUpdate = false;
   String replyTo = '';
   int? _postCommentId;
   int? _commentIndex;
+  int? _replyIndex;
   late User _user;
   late TextEditingController _commentController;
   late List<Comment> _comments;
   FocusNode focusNode = FocusNode();
+  FocusNode focusNodeEdit = FocusNode();
 
   @override
   void initState() {
@@ -54,6 +58,7 @@ class _CommentSectionState extends State<CommentSection> {
   void dispose() {
     _commentController.dispose();
     focusNode.dispose();
+    focusNodeEdit.dispose();
     super.dispose();
   }
 
@@ -139,6 +144,42 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
+  _editComment() async {
+    PageLoader.showLoader(context);
+    Comment _comment = widget.comments[_commentIndex!];
+    final res =
+        await PostService.editComment(_comment.id, _commentController.text);
+    Navigator.pop(context);
+    if (res) {
+      setState(() {
+        widget.comments[_commentIndex!].body = _commentController.text;
+        _isUpdate = false;
+        _isComment = true;
+      });
+      _commentController.clear();
+      FocusScope.of(context).unfocus();
+    }
+  }
+
+  _editCommentReply() async {
+    PageLoader.showLoader(context);
+    ReplyComment _replyComment =
+        widget.comments[_commentIndex!].replyComments[_replyIndex!];
+    final res = await PostService.editCommentReply(
+        _replyComment.id, _commentController.text);
+    Navigator.pop(context);
+    if (res) {
+      setState(() {
+        widget.comments[_commentIndex!].replyComments[_replyIndex!].body =
+            _commentController.text;
+        _isUpdate = false;
+        _isComment = true;
+      });
+      _commentController.clear();
+      FocusScope.of(context).unfocus();
+    }
+  }
+
   _deleteComment(int commentId, int commentIndex) async {
     final res = await PostService.postCommentDelete(commentId);
     if (res) {
@@ -166,7 +207,7 @@ class _CommentSectionState extends State<CommentSection> {
           _buildCommentTile(_comments[0], 0),
         if (_isSeeAll) _buildSeeAll(),
         if (_comments.length > 1) _buildShowMoreIcon(),
-        _buildWriteComment(),
+        _isUpdate ? _buildEditField() : _buildWriteComment(),
       ],
     );
   }
@@ -197,17 +238,41 @@ class _CommentSectionState extends State<CommentSection> {
                 menuItems: [
                   FocusedMenuItem(
                       title: const Text("Reply"),
-                      trailingIcon: const Icon(Icons.reply_rounded),
+                      trailingIcon: const Icon(
+                        Icons.reply_rounded,
+                        color: Colors.black,
+                      ),
                       onPressed: () {
+                        _commentController.clear();
                         setState(() {
                           _isComment = false;
+                          _isUpdate = false;
                           _postCommentId = _comment.id;
                           _commentIndex = commentIndex;
                           replyTo =
                               _comment.firstName + " " + _comment.lastName;
                         });
-                        FocusScope.of(context).requestFocus(focusNode);
+                        focusNode.requestFocus();
                       }),
+                  if (_user.id == _comment.personId)
+                    FocusedMenuItem(
+                        title: const Text(
+                          "Edit",
+                        ),
+                        trailingIcon: const Icon(
+                          Icons.mode_edit_outline_outlined,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _commentIndex = commentIndex;
+                            _isUpdate = true;
+                            _isComment = true;
+                            _commentController.text = _comment.body;
+                          });
+                          focusNodeEdit.requestFocus();
+                          // FocusScope.of(context).requestFocus(focusNodeEdit);
+                        }),
                   if (_user.id == _comment.personId)
                     FocusedMenuItem(
                         title: const Text(
@@ -244,13 +309,15 @@ class _CommentSectionState extends State<CommentSection> {
                 ),
                 GestureDetector(
                     onTap: () {
+                      _commentController.clear();
                       setState(() {
                         _isComment = false;
+                        _isUpdate = false;
                         _postCommentId = _comment.id;
                         _commentIndex = commentIndex;
                         replyTo = _comment.firstName + " " + _comment.lastName;
                       });
-                      FocusScope.of(context).requestFocus(focusNode);
+                      focusNode.requestFocus();
                     },
                     child: const Text("Reply")),
               ],
@@ -302,6 +369,24 @@ class _CommentSectionState extends State<CommentSection> {
                       animateMenuItems: true,
                       blurBackgroundColor: Colors.black12,
                       menuItems: [
+                        FocusedMenuItem(
+                            title: const Text(
+                              "Edit",
+                            ),
+                            trailingIcon: const Icon(
+                              Icons.mode_edit_outline_outlined,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _commentIndex = commentIndex;
+                                _replyIndex = replyIndex;
+                                _isUpdate = true;
+                                _isComment = false;
+                                _commentController.text = replyComment.body;
+                              });
+                              focusNodeEdit.requestFocus();
+                            }),
                         FocusedMenuItem(
                             title: const Text(
                               "Delete",
@@ -453,6 +538,126 @@ class _CommentSectionState extends State<CommentSection> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  _buildEditField() {
+    return Container(
+      color: Colors.transparent,
+      width: 428.w,
+      margin: EdgeInsets.symmetric(vertical: 7.5.h),
+      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      child: Column(
+        children: [
+          TextField(
+            controller: _commentController,
+            focusNode: focusNodeEdit,
+            maxLines: 3,
+            style: TextStyle(
+                color: Colors.black87,
+                fontSize: 16.sp,
+                decoration: TextDecoration.none),
+            textAlignVertical: TextAlignVertical.center,
+            cursorColor: AppColors.btnColor,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.h),
+              fillColor: Colors.transparent,
+              filled: false,
+              hintText: "Write something...",
+              hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: 16.sp,
+                  decoration: TextDecoration.none),
+              border: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey[600]!),
+                  borderRadius: BorderRadius.circular(5.w)),
+              focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey[600]!),
+                  borderRadius: BorderRadius.circular(5.w)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey[600]!),
+                  borderRadius: BorderRadius.circular(5.w)),
+            ),
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _commentController.clear();
+                  setState(() {
+                    _isUpdate = false;
+                    _commentIndex = null;
+                    _replyIndex = null;
+                    _isComment = true;
+                  });
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 7.5.h),
+                    // decoration: BoxDecoration(
+                    //     borderRadius: BorderRadius.circular(5.w),
+                    //     color: Colors.transparent,
+                    //     border:
+                    //         Border.all(color: AppColors.btnColor, width: 1.5.w)),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.grey[400],
+                            fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
+                    )),
+              ),
+              // SizedBox(
+              //   width: 15.w,
+              // ),
+              GestureDetector(
+                onTap: () {
+                  if (_commentController.text.isNotEmpty) {
+                    if (_isComment) {
+                      _editComment();
+                    } else {
+                      _editCommentReply();
+                    }
+                  }
+                },
+                child: Container(
+                    alignment: Alignment.center,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.w, vertical: 7.5.h),
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(5.w),
+                    //   color: AppColors.btnColor,
+                    // ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        "Update",
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: AppColors.btnColor,
+                            fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
+                    )),
+              ),
+              // SizedBox(
+              //   width: 15.w,
+              // ),
+            ],
+          )
         ],
       ),
     );

@@ -278,6 +278,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: Scaffold(
           backgroundColor: Colors.transparent,
+          // resizeToAvoidBottomInset: false,
           body: _isLoading
               ? Center(
                   child: SizedBox(
@@ -294,71 +295,55 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       PageStepper(
                           length: items.length, currentStep: _currentStep),
-                      Flexible(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                height: 750.h,
-                                width: 428.w,
-                                child: PageView.builder(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    controller: _pageController,
-                                    itemCount: items.length,
-                                    itemBuilder: (_, index) {
-                                      return items[index];
-                                    }),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  _buildBackButton(() {
-                                    if (_currentStep == 0) {
-                                      _goBack();
-                                    } else {
-                                      setState(() {
-                                        _currentStep -= 1;
-                                        _onPageChange();
-                                      });
-                                    }
-                                  }),
-                                  _buildNextButton(() {
-                                    // if (_currentStep == 0) {
-
-                                    // }
-
-                                    if (_currentStep == items.length - 1) {
-                                      _doSignUp();
-                                    } else {
-                                      setState(() {
-                                        _currentStep += 1;
-                                        _onPageChange();
-                                      });
-                                    }
-                                  },
-                                      (_currentStep == 0
-                                          ? _validateCountyPage()
-                                          : _currentStep == items.length - 1
-                                              ? true
-                                              : _validateQuestionPage()))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
+                      Expanded(
+                        child: PageView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: _pageController,
+                            itemCount: items.length,
+                            itemBuilder: (_, index) {
+                              return items[index];
+                            }),
+                      ),
+                      _buildBtnRow()
                     ],
                   );
                 })),
+    );
+  }
+
+  _buildBtnRow() {
+    return Padding(
+      padding: EdgeInsets.only(top: 10.h, bottom: 30.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildBackButton(() {
+            if (_currentStep == 0) {
+              _goBack();
+            } else {
+              setState(() {
+                _currentStep -= 1;
+                _onPageChange();
+              });
+            }
+          }),
+          _buildNextButton(() {
+            if (_currentStep == items.length - 1) {
+              _doSignUp();
+            } else {
+              setState(() {
+                _currentStep += 1;
+                _onPageChange();
+              });
+            }
+          },
+              (_currentStep == 0
+                  ? _validateCountyPage()
+                  : _currentStep == items.length - 1
+                      ? true
+                      : _validateQuestionPage()))
+        ],
+      ),
     );
   }
 

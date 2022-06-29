@@ -59,4 +59,25 @@ class UserService {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  static Future<ApiResult<List<User>>> getFollowedList(String personId) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .get(Constant.baseUrl + "/FollowedList?id=$personId");
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => User.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

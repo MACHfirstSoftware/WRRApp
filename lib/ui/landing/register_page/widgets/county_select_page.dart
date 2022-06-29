@@ -33,28 +33,62 @@ class _CountySelectPageState extends State<CountySelectPage> {
               ),
             ),
             SizedBox(
-              width: 410.w,
-              child: Theme(
-                  data: Theme.of(context).copyWith(
-                    dividerColor: Colors.transparent,
-                    unselectedWidgetColor: AppColors.btnColor,
-                  ),
-                  child: ExpansionTile(
-                    title: Text(
-                      registerProvider.selectedCounty?.name ?? "County",
-                      style: TextStyle(
-                          fontSize: 22.sp,
+              width: 400.w,
+              child: GestureDetector(
+                onTap: () => setState(() {
+                  _isExpanded = !_isExpanded;
+                }),
+                child: Container(
+                  height: 55.h,
+                  color: Colors.transparent,
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          registerProvider.selectedCounty?.name ?? "County",
+                          style: TextStyle(
+                              fontSize: 22.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.left,
+                        ),
+                        Icon(
+                          _isExpanded
+                              ? Icons.keyboard_arrow_up_rounded
+                              : Icons.keyboard_arrow_down_rounded,
                           color: AppColors.btnColor,
-                          fontWeight: FontWeight.w600),
-                      textAlign: TextAlign.left,
-                    ),
-                    iconColor: AppColors.btnColor,
-                    onExpansionChanged: (bool value) {
-                      setState(() {
-                        _isExpanded = value;
-                      });
-                    },
-                  )),
+                        ),
+                      ]),
+                ),
+              ),
+              // child: Theme(
+              //     data: Theme.of(context).copyWith(
+              //       dividerColor: Colors.transparent,
+              //       unselectedWidgetColor: AppColors.btnColor,
+              //     ),
+              //     child: ExpansionTile(
+              // title: Text(
+              //   registerProvider.selectedCounty?.name ?? "County",
+              //   style: TextStyle(
+              //       fontSize: 22.sp,
+              //       color: AppColors.btnColor,
+              //       fontWeight: FontWeight.w600),
+              //   textAlign: TextAlign.left,
+              // ),
+              //       iconColor: AppColors.btnColor,
+              // trailing: Icon(
+              //   _isExpanded
+              //       ? Icons.keyboard_arrow_up_rounded
+              //       : Icons.keyboard_arrow_down_rounded,
+              //   color: AppColors.btnColor,
+              // ),
+              //       onExpansionChanged: (bool value) {
+              //         setState(() {
+              //           _isExpanded = value;
+              //         });
+              //       },
+              //     )),
             ),
             Flexible(
               child: _isExpanded
@@ -93,6 +127,9 @@ class _CountySelectPageState extends State<CountySelectPage> {
                                 onTap: () {
                                   registerProvider.changeCounty(
                                       countyProvider.counties[index]);
+                                  setState(() {
+                                    _isExpanded = false;
+                                  });
                                 },
                               );
                             },
