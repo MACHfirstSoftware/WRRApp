@@ -54,6 +54,21 @@ class CountyPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePost(Post _post) {
+    for (int i = 0; i < postsOfCounty.length; i++) {
+      if (_post.id == postsOfCounty[i].id) {
+        postsOfCounty[i] = _post;
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void deletePost(Post _post) {
+    postsOfCounty.remove(_post);
+    notifyListeners();
+  }
+
   Future<void> getMyCountyPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
     final postResponse = await PostService.getMyCountyPosts(userId, _countyId!);

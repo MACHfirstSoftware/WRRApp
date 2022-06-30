@@ -111,6 +111,20 @@ class PostService {
     }
   }
 
+  static Future<bool> imageDelete(int id) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/DeleteImage?id=$id");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
   static Future<bool> postDelete(int postId) async {
     try {
       final response = await CustomHttp.getDio()
@@ -121,6 +135,25 @@ class PostService {
         return false;
       }
     } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> updatePost(int postId, String title, String body) async {
+    print("update call");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Patch?id=$postId", data: [
+        {"path": "/title", "op": "Add", "value": title},
+        {"path": "/body", "op": "Add", "value": body}
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
       return false;
     }
   }

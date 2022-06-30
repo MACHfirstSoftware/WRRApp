@@ -16,32 +16,34 @@ import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
-import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
-class NewPost extends StatefulWidget {
-  final bool isWRRPost;
-  const NewPost({Key? key, required this.isWRRPost}) : super(key: key);
+class UpdatePost extends StatefulWidget {
+  final Post post;
+  const UpdatePost({Key? key, required this.post}) : super(key: key);
 
   @override
-  State<NewPost> createState() => _NewPostState();
+  State<UpdatePost> createState() => _UpdatePostState();
 }
 
-class _NewPostState extends State<NewPost> {
+class _UpdatePostState extends State<UpdatePost> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
   List<XFile> _images = [];
-  Post? newPost;
-  bool _isPostPublished = false;
+  List<Media> _medias = [];
+  Media? _mediaForDelete;
+  // Post? newPost;
+  bool _isPostUpdate = false;
 
   @override
   void initState() {
-    _titleController = TextEditingController();
-    _bodyController = TextEditingController();
+    _titleController = TextEditingController(text: widget.post.title);
+    _bodyController = TextEditingController(text: widget.post.body);
+    _medias = widget.post.media;
     super.initState();
   }
 
@@ -88,39 +90,17 @@ class _NewPostState extends State<NewPost> {
     return ".jpg";
   }
 
-  _publishPost() async {
+  _updatePost() async {
     if (_validatePostDetails()) {
       ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
-      User _user = Provider.of<UserProvider>(context, listen: false).user;
-      final data = {
-        "personId": _user.id,
-        "postTypeId": 1,
-        "regionId": _user.regionId,
-        "countyId": _user.countyId,
-        "title": _titleController.text,
-        "body": _bodyController.text,
-        "isFlagged": false
-      };
-
       PageLoader.showLoader(context);
-      final postResponse = await PostService.postPublish(data);
+      final updateResponse = await PostService.updatePost(
+          widget.post.id, _titleController.text, _bodyController.text);
 
-      postResponse.when(success: (int id) async {
-        newPost = Post(
-            id: id,
-            personId: _user.id,
-            firstName: _user.firstName,
-            lastName: _user.lastName,
-            title: _titleController.text,
-            body: _bodyController.text,
-            isShare: false,
-            createdOn: UtilCommon.getDateTimeNow(),
-            modifiedOn: UtilCommon.getDateTimeNow(),
-            likes: [],
-            comments: [],
-            media: []);
+      if (updateResponse) {
+        User _user = Provider.of<UserProvider>(context, listen: false).user;
         setState(() {
-          _isPostPublished = true;
+          _isPostUpdate = true;
         });
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
@@ -128,7 +108,7 @@ class _NewPostState extends State<NewPost> {
             final bytes = File(image.path).readAsBytesSync();
             String img64 = base64Encode(bytes);
             uploadList.add({
-              "postId": newPost!.id,
+              "postId": widget.post.id,
               "caption": "No Caption",
               "image": img64,
               "fileName": _getImageName(image.name),
@@ -138,21 +118,22 @@ class _NewPostState extends State<NewPost> {
           }
           final imageResponse = await PostService.addPostImage(uploadList);
           imageResponse.when(success: (List<Media> media) {
-            newPost?.media = media;
-            if (widget.isWRRPost) {
-              Provider.of<WRRPostProvider>(context, listen: false)
-                  .addingNewPost(newPost!);
-            } else {
-              final countyPostProvider =
-                  Provider.of<CountyPostProvider>(context, listen: false);
-              if (_user.countyId == countyPostProvider.countyId) {
-                countyPostProvider.addingNewPost(newPost!);
-              }
-            }
+            Post _updatedPost = widget.post;
+            _updatedPost.title = _titleController.text;
+            _updatedPost.body = _bodyController.text;
+            _updatedPost.media = media;
+//------------------------------------------ change bellow to update------------------
+
+            Provider.of<WRRPostProvider>(context, listen: false)
+                .updatePost(_updatedPost);
+            Provider.of<CountyPostProvider>(context, listen: false)
+                .updatePost(_updatedPost);
+
+//---------------------------------------------------------------------------------------
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
-                messageText: "Successfully published",
+                messageText: "Successfully updated",
                 type: SnackBarType.success));
             Navigator.pop(context);
           }, failure: (NetworkExceptions error) {
@@ -169,40 +150,34 @@ class _NewPostState extends State<NewPost> {
                 type: SnackBarType.error));
           });
         } else {
-          if (widget.isWRRPost) {
-            Provider.of<WRRPostProvider>(context, listen: false)
-                .addingNewPost(newPost!);
-          } else {
-            final countyPostProvider =
-                Provider.of<CountyPostProvider>(context, listen: false);
-            if (_user.countyId == countyPostProvider.countyId) {
-              countyPostProvider.addingNewPost(newPost!);
-            }
-          }
+          Post _updatedPost = widget.post;
+          _updatedPost.title = _titleController.text;
+          _updatedPost.body = _bodyController.text;
+          _updatedPost.media = _medias;
+//------------------------------------------ change bellow to update------------------
+          Provider.of<WRRPostProvider>(context, listen: false)
+              .updatePost(_updatedPost);
+          Provider.of<CountyPostProvider>(context, listen: false)
+              .updatePost(_updatedPost);
+//---------------------------------------------------------------------------------------
           Navigator.pop(context);
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
               context: context,
-              messageText: "Successfully published",
+              messageText: "Successfully updated",
               type: SnackBarType.success));
           Navigator.pop(context);
         }
-      }, failure: (NetworkExceptions error) {
+      } else {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
             context: context,
-            messageText: NetworkExceptions.getErrorMessage(error),
+            messageText: "Post update failed.",
             type: SnackBarType.error));
-      }, responseError: (ResponseError responseError) {
-        Navigator.pop(context);
-        ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-            context: context,
-            messageText: responseError.error,
-            type: SnackBarType.error));
-      });
+      }
     }
   }
 
-  _uploadImage() async {
+  _updateImage() async {
     if (_images.isNotEmpty) {
       PageLoader.showLoader(context);
       User _user = Provider.of<UserProvider>(context, listen: false).user;
@@ -211,7 +186,7 @@ class _NewPostState extends State<NewPost> {
         final bytes = File(image.path).readAsBytesSync();
         String img64 = base64Encode(bytes);
         uploadList.add({
-          "postId": newPost!.id,
+          "postId": widget.post.id,
           "caption": "No Caption",
           "image": img64,
           "fileName": _getImageName(image.name),
@@ -221,21 +196,20 @@ class _NewPostState extends State<NewPost> {
       }
       final imageResponse = await PostService.addPostImage(uploadList);
       imageResponse.when(success: (List<Media> media) {
-        newPost?.media = media;
-        if (widget.isWRRPost) {
-          Provider.of<WRRPostProvider>(context, listen: false)
-              .addingNewPost(newPost!);
-        } else {
-          final countyPostProvider =
-              Provider.of<CountyPostProvider>(context, listen: false);
-          if (_user.countyId == countyPostProvider.countyId) {
-            countyPostProvider.addingNewPost(newPost!);
-          }
-        }
+        Post _updatedPost = widget.post;
+        _updatedPost.title = _titleController.text;
+        _updatedPost.body = _bodyController.text;
+        _updatedPost.media = media;
+//------------------------------------------ change bellow to update------------------
+        Provider.of<WRRPostProvider>(context, listen: false)
+            .updatePost(_updatedPost);
+        Provider.of<CountyPostProvider>(context, listen: false)
+            .updatePost(_updatedPost);
+//---------------------------------------------------------------------------------------
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Successfully published",
+            messageText: "Successfully updated",
             type: SnackBarType.success));
         Navigator.pop(context);
       }, failure: (NetworkExceptions error) {
@@ -277,46 +251,39 @@ class _NewPostState extends State<NewPost> {
     }
   }
 
-  // Future<ImageSource?> showImageSource(BuildContext context) {
-  //   if (Platform.isIOS) {
-  //     return showCupertinoModalPopup<ImageSource>(
-  //         context: context,
-  //         builder: (context) => CupertinoActionSheet(actions: [
-  //               CupertinoActionSheetAction(
-  //                   onPressed: () =>
-  //                       Navigator.of(context).pop(ImageSource.camera),
-  //                   child: const Text("Camera")),
-  //               CupertinoActionSheetAction(
-  //                   onPressed: () =>
-  //                       Navigator.of(context).pop(ImageSource.gallery),
-  //                   child: const Text("Gallery")),
-  //             ]));
-  //   } else {
-  //     return showModalBottomSheet<ImageSource>(
-  //         context: context,
-  //         builder: (context) => Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 ListTile(
-  //                     leading: const Icon(Icons.camera_alt_outlined),
-  //                     title: const Text("Camera"),
-  //                     onTap: () =>
-  //                         Navigator.of(context).pop(ImageSource.camera)),
-  //                 ListTile(
-  //                     leading: const Icon(Icons.image_outlined),
-  //                     title: const Text("Gallery"),
-  //                     onTap: () =>
-  //                         Navigator.of(context).pop(ImageSource.gallery))
-  //               ],
-  //             ));
-  //   }
-  // }
-
   _discardPost() {
-    if (_isPostPublished) {
-      PostService.postDelete(newPost!.id);
+    if (widget.post.media.length > _medias.length) {
+      User _user = Provider.of<UserProvider>(context, listen: false).user;
+      Post _updatedPost = widget.post;
+      _updatedPost.media = _medias;
+
+      Provider.of<WRRPostProvider>(context, listen: false)
+          .updatePost(_updatedPost);
+      Provider.of<CountyPostProvider>(context, listen: false)
+          .updatePost(_updatedPost);
+    }
+    if (_isPostUpdate) {
+      PostService.updatePost(
+          widget.post.id, widget.post.title, widget.post.body);
     }
     Navigator.pop(context);
+  }
+
+  _removeImage() async {
+    PageLoader.showLoader(context);
+    final res = await PostService.imageDelete(_mediaForDelete!.id);
+    Navigator.pop(context);
+    if (res) {
+      setState(() {
+        _medias.remove(_mediaForDelete);
+        _mediaForDelete = null;
+      });
+    } else {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable to remove image",
+          type: SnackBarType.error));
+    }
   }
 
   @override
@@ -328,7 +295,7 @@ class _NewPostState extends State<NewPost> {
             HeroDialogRoute(
                 builder: (_) => ConfirmationPopup(
                       title: "Discard",
-                      message: "If you discard now, you'll lose this post.",
+                      message: "If you discard now, you'll lose these changes.",
                       leftBtnText: "Discard",
                       rightBtnText: "Keep",
                       onTap: _discardPost,
@@ -355,7 +322,7 @@ class _NewPostState extends State<NewPost> {
                         builder: (_) => ConfirmationPopup(
                               title: "Discard",
                               message:
-                                  "If you discard now, you'll lose this post.",
+                                  "If you discard now, you'll lose these changes.",
                               leftBtnText: "Discard",
                               rightBtnText: "Keep",
                               onTap: _discardPost,
@@ -365,7 +332,7 @@ class _NewPostState extends State<NewPost> {
               splashColor: AppColors.btnColor.withOpacity(0.5),
             ),
             title: Text(
-              "Create WRR",
+              "Update WRR",
               style: TextStyle(
                   fontSize: 20.sp,
                   color: AppColors.btnColor,
@@ -377,10 +344,10 @@ class _NewPostState extends State<NewPost> {
             actions: [
               GestureDetector(
                 onTap: () {
-                  if (_isPostPublished) {
-                    _uploadImage();
+                  if (_isPostUpdate) {
+                    _updateImage();
                   } else {
-                    _publishPost();
+                    _updatePost();
                   }
                 },
                 child: Container(
@@ -391,7 +358,7 @@ class _NewPostState extends State<NewPost> {
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(7.5.w)),
                   child: Text(
-                    "Post",
+                    "Apply",
                     style: TextStyle(
                         fontSize: 18.sp,
                         color: Colors.white,
@@ -441,6 +408,51 @@ class _NewPostState extends State<NewPost> {
                     mainAxisSpacing: 5.w,
                     shrinkWrap: true,
                     children: [
+                      ..._medias.map((media) => Stack(
+                            children: [
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(7.5.w),
+                                  child: Image.network(
+                                    media.imageUrl,
+                                    height: 300.h,
+                                    width: 360.w,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: InkWell(
+                                  onTap: () {
+                                    _mediaForDelete = media;
+                                    Navigator.push(
+                                        context,
+                                        HeroDialogRoute(
+                                            builder: (_) => ConfirmationPopup(
+                                                  title: "Remove",
+                                                  message:
+                                                      "This image is currently available in the post. If you remove now, no longer available this image.",
+                                                  leftBtnText: "Remove",
+                                                  rightBtnText: "Keep",
+                                                  onTap: _removeImage,
+                                                )));
+                                    //------------------------------------------------------------
+                                  },
+                                  child: SizedBox(
+                                    height: 50.w,
+                                    width: 50.w,
+                                    child: Icon(
+                                      Icons.cancel_outlined,
+                                      size: 30.w,
+                                      color: AppColors.btnColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
                       ..._images.map(
                         (image) => Stack(
                           children: [

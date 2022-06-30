@@ -3,8 +3,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 
 class ConfirmationPopup extends StatelessWidget {
+  final String title;
+  final String message;
+  final String leftBtnText;
+  final String rightBtnText;
   final VoidCallback onTap;
-  const ConfirmationPopup({Key? key, required this.onTap}) : super(key: key);
+  const ConfirmationPopup(
+      {Key? key,
+      required this.onTap,
+      required this.title,
+      required this.message,
+      required this.leftBtnText,
+      required this.rightBtnText})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,22 +37,22 @@ class ConfirmationPopup extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "Discard",
+                    title,
                     style: TextStyle(
-                      fontSize: 20.sp,
-                      color: AppColors.btnColor,
-                    ),
+                        fontSize: 20.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w600),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
                     height: 10.h,
                   ),
-                  Text("If you discard now, you'll lose this post.",
+                  Text(message,
                       style: TextStyle(
                         fontSize: 16.sp,
                         color: Colors.white,
                       ),
-                      textAlign: TextAlign.left),
+                      textAlign: TextAlign.center),
                   SizedBox(
                     height: 20.h,
                   ),
@@ -53,7 +64,10 @@ class ConfirmationPopup extends StatelessWidget {
                         child: InkWell(
                             splashColor: AppColors.btnColor.withOpacity(0.4),
                             customBorder: const StadiumBorder(),
-                            onTap: onTap,
+                            onTap: () {
+                              Navigator.pop(context);
+                              onTap();
+                            },
                             child: Container(
                                 alignment: Alignment.center,
                                 // padding: EdgeInsets.symmetric(
@@ -67,7 +81,7 @@ class ConfirmationPopup extends StatelessWidget {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    "Discard",
+                                    leftBtnText,
                                     style: TextStyle(
                                         fontSize: 16.sp,
                                         color: Colors.white,
@@ -97,7 +111,7 @@ class ConfirmationPopup extends StatelessWidget {
                                 child: FittedBox(
                                   fit: BoxFit.scaleDown,
                                   child: Text(
-                                    "Keep",
+                                    rightBtnText,
                                     style: TextStyle(
                                         fontSize: 16.sp,
                                         color: AppColors.btnColor,

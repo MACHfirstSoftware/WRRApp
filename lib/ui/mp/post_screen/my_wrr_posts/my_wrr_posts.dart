@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -12,6 +13,7 @@ import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/widgets/my_wrr_post
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class MyWRRPosts extends StatefulWidget {
   const MyWRRPosts({Key? key}) : super(key: key);
@@ -24,6 +26,8 @@ class _MyWRRPostsState extends State<MyWRRPosts>
     with AutomaticKeepAliveClientMixin {
   bool keepAlive = true;
   late ScrollController scrollController;
+  late RefreshController _refreshController;
+  late RefreshController _refreshController2;
   String? _lastRecordTime;
   bool allLoaded = false;
   bool onLoading = false;
@@ -33,6 +37,8 @@ class _MyWRRPostsState extends State<MyWRRPosts>
   void initState() {
     _user = Provider.of<UserProvider>(context, listen: false).user;
     scrollController = ScrollController();
+    _refreshController = RefreshController(initialRefresh: false);
+    _refreshController2 = RefreshController(initialRefresh: false);
     _init(isInit: true);
     scrollController.addListener(() async {
       final postProvider = Provider.of<WRRPostProvider>(context, listen: false);
@@ -76,6 +82,8 @@ class _MyWRRPostsState extends State<MyWRRPosts>
   @override
   void dispose() {
     scrollController.dispose();
+    _refreshController.dispose();
+    _refreshController2.dispose();
     super.dispose();
   }
 
@@ -87,31 +95,13 @@ class _MyWRRPostsState extends State<MyWRRPosts>
         .getMyWRRPosts(_user.id, isInit: isInit);
   }
 
-  // _scrollListner() async {
-  //   final postProvider = Provider.of<PostProvider>(context, listen: false);
-  //   if (scrollController.offset >= scrollController.position.maxScrollExtent &&
-  //       scrollController.position.outOfRange) {
-  //     print("loading");
-  //     _lastId = postProvider.posts.last.id;
-  //     setState(() {
-  //       onLoading = true;
-  //     });
-  //     final postResponse = await PostService.getMyPost(_lastId);
-  //     postResponse.when(success: (List<Post> postsList) async {
-  //       postProvider.posts.addAll(postsList);
-  //       if (postsList.isEmpty) {
-  //         allLoaded = true;
-  //       }
-  //       setState(() {
-  //         onLoading = false;
-  //       });
-  //     }, failure: (NetworkExceptions error) {
-  //       print(NetworkExceptions.getErrorMessage(error));
-  //     }, responseError: (ResponseError responseError) {
-  //       print(responseError.error);
-  //     });
-  //   }
-  // }
+  Future<void> _onRefresh() async {
+    allLoaded = false;
+    onLoading = false;
+    await _init(isInit: true);
+    _refreshController.refreshCompleted();
+    _refreshController2.refreshCompleted();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -130,37 +120,57 @@ class _MyWRRPostsState extends State<MyWRRPosts>
             return ViewModels.buildLoader();
           }
           if (model.apiStatus == ApiStatus.isError) {
-            return ViewModels.buildErrorWidget(model.errorMessage, _init);
+            return SmartRefresher(
+                controller: _refreshController,
+                enablePullDown: true,
+                enablePullUp: false,
+                onRefresh: _onRefresh,
+                header: const WaterDropMaterialHeader(
+                  backgroundColor: AppColors.secondaryColor,
+                  color: AppColors.btnColor,
+                ),
+                child: ViewModels.buildErrorWidget(model.errorMessage, _init));
           }
 
-          if (model.postsOfWRR.isEmpty) {
-            return ViewModels.postEmply();
-          }
-
-          return ListView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(0),
-            children: [
-              ...model.postsOfWRR.map((post) => PostView(post: post)).toList(),
-              Container(
-                color: Colors.transparent,
-                height: 5.h,
-                width: 428.w,
-                child: onLoading ? const LinearProgressIndicator() : null,
-              ),
-              if (allLoaded)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 5.h),
-                  child: Text(
-                    "No more data",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
+          return SmartRefresher(
+            controller: _refreshController2,
+            enablePullDown: true,
+            enablePullUp: false,
+            onRefresh: _onRefresh,
+            header: const WaterDropMaterialHeader(
+              backgroundColor: AppColors.secondaryColor,
+              color: AppColors.btnColor,
+            ),
+            child: model.postsOfWRR.isEmpty
+                ? ViewModels.postEmply()
+                : ListView(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(0),
+                    children: [
+                      ...model.postsOfWRR
+                          .map((post) => PostView(post: post))
+                          .toList(),
+                      Container(
+                        color: Colors.transparent,
+                        height: 5.h,
+                        width: 428.w,
+                        child:
+                            onLoading ? const LinearProgressIndicator() : null,
+                      ),
+                      if (allLoaded)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 5.h),
+                          child: Text(
+                            "No more data",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                    ],
                   ),
-                )
-            ],
           );
         }));
   }

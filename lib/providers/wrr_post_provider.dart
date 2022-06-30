@@ -38,6 +38,21 @@ class WRRPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updatePost(Post _post) {
+    for (int i = 0; i < postsOfWRR.length; i++) {
+      if (_post.id == postsOfWRR[i].id) {
+        postsOfWRR[i] = _post;
+        break;
+      }
+    }
+    notifyListeners();
+  }
+
+  void deletePost(Post _post) {
+    postsOfWRR.remove(_post);
+    notifyListeners();
+  }
+
   Future<void> getMyWRRPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
     final postResponse = await PostService.getMyWRRPosts(userId);

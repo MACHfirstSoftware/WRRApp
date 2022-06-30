@@ -7,14 +7,19 @@ import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/add_post/update_post.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_abuse.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
+import 'package:wisconsin_app/widgets/confirmation_popup.dart';
+import 'package:wisconsin_app/widgets/page_loader.dart';
+import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class PostView extends StatefulWidget {
   final Post post;
@@ -88,6 +93,44 @@ class _PostViewState extends State<PostView> {
       setState(() {
         _isApiCall = false;
       });
+    }
+  }
+
+  _postAbuse() async {
+    PageLoader.showLoader(context);
+    final res = await PostService.postAbuse(_user.id, widget.post.id);
+    Navigator.pop(context);
+    if (res) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Successfully reported",
+          type: SnackBarType.success));
+    } else {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Report unsuccessful",
+          type: SnackBarType.error));
+    }
+  }
+
+  _deletePost() async {
+    PageLoader.showLoader(context);
+    final res = await PostService.postDelete(widget.post.id);
+    Navigator.pop(context);
+    if (res) {
+      Provider.of<WRRPostProvider>(context, listen: false)
+          .deletePost(widget.post);
+      Provider.of<CountyPostProvider>(context, listen: false)
+          .deletePost(widget.post);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Successfully deleted",
+          type: SnackBarType.success));
+    } else {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Delete unsuccessful",
+          type: SnackBarType.error));
     }
   }
 
@@ -190,15 +233,16 @@ class _PostViewState extends State<PostView> {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                         onPressed: () {
-                          Navigator.of(context).push(
-                            HeroDialogRoute(
-                                builder: (context) => PostAbuse(
-                                    personId: widget.post.personId,
-                                    postId: widget.post.id)),
-                          );
+                          Navigator.of(context).push(HeroDialogRoute(
+                              builder: (context) => ConfirmationPopup(
+                                  onTap: _postAbuse,
+                                  title: "Report",
+                                  message: "Do you want to report post?",
+                                  leftBtnText: "Report",
+                                  rightBtnText: "Cancel")));
                         },
                         icon: Icon(
-                          Icons.more_horiz_rounded,
+                          Icons.report_gmailerrorred_rounded,
                           size: 40.h,
                           color: AppColors.iconGrey,
                         )),
@@ -299,13 +343,64 @@ class _PostViewState extends State<PostView> {
           SizedBox(
             height: 60.h,
             width: 60.h,
-            child: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.person_add_alt_rounded,
-                  size: 40.h,
-                  color: AppColors.btnColor,
-                )),
+            child: !widget.post.isShare && _user.id == widget.post.personId
+                ? PopupMenuButton(
+                    icon: Icon(Icons.more_horiz_rounded, size: 40.h),
+                    itemBuilder: (context) => [
+                      const PopupMenuItem<String>(
+                        value: "Edit",
+                        child: ListTile(
+                          title: Text(
+                            "Edit",
+                          ),
+                          trailing: Icon(
+                            Icons.mode_edit_outline_outlined,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: "Delete",
+                        child: ListTile(
+                          title: Text(
+                            "Delete",
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
+                          trailing: Icon(
+                            Icons.delete,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      )
+                    ],
+                    onSelected: (String value) {
+                      if (value == "Edit") {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => UpdatePost(
+                                    post: widget.post,
+                                  )),
+                        );
+                      }
+                      if (value == "Delete") {
+                        Navigator.push(
+                            context,
+                            HeroDialogRoute(
+                                builder: (_) => ConfirmationPopup(
+                                      title: "Delete",
+                                      message:
+                                          "If you delete now, you'll lose this post.",
+                                      leftBtnText: "Delete",
+                                      rightBtnText: "Cancel",
+                                      onTap: _deletePost,
+                                    )));
+                      }
+                    },
+                  )
+                : Icon(
+                    Icons.more_horiz_rounded,
+                    size: 40.h,
+                  ),
           )
         ],
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -24,6 +26,8 @@ class _MyCountyPostsState extends State<MyCountyPosts>
     with AutomaticKeepAliveClientMixin {
   bool keepAlive = true;
   late ScrollController scrollController;
+  late RefreshController _refreshController;
+  late RefreshController _refreshController2;
   bool onLoading = false;
   late User _user;
 
@@ -31,6 +35,8 @@ class _MyCountyPostsState extends State<MyCountyPosts>
   void initState() {
     _user = Provider.of<UserProvider>(context, listen: false).user;
     scrollController = ScrollController();
+    _refreshController = RefreshController(initialRefresh: false);
+    _refreshController2 = RefreshController(initialRefresh: false);
     _init(isInit: true);
     scrollController.addListener(() async {
       final postProvider =
@@ -75,6 +81,8 @@ class _MyCountyPostsState extends State<MyCountyPosts>
   @override
   void dispose() {
     scrollController.dispose();
+    _refreshController.dispose();
+    _refreshController2.dispose();
     super.dispose();
   }
 
@@ -84,6 +92,15 @@ class _MyCountyPostsState extends State<MyCountyPosts>
   _init({bool isInit = false}) async {
     await Provider.of<CountyPostProvider>(context, listen: false)
         .getMyCountyPosts(_user.id, isInit: isInit);
+  }
+
+  Future<void> _onRefresh() async {
+    Provider.of<CountyPostProvider>(context, listen: false)
+        .allCountyPostLoaded = false;
+    onLoading = false;
+    await _init(isInit: true);
+    _refreshController.refreshCompleted();
+    _refreshController2.refreshCompleted();
   }
 
   @override
@@ -103,40 +120,58 @@ class _MyCountyPostsState extends State<MyCountyPosts>
             return ViewModels.buildLoader();
           }
           if (model.apiStatus == ApiStatus.isError) {
-            return ViewModels.buildErrorWidget(model.errorMessage, _init);
+            return SmartRefresher(
+                controller: _refreshController,
+                enablePullDown: true,
+                enablePullUp: false,
+                onRefresh: _onRefresh,
+                header: const WaterDropMaterialHeader(
+                  backgroundColor: AppColors.secondaryColor,
+                  color: AppColors.btnColor,
+                ),
+                child: ViewModels.buildErrorWidget(model.errorMessage, _init));
           }
 
-          if (model.postsOfCounty.isEmpty) {
-            return ViewModels.postEmply();
-          }
-
-          return ListView(
-            controller: scrollController,
-            padding: const EdgeInsets.all(0),
-            children: [
-              ...model.postsOfCounty
-                  .map((post) => PostView(post: post))
-                  .toList(),
-              Container(
-                color: Colors.transparent,
-                height: 5.h,
-                width: 428.w,
-                child: onLoading ? const LinearProgressIndicator() : null,
+          return SmartRefresher(
+              controller: _refreshController2,
+              enablePullDown: true,
+              enablePullUp: false,
+              onRefresh: _onRefresh,
+              header: const WaterDropMaterialHeader(
+                backgroundColor: AppColors.secondaryColor,
+                color: AppColors.btnColor,
               ),
-              if (model.allCountyPostLoaded)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 5.h),
-                  child: Text(
-                    "No more data",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
-                  ),
-                )
-            ],
-          );
+              child: model.postsOfCounty.isEmpty
+                  ? ViewModels.postEmply()
+                  : ListView(
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(0),
+                      children: [
+                        ...model.postsOfCounty
+                            .map((post) => PostView(post: post))
+                            .toList(),
+                        Container(
+                          color: Colors.transparent,
+                          height: 5.h,
+                          width: 428.w,
+                          child: onLoading
+                              ? const LinearProgressIndicator()
+                              : null,
+                        ),
+                        if (model.allCountyPostLoaded)
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 5.h),
+                            child: Text(
+                              "No more data",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w400),
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                      ],
+                    ));
         }));
   }
 }
