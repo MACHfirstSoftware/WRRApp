@@ -22,6 +22,7 @@ import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class NewPost extends StatefulWidget {
   final bool isWRRPost;
@@ -486,6 +487,22 @@ class _NewPostState extends State<NewPost> {
                           decoration: BoxDecoration(
                               color: AppColors.secondaryColor.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(7.5.w)),
+                          // child: CachedNetworkImage(
+                          //   imageUrl: "http://via.placeholder.com/200x150",
+                          //   imageBuilder: (context, imageProvider) => Container(
+                          //     decoration: BoxDecoration(
+                          //       image: DecorationImage(
+                          //           image: imageProvider,
+                          //           fit: BoxFit.cover,
+                          //           colorFilter: const ColorFilter.mode(
+                          //               Colors.red, BlendMode.colorBurn)),
+                          //     ),
+                          //   ),
+                          //   placeholder: (context, url) =>
+                          //       const CircularProgressIndicator(),
+                          //   errorWidget: (context, url, error) =>
+                          //       const Icon(Icons.error),
+                          // ),
                           child: Icon(Icons.camera_alt_rounded,
                               color: AppColors.btnColor, size: 30.h),
                         ),

@@ -62,7 +62,8 @@ dependencies:
   intl: ^0.17.0
 
   #Network Image Caching
-  # cached_network_image: ^3.2.0
+  cached_network_image: ^3.2.0
+  shared_preferences: ^2.0.15
   #Popup Menu Items
   focused_menu: ^1.0.5
   #Image preview package
