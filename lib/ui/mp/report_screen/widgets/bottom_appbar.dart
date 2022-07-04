@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/create_post.dart';
+import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/create_report_post.dart';
 
-class MyWRRPostAppBar extends StatefulWidget {
-  const MyWRRPostAppBar({Key? key}) : super(key: key);
+class ReportBottomAppbar extends StatefulWidget {
+  const ReportBottomAppbar({Key? key}) : super(key: key);
 
   @override
-  State<MyWRRPostAppBar> createState() => _MyWRRPostAppBarState();
+  State<ReportBottomAppbar> createState() => _ReportBottomAppbarState();
 }
 
-class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
+class _ReportBottomAppbarState extends State<ReportBottomAppbar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -20,12 +21,9 @@ class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
         alignment: Alignment.centerRight,
         child: IconButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const NewPost(
-                          isWRRPost: true,
-                        )),
-              );
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(builder: (context) => const NewReportPost()),
+              // );
             },
             icon: Icon(
               Icons.add_circle_outline_rounded,

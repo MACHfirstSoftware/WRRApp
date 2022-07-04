@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -11,7 +14,7 @@ import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/add_post/update_post.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/update_post.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
@@ -543,6 +546,26 @@ class MediaView extends StatelessWidget {
                             height: 350.h / 2,
                             child: _imageTile(context, media[3].imageUrl, 0),
                           ),
+                          Positioned.fill(
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            ImagePreview(medias: media)));
+                              },
+                              child: ClipRect(
+                                child: BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                                  child: Container(
+                                    color: Colors.black.withOpacity(0.2),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           Center(
                             child: Text(
                               "+${media.length - 4}",
@@ -585,10 +608,26 @@ class MediaView extends StatelessWidget {
             MaterialPageRoute(
                 builder: (_) => ImagePreview(medias: media, index: index)));
       },
-      child: Image.network(
-        url,
-        fit: BoxFit.cover,
-        alignment: Alignment.topCenter,
+      child: CachedNetworkImage(
+        imageUrl: url,
+        imageBuilder: (context, imageProvider) {
+          return Image(
+            image: imageProvider,
+            fit: BoxFit.cover,
+            alignment: Alignment.topCenter,
+          );
+        },
+        progressIndicatorBuilder: (context, url, progress) => Center(
+          child: SizedBox(
+            height: 30.h,
+            width: 30.h,
+            child: CircularProgressIndicator(
+              value: progress.progress,
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) =>
+            Icon(Icons.error, color: AppColors.btnColor, size: 30.h),
       ),
     );
   }

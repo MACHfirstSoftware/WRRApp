@@ -10,7 +10,7 @@ import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/my_account_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_page.dart';
-import 'package:wisconsin_app/ui/mp/report_screen/report_page.dart';
+import 'package:wisconsin_app/ui/mp/report_screen/report_main_page.dart';
 import 'package:wisconsin_app/ui/mp/shop_screen/shop_page.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/weather_page.dart';
 
