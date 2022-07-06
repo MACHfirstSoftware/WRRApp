@@ -16,8 +16,9 @@ class CustomHttp {
         options.headers["Ocp-Apim-Subscription-Key"] = Constant.subscriptionKey;
         options.headers["Content-Type"] = "application/json";
         options.connectTimeout = 25000;
-        options.receiveTimeout = 15000;
-        options.sendTimeout = 20000;
+        options.receiveTimeout = 20000;
+        options.sendTimeout = 40000;
+        //options.res
         // } else {
         //   options.headers["Content-Type"] = "application/json";
         //   options.connectTimeout = 25000;

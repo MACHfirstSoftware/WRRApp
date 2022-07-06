@@ -52,7 +52,7 @@ class _WeatherPageState extends State<WeatherPage>
   Widget build(BuildContext context) {
     super.build(context);
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -65,9 +65,9 @@ class _WeatherPageState extends State<WeatherPage>
             Tab(
               text: "Forecast",
             ),
-            Tab(
-              text: "History",
-            ),
+            // Tab(
+            //   text: "History",
+            // ),
           ]),
         ),
         body: Consumer<WeatherProvider>(builder: (context, weatherProvider, _) {
@@ -85,7 +85,7 @@ class _WeatherPageState extends State<WeatherPage>
                 astro: weatherProvider.astro,
               ),
               const SizedBox(),
-              const SizedBox()
+              // const SizedBox()
               // WeatherDetails(),
               // WeatherDetails(),
             ],
