@@ -35,6 +35,10 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
         "value": widget.currentWeather.current.humidity.toString() + "%"
       },
       {
+        "key": "Pressure",
+        "value": widget.currentWeather.current.pressureIn.toString() + " in."
+      },
+      {
         "key": "Cloud Cover",
         "value": widget.currentWeather.current.cloud.toString() + " %"
       },

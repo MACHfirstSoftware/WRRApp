@@ -88,7 +88,7 @@ class PostService {
       final response = await CustomHttp.getDio().post(
           Constant.baseUrl + "/PostImage",
           data: postImageDetails,
-          options: Options(receiveTimeout: 60000));
+          options: Options(receiveTimeout: 60000, sendTimeout: 60000));
       print(response);
       if (response.statusCode == 200) {
         print(response.data);

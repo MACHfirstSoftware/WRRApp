@@ -123,20 +123,21 @@ class _VerificationPageState extends State<VerificationPage> {
         ),
         child: Scaffold(
             backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: false,
             body: Column(children: [
               SizedBox(
                 height: 56.h,
               ),
               const LogoImage(),
               SizedBox(
-                height: 120.h,
+                height: 50.h,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: Text(
                   "We have sent your phone a verification code, please enter it to complete your account.",
                   style: TextStyle(
-                      fontSize: 22.sp,
+                      fontSize: 20.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,

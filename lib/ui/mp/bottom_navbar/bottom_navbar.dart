@@ -105,32 +105,31 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
           ],
         ),
-        child: SafeArea(
-            child: Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ...listOfIcons.map((e) => GestureDetector(
-                  onTap: (() => setState(() {
-                        currentIndex = listOfIcons.indexOf(e);
-                        _pageController.jumpToPage(listOfIcons.indexOf(e));
-                      })),
-                  child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.transparent,
-                      height: 60.h,
-                      width: 60.h,
-                      child: SvgPicture.asset(
-                        e,
-                        height: 30.h,
-                        width: 30.h,
-                        fit: BoxFit.fill,
-                        alignment: Alignment.center,
-                        color: currentIndex == listOfIcons.indexOf(e)
-                            ? AppColors.btnColor
-                            : Colors.white,
-                      )),
-                ))
+        ...listOfIcons.map((e) => GestureDetector(
+              onTap: (() => setState(() {
+                    currentIndex = listOfIcons.indexOf(e);
+                    _pageController.jumpToPage(listOfIcons.indexOf(e));
+                  })),
+              child: Container(
+                  alignment: Alignment.center,
+                  color: Colors.transparent,
+                  height: 60.h,
+                  width: 60.h,
+                  child: SvgPicture.asset(
+                    e,
+                    height: 30.h,
+                    width: 30.h,
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                    color: currentIndex == listOfIcons.indexOf(e)
+                        ? AppColors.btnColor
+                        : Colors.white,
+                  )),
+            ))
           ],
-        )));
+        ));
   }
 }
