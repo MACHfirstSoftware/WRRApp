@@ -21,9 +21,9 @@ class _ReportBottomAppbarState extends State<ReportBottomAppbar> {
         alignment: Alignment.centerRight,
         child: IconButton(
             onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(builder: (context) => const NewReportPost()),
-              // );
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const NewReportPost()),
+              );
             },
             icon: Icon(
               Icons.add_circle_outline_rounded,
