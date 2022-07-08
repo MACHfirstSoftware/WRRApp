@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
@@ -43,6 +45,31 @@ class PostService {
           (lastRecordTime != null
               ? "?lastRecordTime=$lastRecordTime&countyId=$countyId"
               : "?countyId=$countyId"));
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => Post.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<ApiResult<List<Post>>> getReportPosts(String userId,
+      {String? lastRecordTime}) async {
+    try {
+      final response = await CustomHttp.getDio().get(Constant.baseUrl +
+          "/Post/$userId?isReport=true" +
+          (lastRecordTime != null ? "&lastRecordTime=$lastRecordTime" : ""));
+      log(response.data.toString());
+      inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)

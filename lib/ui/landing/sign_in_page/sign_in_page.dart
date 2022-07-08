@@ -212,25 +212,8 @@ class _SignInPageState extends State<SignInPage> {
                     ],
                   ),
                   SizedBox(
-                    height: 15.h,
+                    height: 25.h,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const RegisterPage()));
-                    },
-                    child: Text(
-                      "Register a New Account",
-                      style: TextStyle(
-                          fontSize: 16.sp,
-                          color: AppColors.btnColor,
-                          fontWeight: FontWeight.w400),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const Spacer(),
                   GestureDetector(
                     onTap: () => _doSignIn(),
                     child: Container(
@@ -251,7 +234,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                   ),
                   SizedBox(
-                    height: 25.h,
+                    height: 20.h,
                   ),
                   Text(
                     "Forgot your password?",
@@ -261,8 +244,26 @@ class _SignInPageState extends State<SignInPage> {
                         fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   ),
+                  const Spacer(),
+
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegisterPage()));
+                    },
+                    child: Text(
+                      "Register a New Account",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   SizedBox(
-                    height: 30.h,
+                    height: 40.h,
                   ),
                   // RichText(
                   //     text: TextSpan(

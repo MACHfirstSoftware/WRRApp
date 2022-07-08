@@ -36,19 +36,21 @@ class NewReportPost extends StatefulWidget {
 class _NewReportPostState extends State<NewReportPost> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  late TextEditingController _deerSennController;
-  late TextEditingController _bucksSennController;
+  late TextEditingController _deerSeenController;
+  late TextEditingController _bucksSeenController;
+  late TextEditingController _huntHoursController;
   late List<XFile> _images;
   late List<County> _counties;
   late County _selectedCounty;
   late User _user;
   Post? newPost;
   bool _isPostPublished = false;
-  bool _isExpanded = false;
   double weatherRate = 0.0;
   String huntType = "Gun";
   bool _isHuntSuccess = false;
   DateTime startAt = DateTime.now();
+  List<int> _huntHours = [];
+  int? _huntSuccessHour;
 
   @override
   void initState() {
@@ -59,8 +61,9 @@ class _NewReportPostState extends State<NewReportPost> {
         id: _user.countyId, name: _user.countyName!, regionId: _user.regionId);
     _titleController = TextEditingController();
     _bodyController = TextEditingController();
-    _deerSennController = TextEditingController();
-    _bucksSennController = TextEditingController();
+    _deerSeenController = TextEditingController();
+    _bucksSeenController = TextEditingController();
+    _huntHoursController = TextEditingController();
     super.initState();
   }
 
@@ -68,8 +71,9 @@ class _NewReportPostState extends State<NewReportPost> {
   void dispose() {
     _titleController.dispose();
     _bodyController.dispose();
-    _deerSennController.dispose();
-    _bucksSennController.dispose();
+    _deerSeenController.dispose();
+    _bucksSeenController.dispose();
+    _huntHoursController.dispose();
     super.dispose();
   }
 
@@ -435,6 +439,45 @@ class _NewReportPostState extends State<NewReportPost> {
                   height: 10.h,
                 ),
                 Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Start at  :  ",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () => _pickDateTime(),
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.h),
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.h)),
+                                child: Text(
+                                  UtilCommon.formatDate(startAt),
+                                  style: TextStyle(
+                                      fontSize: 18.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                            ),
+                          )
+                        ])),
+                SizedBox(
+                  height: 15.h,
+                ),
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.w),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -449,7 +492,7 @@ class _NewReportPostState extends State<NewReportPost> {
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      _buildTextField(_deerSennController)
+                      _buildTextField(_deerSeenController)
                     ],
                   ),
                 ),
@@ -471,24 +514,43 @@ class _NewReportPostState extends State<NewReportPost> {
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      _buildTextField(_bucksSennController)
+                      _buildTextField(_bucksSeenController)
                     ],
                   ),
                 ),
                 SizedBox(
                   height: 10.h,
                 ),
-                Slider(
-                    value: weatherRate,
-                    min: 0.0,
-                    max: 5.0,
-                    divisions: 4,
-                    label: '${weatherRate.round() + 1}',
-                    onChanged: (double value) {
-                      setState(() {
-                        weatherRate = value;
-                      });
-                    }),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  child: SizedBox(
+                    width: 428.w,
+                    child: Text(
+                      "Weather Condition : ",
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                // Padding(
+                //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                //   child: Row(
+                //     children: [
+                //       Text(
+                //         "Bad",
+                //         style: TextStyle(
+                //             fontSize: 14.sp,
+                //             color: Colors.white,
+                //             fontWeight: FontWeight.w500),
+                //         textAlign: TextAlign.left,
+                //       )
+                //     ],
+                //   ),
+                // ),
+                _weatherSlider(),
                 SizedBox(
                   height: 10.h,
                 ),
@@ -507,7 +569,8 @@ class _NewReportPostState extends State<NewReportPost> {
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      _buildTextField(_bucksSennController)
+                      _buildTextField(_huntHoursController,
+                          onChange: _onHuntHourChange, hintText: "Hours")
                     ],
                   ),
                 ),
@@ -518,7 +581,8 @@ class _NewReportPostState extends State<NewReportPost> {
                   padding: EdgeInsets.symmetric(horizontal: 25.w),
                   child: Theme(
                     data: ThemeData(
-                      unselectedWidgetColor: Colors.grey[300],
+                      // unselectedWidgetColor: Colors.grey[300],
+                      unselectedWidgetColor: AppColors.btnColor,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -548,7 +612,8 @@ class _NewReportPostState extends State<NewReportPost> {
                               "Gun",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  color: AppColors.btnColor,
+                                  // color: AppColors.btnColor,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
@@ -565,7 +630,8 @@ class _NewReportPostState extends State<NewReportPost> {
                               "Bow",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  color: AppColors.btnColor,
+                                  // color: AppColors.btnColor,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
@@ -592,7 +658,8 @@ class _NewReportPostState extends State<NewReportPost> {
                       ),
                       Theme(
                         data: ThemeData(
-                          unselectedWidgetColor: Colors.grey[300],
+                          // unselectedWidgetColor: Colors.grey[300],
+                          unselectedWidgetColor: AppColors.btnColor,
                         ),
                         child: Row(
                           children: [
@@ -609,7 +676,8 @@ class _NewReportPostState extends State<NewReportPost> {
                               "Yes",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  color: AppColors.btnColor,
+                                  // color: AppColors.btnColor,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
@@ -626,7 +694,8 @@ class _NewReportPostState extends State<NewReportPost> {
                               "No",
                               style: TextStyle(
                                   fontSize: 18.sp,
-                                  color: AppColors.btnColor,
+                                  // color: AppColors.btnColor,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
@@ -637,110 +706,98 @@ class _NewReportPostState extends State<NewReportPost> {
                   ),
                 ),
                 SizedBox(
-                  height: 10.h,
+                  height: 15.h,
                 ),
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25.w),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Start at  :  ",
-                            style: TextStyle(
-                                fontSize: 18.sp,
-                                color: AppColors.btnColor,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.left,
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => _pickDateTime(),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5.h),
-                                    border: Border.all(
-                                        color: Colors.red, width: 1.h)),
-                                child: Text(
-                                  UtilCommon.formatDate(startAt),
-                                  style: TextStyle(
-                                      fontSize: 18.sp,
-                                      color: AppColors.btnColor,
-                                      fontWeight: FontWeight.w400),
-                                  textAlign: TextAlign.left,
+                  padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "What time were you successful (Optional) : ",
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      _buildDropButton()
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 25.w),
+                  child: Scrollbar(
+                    thickness: 5.w,
+                    showTrackOnHover: true,
+                    isAlwaysShown: false,
+                    child: GridView.count(
+                      physics: const BouncingScrollPhysics(),
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 5.w,
+                      mainAxisSpacing: 5.w,
+                      shrinkWrap: true,
+                      children: [
+                        ..._images.map(
+                          (image) => Stack(
+                            children: [
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(7.5.w),
+                                  child: Image.file(
+                                    File(image.path),
+                                    height: 300.h,
+                                    width: 360.w,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
-                            ),
-                          )
-                        ])),
-                // Expanded(
-                //     child: Container(
-                //   margin: EdgeInsets.symmetric(horizontal: 25.w),
-                //   child: Scrollbar(
-                //     thickness: 5.w,
-                //     showTrackOnHover: true,
-                //     isAlwaysShown: true,
-                //     child: GridView.count(
-                //       physics: const BouncingScrollPhysics(),
-                //       crossAxisCount: 3,
-                //       crossAxisSpacing: 5.w,
-                //       mainAxisSpacing: 5.w,
-                //       shrinkWrap: true,
-                //       children: [
-                //         ..._images.map(
-                //           (image) => Stack(
-                //             children: [
-                //               Center(
-                //                 child: ClipRRect(
-                //                   borderRadius: BorderRadius.circular(7.5.w),
-                //                   child: Image.file(
-                //                     File(image.path),
-                //                     height: 300.h,
-                //                     width: 360.w,
-                //                     fit: BoxFit.fill,
-                //                   ),
-                //                 ),
-                //               ),
-                //               Positioned(
-                //                 right: 0,
-                //                 top: 0,
-                //                 child: InkWell(
-                //                   onTap: () {
-                //                     setState(() {
-                //                       _images.remove(image);
-                //                     });
-                //                   },
-                //                   child: SizedBox(
-                //                     height: 50.w,
-                //                     width: 50.w,
-                //                     child: Icon(
-                //                       Icons.cancel_outlined,
-                //                       size: 30.w,
-                //                       color: AppColors.btnColor,
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //         GestureDetector(
-                //           onTap: () {
-                //             getImage();
-                //           },
-                //           child: Container(
-                //             decoration: BoxDecoration(
-                //                 color: AppColors.secondaryColor.withOpacity(0.5),
-                //                 borderRadius: BorderRadius.circular(7.5.w)),
-                //             child: Icon(Icons.camera_alt_rounded,
-                //                 color: AppColors.btnColor, size: 30.h),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // )),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _images.remove(image);
+                                    });
+                                  },
+                                  child: SizedBox(
+                                    height: 50.w,
+                                    width: 50.w,
+                                    child: Icon(
+                                      Icons.cancel_outlined,
+                                      size: 30.w,
+                                      color: AppColors.btnColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            getImage();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color:
+                                    AppColors.secondaryColor.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(7.5.w)),
+                            child: Icon(Icons.camera_alt_rounded,
+                                color: AppColors.btnColor, size: 30.h),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20.h,
                 ),
@@ -752,7 +809,119 @@ class _NewReportPostState extends State<NewReportPost> {
     );
   }
 
-  _buildTextField(TextEditingController controller) => SizedBox(
+  _weatherSlider() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25.w),
+      child: Row(
+        children: [
+          Text(
+            "Bad",
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600),
+            textAlign: TextAlign.left,
+          ),
+          Expanded(
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 10.h,
+                trackShape: const RoundedRectSliderTrackShape(),
+                activeTrackColor: AppColors.secondaryColor,
+                inactiveTrackColor: AppColors.primaryColor,
+                thumbShape: const RoundSliderThumbShape(
+                  enabledThumbRadius: 14.0,
+                  pressedElevation: 8.0,
+                ),
+                thumbColor: AppColors.btnColor,
+                overlayColor: AppColors.btnColor.withOpacity(0.2),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 30.w),
+                tickMarkShape: const RoundSliderTickMarkShape(),
+                activeTickMarkColor: AppColors.btnColor,
+                inactiveTickMarkColor: Colors.white,
+                valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
+                valueIndicatorColor: AppColors.secondaryColor,
+                valueIndicatorTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.sp,
+                ),
+              ),
+              child: Slider(
+                  value: weatherRate,
+                  min: 0.0,
+                  max: 4.0,
+                  divisions: 4,
+                  label: '${weatherRate.round() + 1}',
+                  onChanged: (double value) {
+                    setState(() {
+                      weatherRate = value;
+                    });
+                  }),
+            ),
+          ),
+          Text(
+            "Good",
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600),
+            textAlign: TextAlign.right,
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildDropButton() {
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<int>(
+          dropdownColor: AppColors.secondaryColor,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.btnColor,
+            size: 30.h,
+          ),
+          style: TextStyle(
+              fontSize: 16.sp,
+              color: Colors.white,
+              fontWeight: FontWeight.w600),
+          iconSize: 30.h,
+          value: _huntSuccessHour,
+          items: _huntHours
+              .map((e) => DropdownMenuItem<int>(
+                  value: e,
+                  child: Text(
+                    UtilCommon.getTimeString(startAt.add(Duration(hours: e))),
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                  )))
+              .toList(),
+          onChanged: (int? value) {
+            setState(() {
+              _huntSuccessHour = value;
+            });
+          }),
+    );
+  }
+
+  _onHuntHourChange(String value) {
+    if (value.isNotEmpty) {
+      List<int> temp = [];
+      for (int i = 0; i < int.parse(value); i++) {
+        temp.add(i + 1);
+      }
+      setState(() {
+        _huntHours = temp;
+        _huntSuccessHour = null;
+      });
+    }
+  }
+
+  _buildTextField(TextEditingController controller,
+          {Function? onChange, String hintText = "00"}) =>
+      SizedBox(
         height: 40.h,
         width: 100.w,
         child: TextField(
@@ -767,12 +936,17 @@ class _NewReportPostState extends State<NewReportPost> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
           ],
+          onChanged: (String value) {
+            if (onChange != null) {
+              onChange(value);
+            }
+          },
           decoration: InputDecoration(
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
             fillColor: Colors.transparent,
             filled: true,
-            hintText: "00",
+            hintText: hintText,
             hintStyle: TextStyle(
               color: Colors.grey[200],
               fontSize: 16.sp,
@@ -813,7 +987,8 @@ class _NewReportPostState extends State<NewReportPost> {
                   _selectedCounty.name,
                   style: TextStyle(
                       fontSize: 18.sp,
-                      color: AppColors.btnColor,
+                      // color: AppColors.btnColor,
+                      color: Colors.white,
                       fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,
                 ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
@@ -39,6 +40,8 @@ class MyApp extends StatelessWidget {
             create: (_) => WRRPostProvider()),
         ChangeNotifierProvider<CountyPostProvider>(
             create: (_) => CountyPostProvider()),
+        ChangeNotifierProvider<ReportPostProvider>(
+            create: (_) => ReportPostProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),
