@@ -19,16 +19,32 @@ class _ReportBottomAppbarState extends State<ReportBottomAppbar> {
       width: 428.w,
       child: Align(
         alignment: Alignment.centerRight,
-        child: IconButton(
-            onPressed: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(builder: (context) => const NewReportPost()),
-              // );
+        child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const NewReportPost()),
+              );
             },
-            icon: Icon(
-              Icons.add_circle_outline_rounded,
-              color: AppColors.btnColor,
-              size: 30.h,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.symmetric(vertical: 10.w),
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  decoration: BoxDecoration(
+                      color: AppColors.btnColor,
+                      borderRadius: BorderRadius.circular(7.5.w)),
+                  child: Text(
+                    "New Post",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             )),
       ),
     );

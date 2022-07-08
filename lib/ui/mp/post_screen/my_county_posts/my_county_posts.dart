@@ -10,7 +10,7 @@ import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/my_county_posts/widgets/my_county_post_appbar.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/widgets/my_wrr_post_appbar.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
@@ -110,7 +110,7 @@ class _MyCountyPostsState extends State<MyCountyPosts>
         backgroundColor: Colors.transparent,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title: const MyCountyPostAppBar(),
+          title: const MyWRRPostAppBar(),
           elevation: 0,
           toolbarHeight: 70.h,
           automaticallyImplyLeading: false,

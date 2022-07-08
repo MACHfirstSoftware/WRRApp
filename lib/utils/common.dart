@@ -34,7 +34,14 @@ class UtilCommon {
   }
 
   static String getDateTimeNow() {
-    final now = DateTime.now();
-    return DateFormat('MM/dd/yyyy HH:mm:ss a').format(now);
+    return DateFormat("MM/dd/yyyy").add_jm().format(DateTime.now());
+  }
+
+  static String formatDate(DateTime dateTime) {
+    return DateFormat("MM/dd/yyyy").add_jm().format(dateTime);
+  }
+
+  static String getTimeString(DateTime dateTime) {
+    return DateFormat.jm().format(dateTime);
   }
 }
