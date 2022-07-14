@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:wisconsin_app/utils/common.dart';
+
 Media mediaFromJson(String str) => Media.fromJson(json.decode(str));
 
 String mediaToJson(Media data) => json.encode(data.toJson());
@@ -21,7 +23,7 @@ class Media {
   String imageUrl;
   String? videoUrl;
   int sortOrder;
-  String createdOn;
+  DateTime createdOn;
 
   factory Media.fromJson(Map<String, dynamic> json) => Media(
         id: json["id"],
@@ -30,7 +32,7 @@ class Media {
         imageUrl: json["imageUrl"],
         videoUrl: json["videoUrl"],
         sortOrder: json["sortOrder"],
-        createdOn: json["createdOn"],
+        createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
   Map<String, dynamic> toJson() => {

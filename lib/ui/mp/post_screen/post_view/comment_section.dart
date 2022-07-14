@@ -9,7 +9,10 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/reply_comment.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -51,6 +54,7 @@ class _CommentSectionState extends State<CommentSection> {
     _user = Provider.of<UserProvider>(context, listen: false).user;
     _comments = widget.comments;
     _commentController = TextEditingController();
+    focusNode.requestFocus();
     super.initState();
   }
 
@@ -98,6 +102,9 @@ class _CommentSectionState extends State<CommentSection> {
       });
       _commentController.clear();
       FocusScope.of(context).unfocus();
+      Provider.of<WRRPostProvider>(context, listen: false).reFreshData();
+      Provider.of<CountyPostProvider>(context, listen: false).reFreshData();
+      Provider.of<ReportPostProvider>(context, listen: false).reFreshData();
     } else {
       setState(() {
         _isSubmiting = false;
@@ -186,6 +193,9 @@ class _CommentSectionState extends State<CommentSection> {
       setState(() {
         _comments.removeAt(commentIndex);
       });
+      Provider.of<WRRPostProvider>(context, listen: false).reFreshData();
+      Provider.of<CountyPostProvider>(context, listen: false).reFreshData();
+      Provider.of<ReportPostProvider>(context, listen: false).reFreshData();
     }
   }
 
@@ -213,6 +223,8 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   _buildCommentTile(Comment _comment, int commentIndex) {
+    // print(_comment.createdOn);
+    // print(_comment.body);
     return Container(
       color: Colors.transparent,
       child: Padding(
@@ -301,9 +313,7 @@ class _CommentSectionState extends State<CommentSection> {
                 SizedBox(
                   width: 10.w,
                 ),
-                Text(UtilCommon.convertToAgoShort(
-                    DateFormat("MM/dd/yyyy HH:mm:ss a")
-                        .parse(_comment.createdOn))),
+                Text(UtilCommon.convertToAgoShort(_comment.createdOn)),
                 SizedBox(
                   width: 30.w,
                 ),
@@ -418,9 +428,7 @@ class _CommentSectionState extends State<CommentSection> {
             ),
             Padding(
               padding: EdgeInsets.only(left: 15.w),
-              child: Text(UtilCommon.convertToAgoShort(
-                  DateFormat("MM/dd/yyyy HH:mm:ss a")
-                      .parse(replyComment.createdOn))),
+              child: Text(UtilCommon.convertToAgoShort(replyComment.createdOn)),
             ),
           ],
         ),
@@ -471,6 +479,7 @@ class _CommentSectionState extends State<CommentSection> {
                             _isComment = true;
                             _postCommentId = null;
                             _commentIndex = null;
+                            _isSubmiting = false;
                             replyTo = '';
                           });
                         },

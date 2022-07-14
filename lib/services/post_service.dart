@@ -7,6 +7,7 @@ import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/reply_comment.dart';
+import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
@@ -14,10 +15,10 @@ import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
 class PostService {
   static Future<ApiResult<List<Post>>> getMyWRRPosts(String userId,
-      {String? lastRecordTime}) async {
+      {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId" +
+          "/Post/$userId/MyWRR" +
           (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
       if (response.statusCode == 200) {
         return ApiResult.success(
@@ -38,10 +39,10 @@ class PostService {
 
   static Future<ApiResult<List<Post>>> getMyCountyPosts(
       String userId, int countyId,
-      {String? lastRecordTime}) async {
+      {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId" +
+          "/Post/$userId/MyCounty" +
           (lastRecordTime != null
               ? "?lastRecordTime=$lastRecordTime&countyId=$countyId"
               : "?countyId=$countyId"));
@@ -62,11 +63,12 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<List<Post>>> getReportPosts(String userId,
-      {String? lastRecordTime}) async {
+  static Future<ApiResult<List<Post>>> getReportPosts(
+      String userId, int countyId,
+      {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId?isReport=true" +
+          "/Post/$userId/Report?countyId=$countyId" +
           (lastRecordTime != null ? "&lastRecordTime=$lastRecordTime" : ""));
       log(response.data.toString());
       inspect(response.data);
@@ -95,6 +97,29 @@ class PostService {
       if (response.statusCode == 201) {
         print(response.data);
         return ApiResult.success(data: response.data["id"] as int);
+      } else {
+        print(response.data);
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<ApiResult<Report>> reportPostPublish(
+      Map<String, dynamic> postDetails) async {
+    log(postDetails.toString());
+    try {
+      final response = await CustomHttp.getDio()
+          .post(Constant.baseUrl + "/PostReport", data: postDetails);
+      log(response.data.toString());
+      if (response.statusCode == 201) {
+        print(response.data);
+        return ApiResult.success(data: Report.fromJson(response.data));
       } else {
         print(response.data);
         return ApiResult.responseError(

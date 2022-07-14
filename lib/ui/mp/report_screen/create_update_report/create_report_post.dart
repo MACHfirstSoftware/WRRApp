@@ -12,9 +12,11 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
+import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
@@ -46,7 +48,7 @@ class _NewReportPostState extends State<NewReportPost> {
   Post? newPost;
   bool _isPostPublished = false;
   double weatherRate = 0.0;
-  String huntType = "Gun";
+  String huntType = "G";
   bool _isHuntSuccess = false;
   DateTime startAt = DateTime.now();
   List<int> _huntHours = [];
@@ -93,6 +95,27 @@ class _NewReportPostState extends State<NewReportPost> {
           type: SnackBarType.error));
       return false;
     }
+    if (_deerSeenController.text.isEmpty) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Deer seen is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_bucksSeenController.text.isEmpty) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Bucks seen is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_huntHoursController.text.isEmpty) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Hunt hours is required",
+          type: SnackBarType.error));
+      return false;
+    }
     return true;
   }
 
@@ -119,7 +142,7 @@ class _NewReportPostState extends State<NewReportPost> {
       User _user = Provider.of<UserProvider>(context, listen: false).user;
       final data = {
         "personId": _user.id,
-        "postTypeId": 1,
+        "postTypeId": 2,
         "regionId": _user.regionId,
         "countyId": _user.countyId,
         "title": _titleController.text,
@@ -147,6 +170,29 @@ class _NewReportPostState extends State<NewReportPost> {
         setState(() {
           _isPostPublished = true;
         });
+        final reportData = {
+          "postId": id,
+          "startDateTime": UtilCommon.formatDate(startAt),
+          "numDeer": _deerSeenController.text,
+          "numBucks": _bucksSeenController.text,
+          "weatherRating": weatherRate.round() + 1,
+          "numHours": _huntHoursController.text,
+          "weaponUsed": huntType,
+          "isSuccess": _isHuntSuccess,
+          "successTime": _huntSuccessHour != null
+              ? UtilCommon.formatDate(
+                  startAt.add(Duration(hours: _huntSuccessHour!)))
+              : null,
+        };
+
+        final reportResponse = await PostService.reportPostPublish(reportData);
+        reportResponse.when(success: (Report report) {
+          newPost!.report = report;
+        }, failure: (NetworkExceptions error) {
+          print("Failed to create report post");
+        }, responseError: (ResponseError error) {
+          print("Failed to create report post");
+        });
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
           for (XFile image in _images) {
@@ -164,6 +210,8 @@ class _NewReportPostState extends State<NewReportPost> {
           final imageResponse = await PostService.addPostImage(uploadList);
           imageResponse.when(success: (List<Media> media) {
             newPost?.media = media;
+            Provider.of<ReportPostProvider>(context, listen: false)
+                .addingNewPost(newPost!);
             // if (widget.isWRRPost) {
             //   Provider.of<WRRPostProvider>(context, listen: false)
             //       .addingNewPost(newPost!);
@@ -194,6 +242,8 @@ class _NewReportPostState extends State<NewReportPost> {
                 type: SnackBarType.error));
           });
         } else {
+          Provider.of<ReportPostProvider>(context, listen: false)
+              .addingNewPost(newPost!);
           // if (widget.isWRRPost) {
           //   Provider.of<WRRPostProvider>(context, listen: false)
           //       .addingNewPost(newPost!);
@@ -230,7 +280,7 @@ class _NewReportPostState extends State<NewReportPost> {
   _uploadImage() async {
     if (_images.isNotEmpty) {
       PageLoader.showLoader(context);
-      User _user = Provider.of<UserProvider>(context, listen: false).user;
+      // User _user = Provider.of<UserProvider>(context, listen: false).user;
       List<Map<String, dynamic>> uploadList = [];
       for (XFile image in _images) {
         final bytes = File(image.path).readAsBytesSync();
@@ -248,8 +298,8 @@ class _NewReportPostState extends State<NewReportPost> {
       imageResponse.when(success: (List<Media> media) {
         newPost?.media = media;
         // if (widget.isWRRPost) {
-        //   Provider.of<WRRPostProvider>(context, listen: false)
-        //       .addingNewPost(newPost!);
+        Provider.of<ReportPostProvider>(context, listen: false)
+            .addingNewPost(newPost!);
         // } else {
         //   final countyPostProvider =
         //       Provider.of<CountyPostProvider>(context, listen: false);
@@ -535,21 +585,6 @@ class _NewReportPostState extends State<NewReportPost> {
                     ),
                   ),
                 ),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 25.w),
-                //   child: Row(
-                //     children: [
-                //       Text(
-                //         "Bad",
-                //         style: TextStyle(
-                //             fontSize: 14.sp,
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w500),
-                //         textAlign: TextAlign.left,
-                //       )
-                //     ],
-                //   ),
-                // ),
                 _weatherSlider(),
                 SizedBox(
                   height: 10.h,
@@ -600,7 +635,7 @@ class _NewReportPostState extends State<NewReportPost> {
                         Row(
                           children: [
                             Radio(
-                                value: "Gun",
+                                value: "G",
                                 groupValue: huntType,
                                 activeColor: AppColors.btnColor,
                                 onChanged: (value) {
@@ -618,7 +653,7 @@ class _NewReportPostState extends State<NewReportPost> {
                               textAlign: TextAlign.left,
                             ),
                             Radio(
-                                value: "Bow",
+                                value: "A",
                                 groupValue: huntType,
                                 activeColor: AppColors.btnColor,
                                 onChanged: (value) {

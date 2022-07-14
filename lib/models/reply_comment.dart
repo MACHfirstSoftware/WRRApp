@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:wisconsin_app/utils/common.dart';
+
 ReplyComment replyCommentFromJson(String str) =>
     ReplyComment.fromJson(json.decode(str));
 
@@ -22,7 +24,7 @@ class ReplyComment {
   String lastName;
   int postCommentId;
   String body;
-  String createdOn;
+  DateTime createdOn;
 
   factory ReplyComment.fromJson(Map<String, dynamic> json) => ReplyComment(
         id: json["id"],
@@ -31,7 +33,7 @@ class ReplyComment {
         lastName: json["lastName"],
         postCommentId: json["postCommentId"],
         body: json["body"],
-        createdOn: json["createdOn"],
+        createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
   Map<String, dynamic> toJson() => {

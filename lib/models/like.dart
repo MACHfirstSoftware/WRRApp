@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:wisconsin_app/utils/common.dart';
+
 Like likeFromJson(String str) => Like.fromJson(json.decode(str));
 
 String likeToJson(Like data) => json.encode(data.toJson());
@@ -19,7 +21,7 @@ class Like {
   String personId;
   String firstName;
   String lastName;
-  String createdOn;
+  DateTime createdOn;
 
   factory Like.fromJson(Map<String, dynamic> json) => Like(
         id: json["id"],
@@ -27,7 +29,7 @@ class Like {
         personId: json["personId"],
         firstName: json["firstName"],
         lastName: json["lastName"],
-        createdOn: json["createdOn"],
+        createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
   Map<String, dynamic> toJson() => {

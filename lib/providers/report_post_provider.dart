@@ -53,9 +53,14 @@ class ReportPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getReportPosts(String userId, {bool isInit = false}) async {
+  void reFreshData() {
+    notifyListeners();
+  }
+
+  Future<void> getReportPosts(String userId, int countyId,
+      {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final postResponse = await PostService.getReportPosts(userId);
+    final postResponse = await PostService.getReportPosts(userId, countyId);
     postResponse.when(success: (List<Post> postsList) async {
       posts = postsList;
       errorMessage = '';

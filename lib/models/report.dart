@@ -13,10 +13,10 @@ class Report {
     required this.numHours,
     required this.weaponUsed,
     required this.weatherRating,
-    required this.weatherReportId,
+    this.weatherReportId,
     required this.startDateTime,
     required this.endDateTime,
-    required this.successTime,
+    this.successTime,
     required this.isSuccess,
   });
 
@@ -27,10 +27,10 @@ class Report {
   int numHours;
   String weaponUsed;
   int weatherRating;
-  int weatherReportId;
+  int? weatherReportId;
   String startDateTime;
   String endDateTime;
-  String successTime;
+  String? successTime;
   bool isSuccess;
 
   factory Report.fromJson(Map<String, dynamic> json) => Report(

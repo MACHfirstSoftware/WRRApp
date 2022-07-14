@@ -5,6 +5,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/astro.dart';
 import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/weather.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
@@ -49,19 +50,26 @@ class WeatherService {
     }
   }
 
-  static Future<void> getForecastWeather(String countyName) async {
+  static Future<ApiResult<Weather>> getForecastWeather(
+      String countyName) async {
     try {
       final response = await _dio.get(
-          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countyName");
+          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countyName&days=10");
       if (response.statusCode == 200) {
-        final details = response.data;
-        log(details.toString());
+        // final details = response.data;
+        // log(details.toString());
+        return ApiResult.success(data: Weather.fromJson(response.data));
       } else {
         print("ERROR");
         print(response.statusCode);
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
       print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
@@ -81,13 +89,13 @@ class WeatherService {
     }
   }
 
-  static Future<ApiResult<Astro>> getAstroDetails(String countyName) async {
+  static Future<ApiResult<Astros>> getAstroDetails(String countyName) async {
     try {
       final response = await _dio.get(
           "http://api.weatherapi.com/v1/astronomy.json?key=${Constant.weatherApiKey}&q=$countyName");
       if (response.statusCode == 200) {
         return ApiResult.success(
-            data: Astro.fromJson(response.data["astronomy"]["astro"]));
+            data: Astros.fromJson(response.data["astronomy"]["astro"]));
       } else {
         return ApiResult.responseError(
             responseError: ResponseError(

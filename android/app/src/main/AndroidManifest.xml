@@ -2,9 +2,9 @@
     package="com.example.wisconsin_app">
    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="Wisconsin"
+        android:label="WRR"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/wrr">
         
         <activity
             android:name=".MainActivity"

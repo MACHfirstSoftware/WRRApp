@@ -26,7 +26,7 @@ class _ReportContentsState extends State<ReportContents> {
   late ScrollController scrollController;
   late RefreshController _refreshController;
   late RefreshController _refreshController2;
-  String? _lastRecordTime;
+  DateTime? _lastRecordTime;
   bool allLoaded = false;
   bool onLoading = false;
   late User _user;
@@ -51,7 +51,8 @@ class _ReportContentsState extends State<ReportContents> {
         setState(() {
           onLoading = true;
         });
-        final postResponse = await PostService.getReportPosts(_user.id,
+        final postResponse = await PostService.getReportPosts(
+            _user.id, _user.countyId,
             lastRecordTime: _lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           print("Incomming posts : ${postsList.length}");
@@ -88,7 +89,7 @@ class _ReportContentsState extends State<ReportContents> {
 
   _init({bool isInit = false}) async {
     await Provider.of<ReportPostProvider>(context, listen: false)
-        .getReportPosts(_user.id, isInit: isInit);
+        .getReportPosts(_user.id, _user.countyId, isInit: isInit);
   }
 
   Future<void> _onRefresh() async {
@@ -96,6 +97,12 @@ class _ReportContentsState extends State<ReportContents> {
     onLoading = false;
     await _init(isInit: true);
     _refreshController.refreshCompleted();
+  }
+
+  Future<void> _onRefresh2() async {
+    allLoaded = false;
+    onLoading = false;
+    await _init(isInit: true);
     _refreshController2.refreshCompleted();
   }
 
@@ -131,7 +138,7 @@ class _ReportContentsState extends State<ReportContents> {
             controller: _refreshController2,
             enablePullDown: true,
             enablePullUp: false,
-            onRefresh: _onRefresh,
+            onRefresh: _onRefresh2,
             header: const WaterDropMaterialHeader(
               backgroundColor: AppColors.secondaryColor,
               color: AppColors.btnColor,

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-Astro astroFromJson(String str) => Astro.fromJson(json.decode(str));
+Astros AstrosFromJson(String str) => Astros.fromJson(json.decode(str));
 
-String astroToJson(Astro data) => json.encode(data.toJson());
+String AstrosToJson(Astros data) => json.encode(data.toJson());
 
-class Astro {
-  Astro({
+class Astros {
+  Astros({
     required this.sunrise,
     required this.sunset,
     required this.moonrise,
@@ -21,7 +21,7 @@ class Astro {
   String moonPhase;
   String moonIllumination;
 
-  factory Astro.fromJson(Map<String, dynamic> json) => Astro(
+  factory Astros.fromJson(Map<String, dynamic> json) => Astros(
         sunrise: json["sunrise"],
         sunset: json["sunset"],
         moonrise: json["moonrise"],

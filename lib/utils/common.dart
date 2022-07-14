@@ -33,15 +33,21 @@ class UtilCommon {
     }
   }
 
-  static String getDateTimeNow() {
-    return DateFormat("MM/dd/yyyy").add_jm().format(DateTime.now());
+  static DateTime getDateTimeNow() {
+    return DateFormat("MM/dd/yyyy").add_jms().parse(formatDate(DateTime.now()));
   }
 
   static String formatDate(DateTime dateTime) {
-    return DateFormat("MM/dd/yyyy").add_jm().format(dateTime);
+    return DateFormat("MM/dd/yyyy").add_jms().format(dateTime);
   }
 
   static String getTimeString(DateTime dateTime) {
     return DateFormat.jm().format(dateTime);
+  }
+
+  static DateTime getDatefromString(String value) {
+    // print("VALUE : $value");
+    return DateFormat("MM/dd/yyyy").add_jms().parse(value);
+    // return DateFormat.M().add_d().add_y().add_jms().parse(value);
   }
 }

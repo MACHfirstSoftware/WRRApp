@@ -110,7 +110,7 @@ class _SearchHuntersState extends State<SearchHunters> {
           body: isSearching
               ? ViewModels.postLoader()
               : _searchController.text.length < 3
-                  ? _buildMessage("Search hunters")
+                  ? _buildMessage("Search for Hunters")
                   : users.isEmpty
                       ? _buildMessage('Nothing Found')
                       : _buildSearchSuccess()),
@@ -137,7 +137,7 @@ class _SearchHuntersState extends State<SearchHunters> {
         contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
         fillColor: Colors.transparent,
         filled: true,
-        hintText: "Search Hunters...",
+        hintText: "Name or Handle",
         alignLabelWithHint: true,
         hintStyle: TextStyle(
           color: Colors.grey[200],

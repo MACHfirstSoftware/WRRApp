@@ -11,7 +11,7 @@ class CountyPostProvider with ChangeNotifier {
   List<Post> postsOfCounty = [];
   bool allCountyPostLoaded = false;
   int? _countyId;
-  String? lastRecordTime;
+  DateTime? lastRecordTime;
 
   ApiStatus get apiStatus => _apiStatus;
   int get countyId => _countyId!;
@@ -66,6 +66,10 @@ class CountyPostProvider with ChangeNotifier {
 
   void deletePost(Post _post) {
     postsOfCounty.remove(_post);
+    notifyListeners();
+  }
+
+  void reFreshData() {
     notifyListeners();
   }
 

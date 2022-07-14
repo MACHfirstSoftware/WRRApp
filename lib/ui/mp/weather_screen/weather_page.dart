@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/current_weather_details.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
@@ -81,13 +82,11 @@ class _WeatherPageState extends State<WeatherPage>
           return TabBarView(
             children: [
               CurrentWeatherDetails(
-                currentWeather: weatherProvider.currentWeather,
-                astro: weatherProvider.astro,
+                currentWeather: weatherProvider.weather.current,
+                astro: weatherProvider.weather.forecast.forecastday[0].astro,
               ),
-              const SizedBox(),
-              // const SizedBox()
-              // WeatherDetails(),
-              // WeatherDetails(),
+              ForecastWeather(
+                  forecastDays: weatherProvider.weather.forecast.forecastday)
             ],
           );
         }),

@@ -1,6 +1,8 @@
 import 'package:wisconsin_app/models/reply_comment.dart';
 import 'dart:convert';
 
+import 'package:wisconsin_app/utils/common.dart';
+
 Comment commentFromJson(String str) => Comment.fromJson(json.decode(str));
 
 String commentToJson(Comment data) => json.encode(data.toJson());
@@ -14,7 +16,7 @@ class Comment {
     required this.postId,
     required this.body,
     required this.createdOn,
-    required this.modifiedOn,
+    this.modifiedOn,
     required this.replyComments,
   });
 
@@ -24,8 +26,8 @@ class Comment {
   String lastName;
   int postId;
   String body;
-  String createdOn;
-  String modifiedOn;
+  DateTime createdOn;
+  DateTime? modifiedOn;
   List<ReplyComment> replyComments;
 
   factory Comment.fromJson(Map<String, dynamic> json) => Comment(
@@ -35,8 +37,10 @@ class Comment {
         lastName: json["lastName"],
         postId: json["postId"],
         body: json["body"],
-        createdOn: json["createdOn"],
-        modifiedOn: json["modifiedOn"],
+        createdOn: UtilCommon.getDatefromString(json["createdOn"]),
+        modifiedOn: json["modifiedOn"] != null && json["modifiedOn"] != ""
+            ? UtilCommon.getDatefromString(json["modifiedOn"])
+            : null,
         replyComments: List<ReplyComment>.from(
             json["replyComments"].map((x) => ReplyComment.fromJson(x))),
       );

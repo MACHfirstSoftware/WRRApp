@@ -28,7 +28,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
   late ScrollController scrollController;
   late RefreshController _refreshController;
   late RefreshController _refreshController2;
-  String? _lastRecordTime;
+  DateTime? _lastRecordTime;
   bool allLoaded = false;
   bool onLoading = false;
   late User _user;

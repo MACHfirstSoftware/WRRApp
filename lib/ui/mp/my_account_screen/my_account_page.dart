@@ -257,7 +257,7 @@ class _MyAccountState extends State<MyAccount> {
               child: ListView(
             padding: EdgeInsets.symmetric(vertical: 25.h, horizontal: 30.w),
             children: [
-              _buildTile("My Post & Report", Icons.edit_note_rounded),
+              _buildTile("My Posts & Reports", Icons.edit_note_rounded),
               _buildTile("Edit My Account", Icons.account_circle_outlined),
               _buildTile("Subscription", Icons.price_check_rounded),
               _buildTile("Notification Setting", Icons.notifications_none),

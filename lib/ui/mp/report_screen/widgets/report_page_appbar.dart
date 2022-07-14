@@ -9,6 +9,8 @@ import 'package:wisconsin_app/providers/county_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/ui/mp/contest_screen/contest_page.dart';
+import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
 
 class ReportPageAppBar extends StatefulWidget {
@@ -37,26 +39,11 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
           children: [
             Positioned(
                 bottom: 10.h, left: 0.w, child: _buildDropMenu(userProvider)),
-            // Align(
-            //   alignment: Alignment.bottomCenter,
-            //   child: Padding(
-            //     padding: EdgeInsets.only(bottom: 10.h),
-            //     child: Text(
-            //       _countyName,
-            //       style: TextStyle(
-            //           fontSize: 20.sp,
-            //           color: Colors.white,
-            //           fontWeight: FontWeight.bold),
-            //       textAlign: TextAlign.center,
-            //     ),
-            //   ),
-            // ),
             Positioned(
                 bottom: 10.h,
                 left: 40.w,
                 child: GestureDetector(
                   onTap: (() {
-                    // showSearch(context: context, delegate: SearchHunters());
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -71,18 +58,6 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                     color: Colors.white,
                   ),
                 )),
-            // Positioned(
-            //   bottom: 10.h,
-            //   left: 50.h,
-            //   child: Text(
-            //     userProvider.user.countyName!,
-            //     style: TextStyle(
-            //         fontSize: 20.sp,
-            //         color: Colors.white,
-            //         fontWeight: FontWeight.bold),
-            //     textAlign: TextAlign.center,
-            //   ),
-            // ),
             Align(
               alignment: Alignment.center,
               child: SvgPicture.asset(
@@ -94,24 +69,32 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                 // color: Colors.red,
               ),
             ),
-
             Positioned(
                 bottom: 10.h,
                 right: 40.w,
-                child: SvgPicture.asset(
-                  'assets/icons/trophy-bold.svg',
-                  fit: BoxFit.fill,
-                  alignment: Alignment.center,
-                  height: 30.h,
-                  width: 30.h,
-                  color: Colors.white,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const ContestPage()));
+                  },
+                  child: SvgPicture.asset(
+                    'assets/icons/trophy-bold.svg',
+                    fit: BoxFit.fill,
+                    alignment: Alignment.center,
+                    height: 30.h,
+                    width: 30.h,
+                    color: Colors.white,
+                  ),
                 )),
             Positioned(
                 bottom: 10.h,
                 right: 0.w,
                 child: GestureDetector(
                   onTap: () {
-                    // print("Notification clicked");
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const NotificationPage()));
                   },
                   child: Stack(
                     children: [
@@ -176,10 +159,6 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
       ],
       onSelected: (County value) {
         User _user = userProvider.user;
-        // _user.countyId = value.id;
-        // print(_user.id);
-        // print(_user.regionId);
-        // print(_user.countyId);
         _user.countyName = value.name;
         userProvider.setUser(_user);
         Provider.of<WeatherProvider>(context, listen: false)

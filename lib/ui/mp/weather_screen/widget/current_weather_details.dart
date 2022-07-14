@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/models/astro.dart';
-import 'package:wisconsin_app/models/current_weather.dart';
+// import 'package:wisconsin_app/models/astro.dart';
+// import 'package:wisconsin_app/models/current_weather.dart';
+import 'package:wisconsin_app/models/weather.dart';
 
 class CurrentWeatherDetails extends StatefulWidget {
-  final CurrentWeather currentWeather;
+  // final CurrentWeather currentWeather;
+  // final Astros astro;
+  final Current currentWeather;
   final Astro astro;
-  const CurrentWeatherDetails(
-      {Key? key, required this.currentWeather, required this.astro})
-      : super(key: key);
+  const CurrentWeatherDetails({
+    Key? key,
+    required this.currentWeather,
+    required this.astro,
+    // required this.currentWeather, required this.astro
+  }) : super(key: key);
 
   @override
   State<CurrentWeatherDetails> createState() => _CurrentWeatherDetailsState();
@@ -24,29 +30,29 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
       {
         "key": "Wind",
         "value":
-            "${widget.currentWeather.current.windDir} at ${widget.currentWeather.current.windMph} mph Gusting to ${widget.currentWeather.current.gustMph} mph"
+            "${widget.currentWeather.windDir} at ${widget.currentWeather.windMph} mph Gusting to ${widget.currentWeather.gustMph} mph"
       },
       {
-        "key": "Precipitation",
-        "value": widget.currentWeather.current.precipIn.toString() + " in."
+        "key": "Precip",
+        "value": widget.currentWeather.precipIn.toString() + " in."
       },
       {
         "key": "Humidy",
-        "value": widget.currentWeather.current.humidity.toString() + "%"
+        "value": widget.currentWeather.humidity.toString() + "%"
       },
       {
         "key": "Pressure",
-        "value": widget.currentWeather.current.pressureIn.toString() + " in."
+        "value": widget.currentWeather.pressureIn.toString() + " in."
       },
       {
         "key": "Cloud Cover",
-        "value": widget.currentWeather.current.cloud.toString() + " %"
+        "value": widget.currentWeather.cloud.toString() + " %"
       },
       {
         "key": "Visability",
-        "value": widget.currentWeather.current.visMiles.toString() + " miles"
+        "value": widget.currentWeather.visMiles.toString() + " miles"
       },
-      {"key": "UV Index", "value": widget.currentWeather.current.uv.toString()},
+      {"key": "UV Index", "value": widget.currentWeather.uv.toString()},
     ];
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -58,29 +64,6 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             height: 40.h,
             width: 428.w,
           ),
-          // RichText(
-          //     text: TextSpan(
-          //         text: "64° f",
-          //         style: TextStyle(
-          //             fontSize: 35.sp,
-          //             color: Colors.white,
-          //             fontWeight: FontWeight.w700),
-          //         children: <TextSpan>[
-          //       TextSpan(
-          //         text: "  |  ",
-          //         style: TextStyle(
-          //             fontSize: 35.sp,
-          //             color: AppColors.btnColor,
-          //             fontWeight: FontWeight.w700),
-          //       ),
-          //       TextSpan(
-          //         text: "82° f",
-          //         style: TextStyle(
-          //             fontSize: 35.sp,
-          //             color: Colors.white,
-          //             fontWeight: FontWeight.w700),
-          //       )
-          //     ])),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +76,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                     color: Colors.blueGrey,
                     borderRadius: BorderRadius.circular(10.w)),
                 child: Image.network(
-                  "https:${widget.currentWeather.current.condition.icon}",
+                  "https:${widget.currentWeather.condition.icon}",
                   height: 40.w,
                   width: 40.w,
                   fit: BoxFit.fill,
@@ -105,7 +88,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               ),
               Text(
                 // "64° f",
-                "${widget.currentWeather.current.tempF.toString()}° f",
+                "${widget.currentWeather.tempF.toString()}° f",
                 style: TextStyle(
                     fontSize: 40.sp,
                     color: Colors.white,
@@ -118,7 +101,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             height: 15.h,
           ),
           Text(
-            "Feel like ${widget.currentWeather.current.feelslikeF}° f",
+            "Feel like ${widget.currentWeather.feelslikeF}° f",
             style: TextStyle(
                 fontSize: 16.sp,
                 color: Colors.white,
@@ -130,7 +113,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
           ),
           Text(
             // "Cloudy",
-            widget.currentWeather.current.condition.text,
+            widget.currentWeather.condition.text,
             style: TextStyle(
                 fontSize: 22.sp,
                 color: Colors.white,

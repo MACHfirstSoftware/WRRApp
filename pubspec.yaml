@@ -70,6 +70,8 @@ dependencies:
   photo_view: ^0.14.0
   #Get native splash screen
   flutter_native_splash: ^2.1.6
+  #Chart package
+  fl_chart: ^0.55.0
 
 
   freezed_annotation: ^0.14.0
@@ -88,11 +90,11 @@ dev_dependencies:
 
 # App launcher icon configurations
 flutter_icons:
-  android: true
+  android: false
   ios: true
-  image_path: "assets/icons/app_icon.png"
-  adaptive_icon_background: "#F23A02"
-  adaptive_icon_foreground: "assets/icons/app_icon.png"
+  image_path: "assets/icons/wrr.png"
+  adaptive_icon_background: "assets/icons/wrr_adaptive_back.png"
+  adaptive_icon_foreground: "assets/icons/wrr_adaptive_fore.png"
 
 # Splash Screen configurations
 flutter_native_splash:

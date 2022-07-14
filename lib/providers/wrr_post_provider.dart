@@ -53,6 +53,10 @@ class WRRPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void reFreshData() {
+    notifyListeners();
+  }
+
   Future<void> getMyWRRPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
     final postResponse = await PostService.getMyWRRPosts(userId);

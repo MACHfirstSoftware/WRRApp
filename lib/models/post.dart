@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/report.dart';
+import 'package:wisconsin_app/utils/common.dart';
 
 Post postFromJson(String str) => Post.fromJson(json.decode(str));
 
@@ -18,7 +19,7 @@ class Post {
       required this.title,
       required this.body,
       required this.createdOn,
-      required this.modifiedOn,
+      this.modifiedOn,
       required this.isShare,
       this.sharePersonId,
       this.sharePersonFirstName = "",
@@ -34,8 +35,8 @@ class Post {
   String lastName;
   String title;
   String body;
-  String createdOn;
-  String modifiedOn;
+  DateTime createdOn;
+  DateTime? modifiedOn;
   bool isShare;
   String? sharePersonId;
   String sharePersonFirstName;
@@ -52,8 +53,10 @@ class Post {
       lastName: json["lastName"],
       title: json["title"],
       body: json["body"],
-      createdOn: json["createdOn"],
-      modifiedOn: json["modifiedOn"],
+      createdOn: UtilCommon.getDatefromString(json["createdOn"]),
+      modifiedOn: json["modifiedOn"] != null && json["modifiedOn"] != ""
+          ? UtilCommon.getDatefromString(json["modifiedOn"])
+          : null,
       isShare: json["isShare"],
       sharePersonId: json["sharePersonId"],
       sharePersonFirstName: json["sharePersonFirstName"],

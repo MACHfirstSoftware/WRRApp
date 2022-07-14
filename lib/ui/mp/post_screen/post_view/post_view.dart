@@ -36,6 +36,7 @@ class _PostViewState extends State<PostView> {
   int? likeIndex;
   late bool _isApiCall;
   late User _user;
+  bool _showComments = false;
   @override
   void initState() {
     _isApiCall = false;
@@ -56,6 +57,7 @@ class _PostViewState extends State<PostView> {
   _postLike() async {
     setState(() {
       _isApiCall = true;
+      likeIndex = widget.post.likes.length;
     });
     Like _like = Like(
         id: -1,
@@ -69,32 +71,33 @@ class _PostViewState extends State<PostView> {
     if (res != null) {
       _like.id = res;
       setState(() {
-        likeIndex = widget.post.likes.length;
         widget.post.likes.add(_like);
         _isApiCall = false;
       });
     } else {
       setState(() {
         _isApiCall = false;
+        likeIndex = null;
       });
     }
   }
 
   _postLikeDelete() async {
+    int ind = likeIndex!;
     setState(() {
       _isApiCall = true;
+      likeIndex = null;
     });
-    final res =
-        await PostService.postLikeDelete(widget.post.likes[likeIndex!].id);
+    final res = await PostService.postLikeDelete(widget.post.likes[ind].id);
     if (res) {
       setState(() {
-        widget.post.likes.removeAt(likeIndex!);
-        likeIndex = null;
+        widget.post.likes.removeAt(ind);
         _isApiCall = false;
       });
     } else {
       setState(() {
         _isApiCall = false;
+        likeIndex = ind;
       });
     }
   }
@@ -185,93 +188,227 @@ class _PostViewState extends State<PostView> {
                       right: BorderSide(color: Colors.black54, width: 1.w))),
             ),
           Container(
-            alignment: Alignment.center,
+            alignment: Alignment.bottomLeft,
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             color: Colors.white,
-            height: 50.h,
+            height: 40.h,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                IconButton(
-                    onPressed: _isApiCall
-                        ? null
-                        : () {
-                            if (likeIndex == null) {
-                              _postLike();
-                            } else {
-                              _postLikeDelete();
-                            }
-                          },
-                    icon: Icon(
-                      Icons.thumb_up_off_alt_rounded,
-                      size: 40.h,
-                      color: likeIndex != null
-                          ? AppColors.btnColor
-                          : AppColors.iconGrey,
-                    )),
-                IconButton(
-                    onPressed: () {
-                      // CommentSection cc = const CommentSection(comments: []);
-                      // cc.aa();
-                    },
-                    icon: Icon(
-                      Icons.insert_comment_rounded,
-                      size: 40.h,
-                      color: AppColors.iconGrey,
-                    )),
-                IconButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        HeroDialogRoute(
-                            builder: (context) =>
-                                PostSharePage(postId: widget.post.id)),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.redo_rounded,
-                      size: 40.h,
-                      color: AppColors.iconGrey,
-                    )),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(HeroDialogRoute(
-                              builder: (context) => ConfirmationPopup(
-                                  onTap: _postAbuse,
-                                  title: "Report",
-                                  message: "Do you want to report post?",
-                                  leftBtnText: "Report",
-                                  rightBtnText: "Cancel")));
-                        },
-                        icon: Icon(
-                          Icons.report_gmailerrorred_rounded,
-                          size: 40.h,
-                          color: AppColors.iconGrey,
-                        )),
+                Text(
+                  "${widget.post.likes.length} likes",
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.left,
+                ),
+                SizedBox(width: 25.w),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _showComments = !_showComments;
+                    });
+                  },
+                  child: Text(
+                    "${widget.post.comments.isEmpty ? "no" : widget.post.comments.length} comments",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left,
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-            alignment: Alignment.bottomLeft,
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            color: Colors.white,
-            height: 40.h,
-            child: Text(
-              "${widget.post.likes.length} likes",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600),
-              textAlign: TextAlign.left,
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.5.h),
+            child: Container(
+              alignment: Alignment.center,
+              height: 50.h,
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    bottom: BorderSide(color: Colors.black54, width: 0.75.w),
+                    top: BorderSide(color: Colors.black54, width: 0.75.w),
+                  )),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // IconButton(
+                  // onPressed: _isApiCall
+                  //     ? null
+                  //     : () {
+                  //         if (likeIndex == null) {
+                  //           _postLike();
+                  //         } else {
+                  //           _postLikeDelete();
+                  //         }
+                  //       },
+                  //     icon: Icon(
+                  //       Icons.thumb_up_off_alt_rounded,
+                  //       size: 40.h,
+                  // color: likeIndex != null
+                  //     ? AppColors.btnColor
+                  //     : AppColors.iconGrey,
+                  //     )),
+                  // IconButton(
+                  //     onPressed: () {
+                  //       // CommentSection cc = const CommentSection(comments: []);
+                  //       // cc.aa();
+                  //     },
+
+                  // icon: Icon(
+                  //   Icons.insert_comment_rounded,
+                  //   size: 40.h,
+                  //   color: AppColors.iconGrey,
+                  // )),
+
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _isApiCall
+                          ? null
+                          : () {
+                              if (likeIndex == null) {
+                                _postLike();
+                              } else {
+                                _postLikeDelete();
+                              }
+                            },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.thumb_up_rounded,
+                            size: 30.h,
+                            color: likeIndex != null
+                                ? AppColors.btnColor
+                                : AppColors.iconGrey,
+                          ),
+                          SizedBox(
+                            width: 5.w,
+                          ),
+                          Text(
+                            "Like",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColors.iconGrey,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _showComments = !_showComments;
+                        });
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.comment_rounded,
+                            size: 27.5.h,
+                            color: AppColors.iconGrey,
+                          ),
+                          SizedBox(
+                            width: 5.w,
+                          ),
+                          Text(
+                            "Comments",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColors.iconGrey,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          HeroDialogRoute(
+                              builder: (context) =>
+                                  PostSharePage(postId: widget.post.id)),
+                        );
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.group_rounded,
+                            size: 30.h,
+                            color: AppColors.iconGrey,
+                          ),
+                          SizedBox(
+                            width: 5.w,
+                          ),
+                          Text(
+                            "Share",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColors.iconGrey,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // IconButton(
+                  //     onPressed: () {
+                  // Navigator.of(context).push(
+                  //   HeroDialogRoute(
+                  //       builder: (context) =>
+                  //           PostSharePage(postId: widget.post.id)),
+                  // );
+                  //     },
+                  //     icon: Icon(
+                  //       Icons.redo_rounded,
+                  //       size: 40.h,
+                  //       color: AppColors.iconGrey,
+                  //     )),
+                  // Expanded(
+                  //   child: Align(
+                  //     alignment: Alignment.centerRight,
+                  //     child: IconButton(
+                  //         onPressed: () {
+                  // Navigator.of(context).push(HeroDialogRoute(
+                  //     builder: (context) => ConfirmationPopup(
+                  //         onTap: _postAbuse,
+                  //         title: "Report",
+                  //         message: "Do you want to report post?",
+                  //         leftBtnText: "Report",
+                  //         rightBtnText: "Cancel")));
+                  //         },
+                  //         icon: Icon(
+                  //           Icons.report_gmailerrorred_rounded,
+                  //           size: 40.h,
+                  //           color: AppColors.iconGrey,
+                  //         )),
+                  //   ),
+                  // ),
+                ],
+              ),
             ),
           ),
-          CommentSection(
-            comments: widget.post.comments,
-            postId: widget.post.id,
-          )
+          if (_showComments)
+            CommentSection(
+              comments: widget.post.comments,
+              postId: widget.post.id,
+            )
         ],
       ),
     );
@@ -294,7 +431,7 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Container _buildPersonRow(String name, String date) {
+  Container _buildPersonRow(String name, DateTime date) {
     return Container(
       color: Colors.white,
       height: 75.h,
@@ -332,8 +469,7 @@ class _PostViewState extends State<PostView> {
                   textAlign: TextAlign.left,
                 ),
                 Text(
-                  UtilCommon.convertToAgo(
-                      DateFormat("MM/dd/yyyy HH:mm:ss a").parse(date)),
+                  UtilCommon.convertToAgo(date),
                   style: TextStyle(
                       fontSize: 14.sp,
                       color: Colors.grey,
@@ -344,67 +480,85 @@ class _PostViewState extends State<PostView> {
             ),
           ),
           SizedBox(
-            height: 60.h,
-            width: 60.h,
-            child: !widget.post.isShare && _user.id == widget.post.personId
-                ? PopupMenuButton(
-                    icon: Icon(Icons.more_horiz_rounded, size: 40.h),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem<String>(
-                        value: "Edit",
-                        child: ListTile(
-                          title: Text(
-                            "Edit",
-                          ),
-                          trailing: Icon(
-                            Icons.mode_edit_outline_outlined,
-                            color: Colors.black,
-                          ),
+              height: 60.h,
+              width: 60.h,
+              child: PopupMenuButton(
+                icon: Icon(Icons.more_horiz_rounded, size: 40.h),
+                itemBuilder: (context) => [
+                  if (!widget.post.isShare && _user.id != widget.post.personId)
+                    const PopupMenuItem<String>(
+                      value: "Report",
+                      child: ListTile(
+                        title: Text(
+                          "Report",
+                        ),
+                        trailing: Icon(
+                          Icons.error_rounded,
+                          color: Colors.black,
                         ),
                       ),
-                      const PopupMenuItem<String>(
-                        value: "Delete",
-                        child: ListTile(
-                          title: Text(
-                            "Delete",
-                            style: TextStyle(color: Colors.redAccent),
-                          ),
-                          trailing: Icon(
-                            Icons.delete,
-                            color: Colors.redAccent,
-                          ),
+                    ),
+                  if (!widget.post.isShare && _user.id == widget.post.personId)
+                    const PopupMenuItem<String>(
+                      value: "Edit",
+                      child: ListTile(
+                        title: Text(
+                          "Edit",
                         ),
-                      )
-                    ],
-                    onSelected: (String value) {
-                      if (value == "Edit") {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => UpdatePost(
-                                    post: widget.post,
-                                  )),
-                        );
-                      }
-                      if (value == "Delete") {
-                        Navigator.push(
-                            context,
-                            HeroDialogRoute(
-                                builder: (_) => ConfirmationPopup(
-                                      title: "Delete",
-                                      message:
-                                          "If you delete now, you'll lose this post.",
-                                      leftBtnText: "Delete",
-                                      rightBtnText: "Cancel",
-                                      onTap: _deletePost,
-                                    )));
-                      }
-                    },
-                  )
-                : Icon(
-                    Icons.more_horiz_rounded,
-                    size: 40.h,
-                  ),
-          )
+                        trailing: Icon(
+                          Icons.mode_edit_outline_outlined,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  if (!widget.post.isShare && _user.id == widget.post.personId)
+                    const PopupMenuItem<String>(
+                      value: "Delete",
+                      child: ListTile(
+                        title: Text(
+                          "Delete",
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                        trailing: Icon(
+                          Icons.delete,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    )
+                ],
+                onSelected: (String value) {
+                  if (value == "Report") {
+                    Navigator.of(context).push(HeroDialogRoute(
+                        builder: (context) => ConfirmationPopup(
+                            onTap: _postAbuse,
+                            title: "Report",
+                            message: "Do you want to report post?",
+                            leftBtnText: "Report",
+                            rightBtnText: "Cancel")));
+                  }
+                  if (value == "Edit") {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => UpdatePost(
+                                post: widget.post,
+                              )),
+                    );
+                  }
+                  if (value == "Delete") {
+                    Navigator.push(
+                        context,
+                        HeroDialogRoute(
+                            builder: (_) => ConfirmationPopup(
+                                  title: "Delete",
+                                  message:
+                                      "If you delete now, you'll lose this post.",
+                                  leftBtnText: "Delete",
+                                  rightBtnText: "Cancel",
+                                  onTap: _deletePost,
+                                )));
+                  }
+                },
+              ))
         ],
       ),
     );
@@ -540,55 +694,61 @@ class MediaView extends StatelessWidget {
                       width: 3.w,
                     ),
                     Expanded(
-                      child: Stack(
-                        children: [
-                          SizedBox(
-                            height: 350.h / 2,
-                            child: _imageTile(context, media[3].imageUrl, 0),
-                          ),
-                          Positioned.fill(
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            ImagePreview(medias: media)));
-                              },
-                              child: ClipRect(
-                                child: BackdropFilter(
-                                  filter:
-                                      ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                                  child: Container(
-                                    color: Colors.black.withOpacity(0.2),
+                      child: media.length == 4
+                          ? SizedBox(
+                              height: 350.h / 2,
+                              child: _imageTile(context, media[3].imageUrl, 3),
+                            )
+                          : Stack(
+                              children: [
+                                SizedBox(
+                                  height: 350.h / 2,
+                                  child:
+                                      _imageTile(context, media[3].imageUrl, 0),
+                                ),
+                                Positioned.fill(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  ImagePreview(medias: media)));
+                                    },
+                                    child: ClipRect(
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                            sigmaX: 3, sigmaY: 3),
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.2),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                                Center(
+                                  child: Text(
+                                    "+${media.length - 4}",
+                                    style: TextStyle(
+                                        color: Colors.grey[200],
+                                        fontSize: 25.sp,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Center(
+                                  child: Text(
+                                    "+${media.length - 4}",
+                                    style: TextStyle(
+                                        foreground: Paint()
+                                          ..style = PaintingStyle.stroke
+                                          ..strokeWidth = 1.sp
+                                          ..color = Colors.black38,
+                                        fontSize: 25.sp,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                          Center(
-                            child: Text(
-                              "+${media.length - 4}",
-                              style: TextStyle(
-                                  color: Colors.grey[200],
-                                  fontSize: 25.sp,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              "+${media.length - 4}",
-                              style: TextStyle(
-                                  foreground: Paint()
-                                    ..style = PaintingStyle.stroke
-                                    ..strokeWidth = 1.sp
-                                    ..color = Colors.black38,
-                                  fontSize: 25.sp,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )
-                        ],
-                      ),
                     ),
                   ],
                 ),
