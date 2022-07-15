@@ -4,9 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
+import 'package:wisconsin_app/providers/region_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 
@@ -19,9 +23,11 @@ class WeatherAppBar extends StatefulWidget {
 
 class _WeatherAppBarState extends State<WeatherAppBar> {
   late List<County> _counties;
+  late List<Region> _regions;
   @override
   void initState() {
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
+    _regions = Provider.of<RegionProvider>(context, listen: false).regions;
     super.initState();
   }
 
@@ -49,18 +55,31 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
             //     ),
             //   ),
             // ),
-            Positioned(
-              bottom: 10.h,
-              left: 50.h,
-              child: Text(
-                userProvider.user.countyName!,
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
+            // Positioned(
+            //   bottom: 10.h,
+            //   left: 50.h,
+            //   child: Text(
+            //     userProvider.user.regionName!,
+            //     style: TextStyle(
+            //         fontSize: 20.sp,
+            //         color: Colors.white,
+            //         fontWeight: FontWeight.bold),
+            //     textAlign: TextAlign.center,
+            //   ),
+            // )
+            Align(
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                'assets/icons/WRR.svg',
+                // fit: BoxFit.fill,
+                alignment: Alignment.center,
+                height: 55.h,
+                // width: 100.w,
+                // color: Colors.red,
               ),
-            )
+            ),
+            Positioned(
+                bottom: 10.h, right: 0.w, child: _buildDropMenuForCounty()),
           ],
         ),
       );
@@ -79,12 +98,67 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
       ),
       color: AppColors.secondaryColor,
       itemBuilder: (context) => [
+        ..._regions.map((region) => PopupMenuItem<Region>(
+            value: region,
+            child: SizedBox(
+              width: 200.w,
+              child: ListTile(
+                trailing: region.name == userProvider.user.regionName
+                    ? const Icon(
+                        Icons.check,
+                        color: AppColors.btnColor,
+                      )
+                    : null,
+                title: Text(
+                  region.name,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 1,
+                ),
+              ),
+            )))
+      ],
+      onSelected: (Region value) {
+        User _user = userProvider.user;
+        _user.regionName = value.name;
+        userProvider.setUser(_user);
+        Provider.of<RegionPostProvider>(context, listen: false)
+            .chnageRegion(_user.id, value.id);
+        Provider.of<ReportPostProvider>(context, listen: false)
+            .chnageRegion(_user.id, value.id);
+        Provider.of<ContestProvider>(context, listen: false)
+            .chnageRegion(_user.id, value.id);
+      },
+    );
+  }
+
+  _buildDropMenuForCounty() {
+    final weatherProvider =
+        Provider.of<WeatherProvider>(context, listen: false);
+    return PopupMenuButton(
+      child: SvgPicture.asset(
+        'assets/icons/home.svg',
+        height: 30.h,
+        width: 30.h,
+        fit: BoxFit.fill,
+        alignment: Alignment.center,
+        color: Colors.white,
+      ),
+      // icon: Align(
+      //   alignment: Alignment.center,
+      //   child: Icon(
+      //     Icons.home_work_rounded,
+      //     size: 20.h,
+      //     color: Colors.white,
+      //   ),
+      // ),
+      color: AppColors.secondaryColor,
+      itemBuilder: (context) => [
         ..._counties.map((county) => PopupMenuItem<County>(
             value: county,
             child: SizedBox(
               width: 200.w,
               child: ListTile(
-                trailing: county.name == userProvider.user.countyName
+                trailing: county.name == weatherProvider.county.name
                     ? const Icon(
                         Icons.check,
                         color: AppColors.btnColor,
@@ -99,15 +173,9 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
             )))
       ],
       onSelected: (County value) {
-        User _user = userProvider.user;
-        // _user.countyId = value.id;
-        // print(_user.countyId);
-        _user.countyName = value.name;
-        userProvider.setUser(_user);
-        Provider.of<WeatherProvider>(context, listen: false)
-            .changeCounty(value);
-        Provider.of<CountyPostProvider>(context, listen: false)
-            .chnageCounty(_user.id, value.id);
+        if (weatherProvider.county != value) {
+          weatherProvider.changeCounty(value);
+        }
       },
     );
   }

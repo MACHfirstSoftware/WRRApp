@@ -42,9 +42,9 @@ class Report {
         weaponUsed: json["weaponUsed"],
         weatherRating: json["weatherRating"],
         weatherReportId: json["weatherReportId"],
-        startDateTime: json["startDateTime"],
-        endDateTime: json["endDateTime"],
-        successTime: json["successTime"],
+        startDateTime: json["startDateTime"] ?? json["start_DateTime"],
+        endDateTime: json["endDateTime"] ?? json["end_DateTime"],
+        successTime: json["successTime"] ?? json["success_Time"],
         isSuccess: json["isSuccess"],
       );
 

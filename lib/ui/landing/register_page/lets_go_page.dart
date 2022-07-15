@@ -85,9 +85,9 @@ class _LetsGoPageState extends State<LetsGoPage> {
     PageLoader.showLoader(context);
     final res = await UserService.signIn(widget.email, widget.password);
     res.when(success: (User user) async {
-      final countyProvider =
-          Provider.of<CountyProvider>(context, listen: false);
-      await countyProvider.getAllCounties();
+      // final countyProvider =
+      //     Provider.of<CountyProvider>(context, listen: false);
+      // await countyProvider.getAllCounties();
       Provider.of<UserProvider>(context, listen: false).setUser(user);
       Navigator.pop(context);
       Navigator.pushAndRemoveUntil(

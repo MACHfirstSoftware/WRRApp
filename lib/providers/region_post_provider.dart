@@ -5,27 +5,33 @@ import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
-class CountyPostProvider with ChangeNotifier {
+class RegionPostProvider with ChangeNotifier {
   ApiStatus _apiStatus = ApiStatus.isInitial;
   String errorMessage = '';
-  List<Post> postsOfCounty = [];
-  bool allCountyPostLoaded = false;
-  int? _countyId;
+  List<Post> postsOfRegion = [];
+  bool allPostLoaded = false;
+  // int? _countyId;
+  int? _regionId;
   DateTime? lastRecordTime;
 
   ApiStatus get apiStatus => _apiStatus;
-  int get countyId => _countyId!;
+  // int get countyId => _countyId!;
+  int get regionId => _regionId!;
 
-  void setCountyId(int id) {
-    _countyId = id;
+  // void setCountyId(int id) {
+  //   _countyId = id;
+  // }
+
+  void setRegionId(int rId) {
+    _regionId = rId;
   }
 
-  void chnageCounty(String userId, int id) {
-    allCountyPostLoaded = false;
-    postsOfCounty = [];
+  void chnageRegion(String userId, int rId) {
+    allPostLoaded = false;
+    postsOfRegion = [];
     lastRecordTime = null;
-    _countyId = id;
-    getMyCountyPosts(userId);
+    _regionId = rId;
+    getMyRegionPosts(userId);
   }
 
   void setBusy() {
@@ -50,14 +56,14 @@ class CountyPostProvider with ChangeNotifier {
   }
 
   void addingNewPost(Post _post) {
-    postsOfCounty.insert(0, _post);
+    postsOfRegion.insert(0, _post);
     notifyListeners();
   }
 
   void updatePost(Post _post) {
-    for (int i = 0; i < postsOfCounty.length; i++) {
-      if (_post.id == postsOfCounty[i].id) {
-        postsOfCounty[i] = _post;
+    for (int i = 0; i < postsOfRegion.length; i++) {
+      if (_post.id == postsOfRegion[i].id) {
+        postsOfRegion[i] = _post;
         break;
       }
     }
@@ -65,7 +71,7 @@ class CountyPostProvider with ChangeNotifier {
   }
 
   void deletePost(Post _post) {
-    postsOfCounty.remove(_post);
+    postsOfRegion.remove(_post);
     notifyListeners();
   }
 
@@ -73,11 +79,11 @@ class CountyPostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getMyCountyPosts(String userId, {bool isInit = false}) async {
+  Future<void> getMyRegionPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final postResponse = await PostService.getMyCountyPosts(userId, _countyId!);
+    final postResponse = await PostService.getMyRegionPosts(userId, _regionId!);
     postResponse.when(success: (List<Post> postsList) async {
-      postsOfCounty = postsList;
+      postsOfRegion = postsList;
       if (postsList.isNotEmpty) {
         lastRecordTime = postsList.last.createdOn;
       }

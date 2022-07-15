@@ -22,12 +22,14 @@ class ReportContents extends StatefulWidget {
   State<ReportContents> createState() => _ReportContentsState();
 }
 
-class _ReportContentsState extends State<ReportContents> {
+class _ReportContentsState extends State<ReportContents>
+    with AutomaticKeepAliveClientMixin {
+  bool keepAlive = true;
   late ScrollController scrollController;
   late RefreshController _refreshController;
   late RefreshController _refreshController2;
   DateTime? _lastRecordTime;
-  bool allLoaded = false;
+  // bool allLoaded = false;
   bool onLoading = false;
   late User _user;
 
@@ -43,7 +45,7 @@ class _ReportContentsState extends State<ReportContents> {
           Provider.of<ReportPostProvider>(context, listen: false);
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
-          !allLoaded) {
+          !postProvider.allPostLoaded) {
         print("----------DATA LOADING----------------");
         _lastRecordTime = postProvider.posts.last.createdOn;
         print("Last Record Time : $_lastRecordTime");
@@ -52,13 +54,13 @@ class _ReportContentsState extends State<ReportContents> {
           onLoading = true;
         });
         final postResponse = await PostService.getReportPosts(
-            _user.id, _user.countyId,
+            _user.id, postProvider.regionId,
             lastRecordTime: _lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           print("Incomming posts : ${postsList.length}");
           postProvider.posts.addAll(postsList);
           if (postsList.length < 10) {
-            allLoaded = true;
+            postProvider.allPostLoaded = true;
           }
           setState(() {
             onLoading = false;
@@ -89,18 +91,20 @@ class _ReportContentsState extends State<ReportContents> {
 
   _init({bool isInit = false}) async {
     await Provider.of<ReportPostProvider>(context, listen: false)
-        .getReportPosts(_user.id, _user.countyId, isInit: isInit);
+        .getReportPosts(_user.id, isInit: isInit);
   }
 
   Future<void> _onRefresh() async {
-    allLoaded = false;
+    Provider.of<ReportPostProvider>(context, listen: false).allPostLoaded =
+        false;
     onLoading = false;
     await _init(isInit: true);
     _refreshController.refreshCompleted();
   }
 
   Future<void> _onRefresh2() async {
-    allLoaded = false;
+    Provider.of<ReportPostProvider>(context, listen: false).allPostLoaded =
+        false;
     onLoading = false;
     await _init(isInit: true);
     _refreshController2.refreshCompleted();
@@ -108,6 +112,7 @@ class _ReportContentsState extends State<ReportContents> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
@@ -159,7 +164,7 @@ class _ReportContentsState extends State<ReportContents> {
                         child:
                             onLoading ? const LinearProgressIndicator() : null,
                       ),
-                      if (allLoaded)
+                      if (model.allPostLoaded)
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 5.h),
                           child: Text(
@@ -176,4 +181,7 @@ class _ReportContentsState extends State<ReportContents> {
       }),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

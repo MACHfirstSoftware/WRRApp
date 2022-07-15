@@ -9,7 +9,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/reply_comment.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
@@ -103,7 +103,7 @@ class _CommentSectionState extends State<CommentSection> {
       _commentController.clear();
       FocusScope.of(context).unfocus();
       Provider.of<WRRPostProvider>(context, listen: false).reFreshData();
-      Provider.of<CountyPostProvider>(context, listen: false).reFreshData();
+      Provider.of<RegionPostProvider>(context, listen: false).reFreshData();
       Provider.of<ReportPostProvider>(context, listen: false).reFreshData();
     } else {
       setState(() {
@@ -194,7 +194,7 @@ class _CommentSectionState extends State<CommentSection> {
         _comments.removeAt(commentIndex);
       });
       Provider.of<WRRPostProvider>(context, listen: false).reFreshData();
-      Provider.of<CountyPostProvider>(context, listen: false).reFreshData();
+      Provider.of<RegionPostProvider>(context, listen: false).reFreshData();
       Provider.of<ReportPostProvider>(context, listen: false).reFreshData();
     }
   }
@@ -215,7 +215,9 @@ class _CommentSectionState extends State<CommentSection> {
       children: [
         if (!_isSeeAll && _comments.isNotEmpty)
           _buildCommentTile(_comments[0], 0),
-        if (_isSeeAll) _buildSeeAll(),
+        if (_isSeeAll)
+          for (int index = 0; index < _comments.length; index++)
+            _buildCommentTile(_comments[index], index),
         if (_comments.length > 1) _buildShowMoreIcon(),
         _isUpdate ? _buildEditField() : _buildWriteComment(),
       ],
@@ -332,20 +334,26 @@ class _CommentSectionState extends State<CommentSection> {
                     child: const Text("Reply")),
               ],
             ),
-            Padding(
-              padding: EdgeInsets.only(left: 25.w, right: 10.w),
-              child: LimitedBox(
-                maxHeight: 250.h,
-                child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: _comment.replyComments.length,
-                    itemBuilder: (_, index) {
-                      return _buildReplyCommentTile(
-                          _comment.replyComments[index], commentIndex, index);
-                    }),
+            // Padding(
+            //   padding: EdgeInsets.only(left: 25.w, right: 10.w),
+            //   child: LimitedBox(
+            //     maxHeight: 250.h,
+            //     child: ListView.builder(
+            //         scrollDirection: Axis.vertical,
+            //         shrinkWrap: true,
+            //         itemCount: _comment.replyComments.length,
+            //         itemBuilder: (_, index) {
+            //           return _buildReplyCommentTile(
+            //               _comment.replyComments[index], commentIndex, index);
+            //         }),
+            //   ),
+            // ),
+            for (int index = 0; index < _comment.replyComments.length; index++)
+              Padding(
+                padding: EdgeInsets.only(left: 25.w, right: 10.w),
+                child: _buildReplyCommentTile(
+                    _comment.replyComments[index], commentIndex, index),
               ),
-            )
           ],
         ),
       ),
@@ -673,15 +681,17 @@ class _CommentSectionState extends State<CommentSection> {
   }
 
   _buildSeeAll() {
-    return LimitedBox(
-      maxHeight: 300.h,
-      child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: _comments.length,
-          itemBuilder: (_, index) {
-            return _buildCommentTile(_comments[index], index);
-          }),
-    );
+    // return LimitedBox(
+    //   maxHeight: 300.h,
+    //   child: ListView.builder(
+    //       scrollDirection: Axis.vertical,
+    //       shrinkWrap: true,
+    //       itemCount: _comments.length,
+    //       itemBuilder: (_, index) {
+    //         return _buildCommentTile(_comments[index], index);
+    //       }),
+    // );
+    return List.generate(_comments.length,
+        (index) => _buildCommentTile(_comments[index], index));
   }
 }

@@ -7,7 +7,7 @@ import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/widgets/my_wrr_post_appbar.dart';
@@ -15,14 +15,14 @@ import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
-class MyCountyPosts extends StatefulWidget {
-  const MyCountyPosts({Key? key}) : super(key: key);
+class MyRegionPosts extends StatefulWidget {
+  const MyRegionPosts({Key? key}) : super(key: key);
 
   @override
-  State<MyCountyPosts> createState() => _MyCountyPostsState();
+  State<MyRegionPosts> createState() => _MyRegionPostsState();
 }
 
-class _MyCountyPostsState extends State<MyCountyPosts>
+class _MyRegionPostsState extends State<MyRegionPosts>
     with AutomaticKeepAliveClientMixin {
   bool keepAlive = true;
   late ScrollController scrollController;
@@ -40,23 +40,23 @@ class _MyCountyPostsState extends State<MyCountyPosts>
     _init(isInit: true);
     scrollController.addListener(() async {
       final postProvider =
-          Provider.of<CountyPostProvider>(context, listen: false);
+          Provider.of<RegionPostProvider>(context, listen: false);
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
-          !postProvider.allCountyPostLoaded) {
+          !postProvider.allPostLoaded) {
         print("data loading");
         setState(() {
           onLoading = true;
         });
-        final postResponse = await PostService.getMyCountyPosts(
-            _user.id, postProvider.countyId,
+        final postResponse = await PostService.getMyRegionPosts(
+            _user.id, postProvider.regionId,
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           print(postsList.length);
           if (postsList.length < 10) {
-            postProvider.allCountyPostLoaded = true;
+            postProvider.allPostLoaded = true;
           } else {
-            postProvider.postsOfCounty.addAll(postsList);
+            postProvider.postsOfRegion.addAll(postsList);
             postProvider.lastRecordTime = postsList.last.createdOn;
           }
           setState(() {
@@ -90,13 +90,13 @@ class _MyCountyPostsState extends State<MyCountyPosts>
   bool get wantKeepAlive => keepAlive;
 
   _init({bool isInit = false}) async {
-    await Provider.of<CountyPostProvider>(context, listen: false)
-        .getMyCountyPosts(_user.id, isInit: isInit);
+    await Provider.of<RegionPostProvider>(context, listen: false)
+        .getMyRegionPosts(_user.id, isInit: isInit);
   }
 
   Future<void> _onRefresh() async {
-    Provider.of<CountyPostProvider>(context, listen: false)
-        .allCountyPostLoaded = false;
+    Provider.of<RegionPostProvider>(context, listen: false).allPostLoaded =
+        false;
     onLoading = false;
     await _init(isInit: true);
     _refreshController.refreshCompleted();
@@ -115,7 +115,7 @@ class _MyCountyPostsState extends State<MyCountyPosts>
           toolbarHeight: 70.h,
           automaticallyImplyLeading: false,
         ),
-        body: Consumer<CountyPostProvider>(builder: (context, model, _) {
+        body: Consumer<RegionPostProvider>(builder: (context, model, _) {
           if (model.apiStatus == ApiStatus.isBusy) {
             return ViewModels.buildLoader();
           }
@@ -141,13 +141,13 @@ class _MyCountyPostsState extends State<MyCountyPosts>
                 backgroundColor: AppColors.secondaryColor,
                 color: AppColors.btnColor,
               ),
-              child: model.postsOfCounty.isEmpty
+              child: model.postsOfRegion.isEmpty
                   ? ViewModels.postEmply()
                   : ListView(
                       controller: scrollController,
                       padding: const EdgeInsets.all(0),
                       children: [
-                        ...model.postsOfCounty
+                        ...model.postsOfRegion
                             .map((post) => PostView(post: post))
                             .toList(),
                         Container(
@@ -158,7 +158,7 @@ class _MyCountyPostsState extends State<MyCountyPosts>
                               ? const LinearProgressIndicator()
                               : null,
                         ),
-                        if (model.allCountyPostLoaded)
+                        if (model.allPostLoaded)
                           Padding(
                             padding: EdgeInsets.symmetric(vertical: 5.h),
                             child: Text(

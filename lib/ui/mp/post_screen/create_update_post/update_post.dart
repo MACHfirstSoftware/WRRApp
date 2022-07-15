@@ -12,7 +12,7 @@ import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
@@ -99,7 +99,6 @@ class _UpdatePostState extends State<UpdatePost> {
           widget.post.id, _titleController.text, _bodyController.text);
 
       if (updateResponse) {
-        User _user = Provider.of<UserProvider>(context, listen: false).user;
         setState(() {
           _isPostUpdate = true;
         });
@@ -127,7 +126,7 @@ class _UpdatePostState extends State<UpdatePost> {
 
             Provider.of<WRRPostProvider>(context, listen: false)
                 .updatePost(_updatedPost);
-            Provider.of<CountyPostProvider>(context, listen: false)
+            Provider.of<RegionPostProvider>(context, listen: false)
                 .updatePost(_updatedPost);
 
 //---------------------------------------------------------------------------------------
@@ -158,7 +157,7 @@ class _UpdatePostState extends State<UpdatePost> {
 //------------------------------------------ change bellow to update------------------
           Provider.of<WRRPostProvider>(context, listen: false)
               .updatePost(_updatedPost);
-          Provider.of<CountyPostProvider>(context, listen: false)
+          Provider.of<RegionPostProvider>(context, listen: false)
               .updatePost(_updatedPost);
 //---------------------------------------------------------------------------------------
           Navigator.pop(context);
@@ -204,7 +203,7 @@ class _UpdatePostState extends State<UpdatePost> {
 //------------------------------------------ change bellow to update------------------
         Provider.of<WRRPostProvider>(context, listen: false)
             .updatePost(_updatedPost);
-        Provider.of<CountyPostProvider>(context, listen: false)
+        Provider.of<RegionPostProvider>(context, listen: false)
             .updatePost(_updatedPost);
 //---------------------------------------------------------------------------------------
         Navigator.pop(context);
@@ -254,13 +253,12 @@ class _UpdatePostState extends State<UpdatePost> {
 
   _discardPost() {
     if (widget.post.media.length > _medias.length) {
-      User _user = Provider.of<UserProvider>(context, listen: false).user;
       Post _updatedPost = widget.post;
       _updatedPost.media = _medias;
 
       Provider.of<WRRPostProvider>(context, listen: false)
           .updatePost(_updatedPost);
-      Provider.of<CountyPostProvider>(context, listen: false)
+      Provider.of<RegionPostProvider>(context, listen: false)
           .updatePost(_updatedPost);
     }
     if (_isPostUpdate) {

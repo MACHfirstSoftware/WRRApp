@@ -4,11 +4,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/contest_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
+import 'package:wisconsin_app/providers/region_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
-import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/contest_page.dart';
 import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
@@ -21,11 +24,13 @@ class ReportPageAppBar extends StatefulWidget {
 }
 
 class _ReportPageAppBarState extends State<ReportPageAppBar> {
-  late List<County> _counties;
+  // late List<County> _counties;
+  late List<Region> _regions;
 
   @override
   void initState() {
-    _counties = Provider.of<CountyProvider>(context, listen: false).counties;
+    // _counties = Provider.of<CountyProvider>(context, listen: false).counties;
+    _regions = Provider.of<RegionProvider>(context, listen: false).regions;
     super.initState();
   }
 
@@ -137,34 +142,68 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
         color: Colors.white,
       ),
       color: AppColors.secondaryColor,
+      // itemBuilder: (context) => [
+      //   ..._counties.map((county) => PopupMenuItem<County>(
+      //       value: county,
+      //       child: SizedBox(
+      //         width: 200.w,
+      //         child: ListTile(
+      //           trailing: county.name == userProvider.user.countyName
+      //               ? const Icon(
+      //                   Icons.check,
+      //                   color: AppColors.btnColor,
+      //                 )
+      //               : null,
+      //           title: Text(
+      //             county.name,
+      //             style: const TextStyle(color: Colors.white),
+      //             maxLines: 1,
+      //           ),
+      //         ),
+      //       )))
+      // ],
+      // onSelected: (County value) {
+      //   User _user = userProvider.user;
+      //   _user.countyName = value.name;
+      //   userProvider.setUser(_user);
+      //   Provider.of<WeatherProvider>(context, listen: false)
+      //       .changeCounty(value);
+      //   Provider.of<CountyPostProvider>(context, listen: false)
+      //       .chnageCounty(_user.id, value.id);
+      // },
+
       itemBuilder: (context) => [
-        ..._counties.map((county) => PopupMenuItem<County>(
-            value: county,
+        ..._regions.map((region) => PopupMenuItem<Region>(
+            value: region,
             child: SizedBox(
               width: 200.w,
               child: ListTile(
-                trailing: county.name == userProvider.user.countyName
+                trailing: region.name == userProvider.user.regionName
                     ? const Icon(
                         Icons.check,
                         color: AppColors.btnColor,
                       )
                     : null,
                 title: Text(
-                  county.name,
+                  region.name,
                   style: const TextStyle(color: Colors.white),
                   maxLines: 1,
                 ),
               ),
             )))
       ],
-      onSelected: (County value) {
-        User _user = userProvider.user;
-        _user.countyName = value.name;
-        userProvider.setUser(_user);
-        Provider.of<WeatherProvider>(context, listen: false)
-            .changeCounty(value);
-        Provider.of<CountyPostProvider>(context, listen: false)
-            .chnageCounty(_user.id, value.id);
+      onSelected: (Region value) {
+        if (userProvider.user.regionName != value.name) {
+          User _user = userProvider.user;
+          _user.regionName = value.name;
+          userProvider.setUser(_user);
+          Provider.of<RegionPostProvider>(context, listen: false)
+              .chnageRegion(_user.id, value.id);
+          Provider.of<ReportPostProvider>(context, listen: false)
+              .chnageRegion(_user.id, value.id);
+          Provider.of<ContestProvider>(context, listen: false)
+              .chnageRegion(_user.id, value.id);
+        }
       },
     );
   }

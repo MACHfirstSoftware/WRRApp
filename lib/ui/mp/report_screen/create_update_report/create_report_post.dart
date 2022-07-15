@@ -4,9 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
@@ -161,6 +159,8 @@ class _NewReportPostState extends State<NewReportPost> {
             lastName: _user.lastName,
             title: _titleController.text,
             body: _bodyController.text,
+            postPersonCounty: _user.countyName!,
+            postType: "Report",
             isShare: false,
             createdOn: UtilCommon.getDateTimeNow(),
             modifiedOn: UtilCommon.getDateTimeNow(),
@@ -172,14 +172,14 @@ class _NewReportPostState extends State<NewReportPost> {
         });
         final reportData = {
           "postId": id,
-          "startDateTime": UtilCommon.formatDate(startAt),
+          "start_DateTime": UtilCommon.formatDate(startAt),
           "numDeer": _deerSeenController.text,
           "numBucks": _bucksSeenController.text,
-          "weatherRating": weatherRate.round() + 1,
+          "weatherRating": (weatherRate.round() + 1),
           "numHours": _huntHoursController.text,
           "weaponUsed": huntType,
           "isSuccess": _isHuntSuccess,
-          "successTime": _huntSuccessHour != null
+          "success_Time": _huntSuccessHour != null
               ? UtilCommon.formatDate(
                   startAt.add(Duration(hours: _huntSuccessHour!)))
               : null,

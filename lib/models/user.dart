@@ -17,6 +17,7 @@ class User {
       required this.countyId,
       this.countyName,
       required this.regionId,
+      this.regionName,
       required this.isOptIn,
       this.isFallowed = false});
 
@@ -31,6 +32,7 @@ class User {
   int countyId;
   String? countyName;
   int regionId;
+  String? regionName;
   bool isOptIn;
   bool isFallowed;
 

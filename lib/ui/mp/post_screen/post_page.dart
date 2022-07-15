@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/my_county_posts/my_county_posts.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/my_region_posts/my_region_posts.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/my_wrr_posts.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_page_appbar.dart';
 
@@ -34,11 +34,11 @@ class _PostPageState extends State<PostPage> {
               text: "My WRR",
             ),
             Tab(
-              text: "My County",
+              text: "My Region",
             ),
           ]),
         ),
-        body: const TabBarView(children: [MyWRRPosts(), MyCountyPosts()]),
+        body: const TabBarView(children: [MyWRRPosts(), MyRegionPosts()]),
       ),
     );
   }

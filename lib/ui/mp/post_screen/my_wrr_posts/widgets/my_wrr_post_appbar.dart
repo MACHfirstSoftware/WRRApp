@@ -23,7 +23,7 @@ class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
               Navigator.of(context).push(
                 MaterialPageRoute(
                     builder: (context) => const NewPost(
-                          isWRRPost: true,
+                        // isWRRPost: true,
                         )),
               );
             },

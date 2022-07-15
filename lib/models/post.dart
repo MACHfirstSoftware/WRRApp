@@ -1,4 +1,5 @@
 import 'package:wisconsin_app/models/comment.dart';
+import 'package:wisconsin_app/models/contest.dart';
 import 'dart:convert';
 
 import 'package:wisconsin_app/models/like.dart';
@@ -11,23 +12,27 @@ Post postFromJson(String str) => Post.fromJson(json.decode(str));
 String postToJson(Post data) => json.encode(data.toJson());
 
 class Post {
-  Post(
-      {required this.id,
-      required this.personId,
-      required this.firstName,
-      required this.lastName,
-      required this.title,
-      required this.body,
-      required this.createdOn,
-      this.modifiedOn,
-      required this.isShare,
-      this.sharePersonId,
-      this.sharePersonFirstName = "",
-      this.sharePersonLastName = "",
-      required this.likes,
-      required this.comments,
-      required this.media,
-      this.report});
+  Post({
+    required this.id,
+    required this.personId,
+    required this.firstName,
+    required this.lastName,
+    required this.title,
+    required this.body,
+    required this.postPersonCounty,
+    required this.postType,
+    required this.createdOn,
+    this.modifiedOn,
+    required this.isShare,
+    this.sharePersonId,
+    this.sharePersonFirstName = "",
+    this.sharePersonLastName = "",
+    required this.likes,
+    required this.comments,
+    required this.media,
+    this.report,
+    this.contest,
+  });
 
   int id;
   String personId;
@@ -35,6 +40,8 @@ class Post {
   String lastName;
   String title;
   String body;
+  String postPersonCounty;
+  String postType;
   DateTime createdOn;
   DateTime? modifiedOn;
   bool isShare;
@@ -45,6 +52,7 @@ class Post {
   List<Comment> comments;
   List<Media> media;
   Report? report;
+  Contest? contest;
 
   factory Post.fromJson(Map<String, dynamic> json) => Post(
       id: json["id"],
@@ -53,6 +61,8 @@ class Post {
       lastName: json["lastName"],
       title: json["title"],
       body: json["body"],
+      postPersonCounty: json["postPersonCounty"],
+      postType: json["postType"],
       createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       modifiedOn: json["modifiedOn"] != null && json["modifiedOn"] != ""
           ? UtilCommon.getDatefromString(json["modifiedOn"])
@@ -65,7 +75,9 @@ class Post {
       comments:
           List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
       media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
-      report: json["report"] != null ? Report.fromJson(json["report"]) : null);
+      report: json["report"] != null ? Report.fromJson(json["report"]) : null,
+      contest:
+          json["contest"] != null ? Contest.fromJson(json["contest"]) : null);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -74,6 +86,8 @@ class Post {
         "lastName": lastName,
         "title": title,
         "body": body,
+        "postPersonCounty": postPersonCounty,
+        "postType": postType,
         "createdOn": createdOn,
         "modifiedOn": modifiedOn,
         "isShare": isShare,
@@ -83,6 +97,7 @@ class Post {
         "likes": List<dynamic>.from(likes.map((x) => x.toJson())),
         "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
         "media": List<dynamic>.from(media.map((x) => x.toJson())),
-        "report": report
+        "report": report,
+        "contest": contest
       };
 }

@@ -14,7 +14,7 @@ class Media {
     required this.imageUrl,
     this.videoUrl,
     required this.sortOrder,
-    required this.createdOn,
+    // required this.createdOn,
   });
 
   int id;
@@ -23,7 +23,7 @@ class Media {
   String imageUrl;
   String? videoUrl;
   int sortOrder;
-  DateTime createdOn;
+  // DateTime createdOn;
 
   factory Media.fromJson(Map<String, dynamic> json) => Media(
         id: json["id"],
@@ -32,7 +32,7 @@ class Media {
         imageUrl: json["imageUrl"],
         videoUrl: json["videoUrl"],
         sortOrder: json["sortOrder"],
-        createdOn: UtilCommon.getDatefromString(json["createdOn"]),
+        // createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -42,6 +42,6 @@ class Media {
         "imageUrl": imageUrl,
         "videoUrl": videoUrl,
         "sortOrder": sortOrder,
-        "createdOn": createdOn,
+        // "createdOn": createdOn,
       };
 }

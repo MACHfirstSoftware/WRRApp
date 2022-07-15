@@ -37,15 +37,15 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<List<Post>>> getMyCountyPosts(
-      String userId, int countyId,
+  static Future<ApiResult<List<Post>>> getMyRegionPosts(
+      String userId, int regionId,
       {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId/MyCounty" +
+          "/Post/$userId/MyRegion" +
           (lastRecordTime != null
-              ? "?lastRecordTime=$lastRecordTime&countyId=$countyId"
-              : "?countyId=$countyId"));
+              ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
+              : "?regionId=$regionId"));
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -64,13 +64,37 @@ class PostService {
   }
 
   static Future<ApiResult<List<Post>>> getReportPosts(
-      String userId, int countyId,
+      String userId, int regionId,
       {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId/Report?countyId=$countyId" +
+          "/Post/$userId/Report?regionId=$regionId" +
           (lastRecordTime != null ? "&lastRecordTime=$lastRecordTime" : ""));
       log(response.data.toString());
+      inspect(response.data);
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => Post.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<ApiResult<List<Post>>> getContest(
+      String userId, int regionId, int superRegionId) async {
+    try {
+      final response = await CustomHttp.getDio().get(Constant.baseUrl +
+          "/Post/$userId/Contest?regionId=$regionId&superRegion=$superRegionId");
+
       inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
@@ -95,10 +119,10 @@ class PostService {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/Post", data: postDetails);
       if (response.statusCode == 201) {
-        print(response.data);
+        // print(response.data);
         return ApiResult.success(data: response.data["id"] as int);
       } else {
-        print(response.data);
+        // print(response.data);
         return ApiResult.responseError(
             responseError: ResponseError(
                 error: "Something went wrong!",

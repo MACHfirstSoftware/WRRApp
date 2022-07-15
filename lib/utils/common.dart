@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'dart:developer';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UtilCommon {
   static String convertToAgo(DateTime input) {
@@ -34,7 +37,13 @@ class UtilCommon {
   }
 
   static DateTime getDateTimeNow() {
-    return DateFormat("MM/dd/yyyy").add_jms().parse(formatDate(DateTime.now()));
+    // print("Utils ${DateTime.parse(DateTime.now().toUtc()}");
+
+    // final date = DateFormat("MM/dd/yyyy hh:mm:s a").format(DateTime.now());
+    // print("Utils $date");
+    return DateFormat("MM/dd/yyyy")
+        .add_jms()
+        .parse(DateFormat("MM/dd/yyyy hh:mm:s a").format(DateTime.now()));
   }
 
   static String formatDate(DateTime dateTime) {
@@ -49,5 +58,31 @@ class UtilCommon {
     // print("VALUE : $value");
     return DateFormat("MM/dd/yyyy").add_jms().parse(value);
     // return DateFormat.M().add_d().add_y().add_jms().parse(value);
+  }
+}
+
+class StoreUtils {
+  static Future<void> saveUser(Map<String, dynamic> userCredintials) async {
+    String _userData = json.encode(userCredintials);
+    log(_userData);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("USER", _userData);
+  }
+
+  static Future<Map<String, dynamic>?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? _user = prefs.getString("USER");
+    if (_user == null) {
+      return null;
+    } else {
+      log(_user);
+      Map<String, dynamic> _userData = json.decode(_user);
+      return _userData;
+    }
+  }
+
+  static Future<void> removeUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("USER");
   }
 }

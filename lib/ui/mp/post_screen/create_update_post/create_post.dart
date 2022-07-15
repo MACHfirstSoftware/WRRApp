@@ -11,7 +11,7 @@ import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
@@ -22,11 +22,13 @@ import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class NewPost extends StatefulWidget {
-  final bool isWRRPost;
-  const NewPost({Key? key, required this.isWRRPost}) : super(key: key);
+  // final bool isWRRPost;
+  const NewPost({
+    Key? key,
+    // required this.isWRRPost
+  }) : super(key: key);
 
   @override
   State<NewPost> createState() => _NewPostState();
@@ -35,12 +37,13 @@ class NewPost extends StatefulWidget {
 class _NewPostState extends State<NewPost> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  List<XFile> _images = [];
+  late List<XFile> _images;
   Post? newPost;
   bool _isPostPublished = false;
 
   @override
   void initState() {
+    _images = [];
     _titleController = TextEditingController();
     _bodyController = TextEditingController();
     super.initState();
@@ -114,6 +117,8 @@ class _NewPostState extends State<NewPost> {
             lastName: _user.lastName,
             title: _titleController.text,
             body: _bodyController.text,
+            postPersonCounty: _user.countyName!,
+            postType: "General",
             isShare: false,
             createdOn: UtilCommon.getDateTimeNow(),
             modifiedOn: UtilCommon.getDateTimeNow(),
@@ -140,16 +145,16 @@ class _NewPostState extends State<NewPost> {
           final imageResponse = await PostService.addPostImage(uploadList);
           imageResponse.when(success: (List<Media> media) {
             newPost?.media = media;
-            if (widget.isWRRPost) {
-              Provider.of<WRRPostProvider>(context, listen: false)
-                  .addingNewPost(newPost!);
-            } else {
-              final countyPostProvider =
-                  Provider.of<CountyPostProvider>(context, listen: false);
-              if (_user.countyId == countyPostProvider.countyId) {
-                countyPostProvider.addingNewPost(newPost!);
-              }
+
+            Provider.of<WRRPostProvider>(context, listen: false)
+                .addingNewPost(newPost!);
+
+            final regionPostProvider =
+                Provider.of<RegionPostProvider>(context, listen: false);
+            if (_user.regionId == regionPostProvider.regionId) {
+              regionPostProvider.addingNewPost(newPost!);
             }
+
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
@@ -170,15 +175,13 @@ class _NewPostState extends State<NewPost> {
                 type: SnackBarType.error));
           });
         } else {
-          if (widget.isWRRPost) {
-            Provider.of<WRRPostProvider>(context, listen: false)
-                .addingNewPost(newPost!);
-          } else {
-            final countyPostProvider =
-                Provider.of<CountyPostProvider>(context, listen: false);
-            if (_user.countyId == countyPostProvider.countyId) {
-              countyPostProvider.addingNewPost(newPost!);
-            }
+          Provider.of<WRRPostProvider>(context, listen: false)
+              .addingNewPost(newPost!);
+
+          final regionPostProvider =
+              Provider.of<RegionPostProvider>(context, listen: false);
+          if (_user.regionId == regionPostProvider.regionId) {
+            regionPostProvider.addingNewPost(newPost!);
           }
           Navigator.pop(context);
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -223,15 +226,13 @@ class _NewPostState extends State<NewPost> {
       final imageResponse = await PostService.addPostImage(uploadList);
       imageResponse.when(success: (List<Media> media) {
         newPost?.media = media;
-        if (widget.isWRRPost) {
-          Provider.of<WRRPostProvider>(context, listen: false)
-              .addingNewPost(newPost!);
-        } else {
-          final countyPostProvider =
-              Provider.of<CountyPostProvider>(context, listen: false);
-          if (_user.countyId == countyPostProvider.countyId) {
-            countyPostProvider.addingNewPost(newPost!);
-          }
+        Provider.of<WRRPostProvider>(context, listen: false)
+            .addingNewPost(newPost!);
+
+        final regionPostProvider =
+            Provider.of<RegionPostProvider>(context, listen: false);
+        if (_user.regionId == regionPostProvider.regionId) {
+          regionPostProvider.addingNewPost(newPost!);
         }
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -322,6 +323,8 @@ class _NewPostState extends State<NewPost> {
 
   @override
   Widget build(BuildContext context) {
+    print(UtilCommon.getDateTimeNow());
+    // print(DateTime.now());
     return WillPopScope(
       onWillPop: () async {
         return await Navigator.push(
@@ -487,22 +490,6 @@ class _NewPostState extends State<NewPost> {
                           decoration: BoxDecoration(
                               color: AppColors.secondaryColor.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(7.5.w)),
-                          // child: CachedNetworkImage(
-                          //   imageUrl: "http://via.placeholder.com/200x150",
-                          //   imageBuilder: (context, imageProvider) => Container(
-                          //     decoration: BoxDecoration(
-                          //       image: DecorationImage(
-                          //           image: imageProvider,
-                          //           fit: BoxFit.cover,
-                          //           colorFilter: const ColorFilter.mode(
-                          //               Colors.red, BlendMode.colorBurn)),
-                          //     ),
-                          //   ),
-                          //   placeholder: (context, url) =>
-                          //       const CircularProgressIndicator(),
-                          //   errorWidget: (context, url, error) =>
-                          //       const Icon(Icons.error),
-                          // ),
                           child: Icon(Icons.camera_alt_rounded,
                               color: AppColors.btnColor, size: 30.h),
                         ),

@@ -3,14 +3,17 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/contest.dart';
+import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
+import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_post_provider.dart';
+import 'package:wisconsin_app/providers/region_post_provider.dart';
+import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
@@ -124,10 +127,15 @@ class _PostViewState extends State<PostView> {
     final res = await PostService.postDelete(widget.post.id);
     Navigator.pop(context);
     if (res) {
-      Provider.of<WRRPostProvider>(context, listen: false)
-          .deletePost(widget.post);
-      Provider.of<CountyPostProvider>(context, listen: false)
-          .deletePost(widget.post);
+      if (widget.post.report == null) {
+        Provider.of<WRRPostProvider>(context, listen: false)
+            .deletePost(widget.post);
+        Provider.of<RegionPostProvider>(context, listen: false)
+            .deletePost(widget.post);
+      } else {
+        Provider.of<ReportPostProvider>(context, listen: false)
+            .deletePost(widget.post);
+      }
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Successfully deleted",
@@ -154,6 +162,7 @@ class _PostViewState extends State<PostView> {
                       " " +
                       widget.post.sharePersonLastName)
                   : (widget.post.firstName + " " + widget.post.lastName),
+              widget.post.postPersonCounty,
               widget.post.createdOn),
           if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
           if (!widget.post.isShare)
@@ -170,6 +179,7 @@ class _PostViewState extends State<PostView> {
                 children: [
                   _buildPersonRow(
                       widget.post.firstName + " " + widget.post.lastName,
+                      widget.post.postPersonCounty,
                       widget.post.createdOn),
                   _buildPostTitleAndBody(widget.post.title),
                   _buildPostTitleAndBody(widget.post.body, isTitle: false),
@@ -177,6 +187,10 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
+          if (widget.post.report != null)
+            ReportView(report: widget.post.report!),
+          if (widget.post.contest != null)
+            ContestView(contest: widget.post.contest!),
           if (widget.post.isShare)
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10.w),
@@ -187,228 +201,235 @@ class _PostViewState extends State<PostView> {
                       left: BorderSide(color: Colors.black54, width: 1.w),
                       right: BorderSide(color: Colors.black54, width: 1.w))),
             ),
-          Container(
-            alignment: Alignment.bottomLeft,
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            color: Colors.white,
-            height: 40.h,
-            child: Row(
-              children: [
-                Text(
-                  "${widget.post.likes.length} likes",
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.left,
-                ),
-                SizedBox(width: 25.w),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showComments = !_showComments;
-                    });
-                  },
-                  child: Text(
-                    "${widget.post.comments.isEmpty ? "no" : widget.post.comments.length} comments",
+          if (widget.post.postType == "General" ||
+              widget.post.postType == "Report")
+            Container(
+              alignment: Alignment.bottomLeft,
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              color: Colors.white,
+              // height: 40.h,
+              child: Row(
+                children: [
+                  Text(
+                    "${widget.post.likes.length} likes",
                     style: TextStyle(
                         fontSize: 16.sp,
                         color: Colors.black,
-                        fontWeight: FontWeight.w400),
+                        fontWeight: FontWeight.w600),
                     textAlign: TextAlign.left,
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 2.5.h),
-            child: Container(
-              alignment: Alignment.center,
-              height: 50.h,
-              margin: EdgeInsets.symmetric(horizontal: 10.w),
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    bottom: BorderSide(color: Colors.black54, width: 0.75.w),
-                    top: BorderSide(color: Colors.black54, width: 0.75.w),
-                  )),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // IconButton(
-                  // onPressed: _isApiCall
-                  //     ? null
-                  //     : () {
-                  //         if (likeIndex == null) {
-                  //           _postLike();
-                  //         } else {
-                  //           _postLikeDelete();
-                  //         }
-                  //       },
-                  //     icon: Icon(
-                  //       Icons.thumb_up_off_alt_rounded,
-                  //       size: 40.h,
-                  // color: likeIndex != null
-                  //     ? AppColors.btnColor
-                  //     : AppColors.iconGrey,
-                  //     )),
-                  // IconButton(
-                  //     onPressed: () {
-                  //       // CommentSection cc = const CommentSection(comments: []);
-                  //       // cc.aa();
-                  //     },
-
-                  // icon: Icon(
-                  //   Icons.insert_comment_rounded,
-                  //   size: 40.h,
-                  //   color: AppColors.iconGrey,
-                  // )),
-
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: _isApiCall
-                          ? null
-                          : () {
-                              if (likeIndex == null) {
-                                _postLike();
-                              } else {
-                                _postLikeDelete();
-                              }
-                            },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.thumb_up_rounded,
-                            size: 30.h,
-                            color: likeIndex != null
-                                ? AppColors.btnColor
-                                : AppColors.iconGrey,
-                          ),
-                          SizedBox(
-                            width: 5.w,
-                          ),
-                          Text(
-                            "Like",
-                            style: TextStyle(
-                                fontSize: 18.sp,
-                                color: AppColors.iconGrey,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+                  SizedBox(width: 25.w),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _showComments = !_showComments;
+                      });
+                    },
+                    child: Text(
+                      "${widget.post.comments.isEmpty ? "no" : widget.post.comments.length} comments",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.left,
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _showComments = !_showComments;
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.comment_rounded,
-                            size: 27.5.h,
-                            color: AppColors.iconGrey,
-                          ),
-                          SizedBox(
-                            width: 5.w,
-                          ),
-                          Text(
-                            "Comments",
-                            style: TextStyle(
-                                fontSize: 18.sp,
-                                color: AppColors.iconGrey,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          HeroDialogRoute(
-                              builder: (context) =>
-                                  PostSharePage(postId: widget.post.id)),
-                        );
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.group_rounded,
-                            size: 30.h,
-                            color: AppColors.iconGrey,
-                          ),
-                          SizedBox(
-                            width: 5.w,
-                          ),
-                          Text(
-                            "Share",
-                            style: TextStyle(
-                                fontSize: 18.sp,
-                                color: AppColors.iconGrey,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // IconButton(
-                  //     onPressed: () {
-                  // Navigator.of(context).push(
-                  //   HeroDialogRoute(
-                  //       builder: (context) =>
-                  //           PostSharePage(postId: widget.post.id)),
-                  // );
-                  //     },
-                  //     icon: Icon(
-                  //       Icons.redo_rounded,
-                  //       size: 40.h,
-                  //       color: AppColors.iconGrey,
-                  //     )),
-                  // Expanded(
-                  //   child: Align(
-                  //     alignment: Alignment.centerRight,
-                  //     child: IconButton(
-                  //         onPressed: () {
-                  // Navigator.of(context).push(HeroDialogRoute(
-                  //     builder: (context) => ConfirmationPopup(
-                  //         onTap: _postAbuse,
-                  //         title: "Report",
-                  //         message: "Do you want to report post?",
-                  //         leftBtnText: "Report",
-                  //         rightBtnText: "Cancel")));
-                  //         },
-                  //         icon: Icon(
-                  //           Icons.report_gmailerrorred_rounded,
-                  //           size: 40.h,
-                  //           color: AppColors.iconGrey,
-                  //         )),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
-          ),
+          if (widget.post.postType == "General" ||
+              widget.post.postType == "Report")
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 2.5.h),
+              child: Container(
+                alignment: Alignment.center,
+                height: 50.h,
+                margin: EdgeInsets.symmetric(horizontal: 10.w),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.black54, width: 0.75.w),
+                      top: BorderSide(color: Colors.black54, width: 0.75.w),
+                    )),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // IconButton(
+                    // onPressed: _isApiCall
+                    //     ? null
+                    //     : () {
+                    //         if (likeIndex == null) {
+                    //           _postLike();
+                    //         } else {
+                    //           _postLikeDelete();
+                    //         }
+                    //       },
+                    //     icon: Icon(
+                    //       Icons.thumb_up_off_alt_rounded,
+                    //       size: 40.h,
+                    // color: likeIndex != null
+                    //     ? AppColors.btnColor
+                    //     : AppColors.iconGrey,
+                    //     )),
+                    // IconButton(
+                    //     onPressed: () {
+                    //       // CommentSection cc = const CommentSection(comments: []);
+                    //       // cc.aa();
+                    //     },
+
+                    // icon: Icon(
+                    //   Icons.insert_comment_rounded,
+                    //   size: 40.h,
+                    //   color: AppColors.iconGrey,
+                    // )),
+
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: _isApiCall
+                            ? null
+                            : () {
+                                if (likeIndex == null) {
+                                  _postLike();
+                                } else {
+                                  _postLikeDelete();
+                                }
+                              },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.thumb_up_rounded,
+                              size: 30.h,
+                              color: likeIndex != null
+                                  ? AppColors.btnColor
+                                  : AppColors.iconGrey,
+                            ),
+                            SizedBox(
+                              width: 5.w,
+                            ),
+                            Text(
+                              "Like",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: AppColors.iconGrey,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _showComments = !_showComments;
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.comment_rounded,
+                              size: 27.5.h,
+                              color: AppColors.iconGrey,
+                            ),
+                            SizedBox(
+                              width: 5.w,
+                            ),
+                            Text(
+                              "Comments",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: AppColors.iconGrey,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            HeroDialogRoute(
+                                builder: (context) =>
+                                    PostSharePage(postId: widget.post.id)),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.group_rounded,
+                              size: 30.h,
+                              color: AppColors.iconGrey,
+                            ),
+                            SizedBox(
+                              width: 5.w,
+                            ),
+                            Text(
+                              "Share",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: AppColors.iconGrey,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // IconButton(
+                    //     onPressed: () {
+                    // Navigator.of(context).push(
+                    //   HeroDialogRoute(
+                    //       builder: (context) =>
+                    //           PostSharePage(postId: widget.post.id)),
+                    // );
+                    //     },
+                    //     icon: Icon(
+                    //       Icons.redo_rounded,
+                    //       size: 40.h,
+                    //       color: AppColors.iconGrey,
+                    //     )),
+                    // Expanded(
+                    //   child: Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: IconButton(
+                    //         onPressed: () {
+                    // Navigator.of(context).push(HeroDialogRoute(
+                    //     builder: (context) => ConfirmationPopup(
+                    //         onTap: _postAbuse,
+                    //         title: "Report",
+                    //         message: "Do you want to report post?",
+                    //         leftBtnText: "Report",
+                    //         rightBtnText: "Cancel")));
+                    //         },
+                    //         icon: Icon(
+                    //           Icons.report_gmailerrorred_rounded,
+                    //           size: 40.h,
+                    //           color: AppColors.iconGrey,
+                    //         )),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ),
           if (_showComments)
             CommentSection(
               comments: widget.post.comments,
               postId: widget.post.id,
-            )
+            ),
+          SizedBox(
+            height: 5.h,
+          )
         ],
       ),
     );
@@ -431,7 +452,7 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Container _buildPersonRow(String name, DateTime date) {
+  Container _buildPersonRow(String name, String county, DateTime date) {
     return Container(
       color: Colors.white,
       height: 75.h,
@@ -469,6 +490,15 @@ class _PostViewState extends State<PostView> {
                   textAlign: TextAlign.left,
                 ),
                 Text(
+                  county + " County",
+                  style: TextStyle(
+                      fontSize: 11.sp,
+                      // color: Colors.grey[800],
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.left,
+                ),
+                Text(
                   UtilCommon.convertToAgo(date),
                   style: TextStyle(
                       fontSize: 14.sp,
@@ -486,13 +516,18 @@ class _PostViewState extends State<PostView> {
                 icon: Icon(Icons.more_horiz_rounded, size: 40.h),
                 itemBuilder: (context) => [
                   if (!widget.post.isShare && _user.id != widget.post.personId)
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: "Report",
                       child: ListTile(
                         title: Text(
                           "Report",
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.left,
                         ),
-                        trailing: Icon(
+                        trailing: const Icon(
                           Icons.error_rounded,
                           color: Colors.black,
                         ),
@@ -537,12 +572,14 @@ class _PostViewState extends State<PostView> {
                             rightBtnText: "Cancel")));
                   }
                   if (value == "Edit") {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => UpdatePost(
-                                post: widget.post,
-                              )),
-                    );
+                    if (widget.post.report == null) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => UpdatePost(
+                                  post: widget.post,
+                                )),
+                      );
+                    }
                   }
                   if (value == "Delete") {
                     Navigator.push(
@@ -788,6 +825,154 @@ class MediaView extends StatelessWidget {
         ),
         errorWidget: (context, url, error) =>
             Icon(Icons.error, color: AppColors.btnColor, size: 30.h),
+      ),
+    );
+  }
+}
+
+class ReportView extends StatelessWidget {
+  final Report report;
+  const ReportView({Key? key, required this.report}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 0.w),
+      color: Colors.transparent,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildReportDataRow("Start time : ", report.startDateTime,
+                isTop: true),
+            _buildReportDataRow("End time : ", report.endDateTime),
+            _buildReportDataRow(
+                "Number of deer seen : ", report.numDeer.toString()),
+            _buildReportDataRow(
+                "Number of bucks seen : ", report.numBucks.toString()),
+            _buildReportDataRow(
+                "Weather rate : ", report.weatherRating.toString()),
+            _buildReportDataRow(
+                "Hunting duration : ", "${report.numHours} hour/s"),
+            _buildReportDataRow(
+                "Weapon used : ", report.weaponUsed == "A" ? "Bow" : "Gun"),
+            _buildReportDataRow(
+                "Hunt success : ", report.isSuccess ? "Yes" : "No"),
+            _buildReportDataRow("Hunt success time : ",
+                "${report.successTime == null || report.successTime == "" ? "-" : report.successTime}"),
+          ]),
+    );
+  }
+
+  _buildReportDataRow(String name, String data, {bool isTop = false}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 10.w),
+      child: Container(
+        alignment: Alignment.centerLeft,
+        // height: 30.h,
+        width: 428.w,
+        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 5.w),
+        decoration: BoxDecoration(
+            border: Border(
+                top: isTop
+                    ? BorderSide(
+                        color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
+                    : BorderSide.none,
+                bottom: BorderSide(
+                    color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              name,
+              style: TextStyle(
+                  fontSize: 15.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.left,
+            ),
+            Expanded(
+              child: Text(
+                data,
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400),
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ContestView extends StatelessWidget {
+  final Contest contest;
+  const ContestView({Key? key, required this.contest}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 0.w),
+      color: Colors.transparent,
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildReportDataRow("Spread : ", contest.spread.toString(),
+                isTop: true),
+            _buildReportDataRow("Length : ", contest.length.toString()),
+            _buildReportDataRow(
+                "Number of tines : ", contest.numTines.toString()),
+            _buildReportDataRow(
+                "Length tines : ", contest.lengthTines.toString()),
+          ]),
+    );
+  }
+
+  _buildReportDataRow(String name, String data, {bool isTop = false}) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 10.w),
+      child: Container(
+        alignment: Alignment.centerLeft,
+        // height: 30.h,
+        width: 428.w,
+        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 5.w),
+        decoration: BoxDecoration(
+            border: Border(
+                top: isTop
+                    ? BorderSide(
+                        color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
+                    : BorderSide.none,
+                bottom: BorderSide(
+                    color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              name,
+              style: TextStyle(
+                  fontSize: 15.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.left,
+            ),
+            Expanded(
+              child: Text(
+                data,
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400),
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

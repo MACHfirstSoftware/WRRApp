@@ -11,6 +11,7 @@ import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
+import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
@@ -25,7 +26,7 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
-  bool _saveAccountInfo = false;
+  bool _saveAccountInfo = true;
   @override
   void initState() {
     _emailController = TextEditingController();
@@ -89,9 +90,15 @@ class _SignInPageState extends State<SignInPage> {
           _emailController.text, _passwordController.text);
 
       res.when(success: (User user) async {
-        final countyProvider =
-            Provider.of<CountyProvider>(context, listen: false);
-        await countyProvider.getAllCounties();
+        // final countyProvider =
+        //     Provider.of<CountyProvider>(context, listen: false);
+        // await countyProvider.getAllCounties();
+        if (_saveAccountInfo) {
+          await StoreUtils.saveUser({
+            "email": _emailController.text,
+            "password": _passwordController.text
+          });
+        }
         Provider.of<UserProvider>(context, listen: false).setUser(user);
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
@@ -202,7 +209,7 @@ class _SignInPageState extends State<SignInPage> {
                         width: 15.w,
                       ),
                       Text(
-                        "Save Account Info ?",
+                        "Remember me",
                         style: TextStyle(
                             fontSize: 14.sp,
                             color: Colors.white,

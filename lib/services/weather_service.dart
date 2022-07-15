@@ -89,13 +89,13 @@ class WeatherService {
     }
   }
 
-  static Future<ApiResult<Astros>> getAstroDetails(String countyName) async {
+  static Future<ApiResult<Astro>> getAstroDetails(String countyName) async {
     try {
       final response = await _dio.get(
           "http://api.weatherapi.com/v1/astronomy.json?key=${Constant.weatherApiKey}&q=$countyName");
       if (response.statusCode == 200) {
         return ApiResult.success(
-            data: Astros.fromJson(response.data["astronomy"]["astro"]));
+            data: Astro.fromJson(response.data["astronomy"]["astro"]));
       } else {
         return ApiResult.responseError(
             responseError: ResponseError(

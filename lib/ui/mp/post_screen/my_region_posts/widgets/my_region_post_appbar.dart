@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 
-class MyCountyPostAppBar extends StatefulWidget {
-  const MyCountyPostAppBar({Key? key}) : super(key: key);
+class MyRegionPostAppBar extends StatefulWidget {
+  const MyRegionPostAppBar({Key? key}) : super(key: key);
 
   @override
-  State<MyCountyPostAppBar> createState() => _MyCountyPostAppBarState();
+  State<MyRegionPostAppBar> createState() => _MyRegionPostAppBarState();
 }
 
-class _MyCountyPostAppBarState extends State<MyCountyPostAppBar> {
+class _MyRegionPostAppBarState extends State<MyRegionPostAppBar> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(

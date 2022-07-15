@@ -57,7 +57,7 @@ class _RegisterPageState extends State<RegisterPage> {
   _init() async {
     Provider.of<RegisterProvider>(context, listen: false).clearData();
     final countyProvider = Provider.of<CountyProvider>(context, listen: false);
-    await countyProvider.getAllCounties();
+    // await countyProvider.getAllCounties();
     if (countyProvider.counties.isNotEmpty) {
       _questions = await QuestionnaireService.getQuestionnarie();
       if (_questions?.isNotEmpty ?? false) {
