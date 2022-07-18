@@ -40,7 +40,7 @@ class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
                   child: Text(
                     "New Post",
                     style: TextStyle(
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,

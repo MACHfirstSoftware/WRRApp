@@ -36,9 +36,9 @@ class _ReportBottomAppbarState extends State<ReportBottomAppbar> {
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(7.5.w)),
                   child: Text(
-                    "New Post",
+                    "New Report",
                     style: TextStyle(
-                        fontSize: 18.sp,
+                        fontSize: 16.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,

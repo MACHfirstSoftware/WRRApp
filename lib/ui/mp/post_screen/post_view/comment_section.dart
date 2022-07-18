@@ -35,7 +35,7 @@ class CommentSection extends StatefulWidget {
 }
 
 class _CommentSectionState extends State<CommentSection> {
-  bool _isSeeAll = false;
+  // bool _isSeeAll = false;
   bool _isSubmiting = false;
   bool _isComment = true;
   bool _isUpdate = false;
@@ -54,7 +54,7 @@ class _CommentSectionState extends State<CommentSection> {
     _user = Provider.of<UserProvider>(context, listen: false).user;
     _comments = widget.comments;
     _commentController = TextEditingController();
-    focusNode.requestFocus();
+    // focusNode.requestFocus();
     super.initState();
   }
 
@@ -213,12 +213,12 @@ class _CommentSectionState extends State<CommentSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (!_isSeeAll && _comments.isNotEmpty)
-          _buildCommentTile(_comments[0], 0),
-        if (_isSeeAll)
+        // if (!_isSeeAll && _comments.isNotEmpty)
+        //   _buildCommentTile(_comments[0], 0),
+        // if (_isSeeAll)
           for (int index = 0; index < _comments.length; index++)
             _buildCommentTile(_comments[index], index),
-        if (_comments.length > 1) _buildShowMoreIcon(),
+        // if (_comments.length > 1) _buildShowMoreIcon(),
         _isUpdate ? _buildEditField() : _buildWriteComment(),
       ],
     );
@@ -444,18 +444,18 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  _buildShowMoreIcon() {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _isSeeAll = !_isSeeAll;
-        });
-      },
-      child: Icon(_isSeeAll
-          ? Icons.keyboard_arrow_up_rounded
-          : Icons.keyboard_arrow_down_rounded),
-    );
-  }
+  // _buildShowMoreIcon() {
+  //   return GestureDetector(
+  //     onTap: () {
+  //       setState(() {
+  //         _isSeeAll = !_isSeeAll;
+  //       });
+  //     },
+  //     child: Icon(_isSeeAll
+  //         ? Icons.keyboard_arrow_up_rounded
+  //         : Icons.keyboard_arrow_down_rounded),
+  //   );
+  // }
 
   _buildWriteComment() {
     return Container(

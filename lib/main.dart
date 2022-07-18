@@ -5,6 +5,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
@@ -82,6 +83,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<RegionProvider>(create: (_) => RegionProvider()),
         ChangeNotifierProvider<ReportPostProvider>(
             create: (_) => ReportPostProvider()),
+            ChangeNotifierProvider<AllPostProvider>(
+            create: (_) => AllPostProvider()),
         ChangeNotifierProvider<ContestProvider>(
             create: (_) => ContestProvider()),
       ],

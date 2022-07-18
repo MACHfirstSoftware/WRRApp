@@ -6,6 +6,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
@@ -200,6 +201,8 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
           Provider.of<RegionPostProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);
           Provider.of<ReportPostProvider>(context, listen: false)
+              .chnageRegion(_user.id, value.id);
+              Provider.of<AllPostProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);
           Provider.of<ContestProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);

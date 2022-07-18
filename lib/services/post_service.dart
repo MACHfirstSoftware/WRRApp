@@ -63,6 +63,32 @@ class PostService {
     }
   }
 
+  static Future<ApiResult<List<Post>>> getAllPosts(
+      String userId, int regionId,
+      {DateTime? lastRecordTime}) async {
+    try {
+      final response = await CustomHttp.getDio().get(Constant.baseUrl +
+          "/Post/$userId/All" +
+          (lastRecordTime != null
+              ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
+              : "?regionId=$regionId"));
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => Post.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
   static Future<ApiResult<List<Post>>> getReportPosts(
       String userId, int regionId,
       {DateTime? lastRecordTime}) async {

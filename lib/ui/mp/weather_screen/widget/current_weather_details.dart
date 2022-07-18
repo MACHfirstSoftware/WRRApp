@@ -56,140 +56,140 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
     ];
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(
-            height: 40.h,
-            width: 428.w,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 50.w,
-                width: 50.w,
-                padding: EdgeInsets.all(10.w),
-                decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(10.w)),
-                child: Image.network(
-                  "https:${widget.currentWeather.condition.icon}",
-                  height: 40.w,
-                  width: 40.w,
-                  fit: BoxFit.fill,
-                  color: Colors.white,
-                ),
-              ),
-              SizedBox(
-                width: 20.w,
-              ),
-              Text(
-                // "64° f",
-                "${widget.currentWeather.tempF.toString()}° f",
-                style: TextStyle(
-                    fontSize: 40.sp,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SizedBox(
+              height: 40.h,
+              width: 428.w,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 50.w,
+                  width: 50.w,
+                  padding: EdgeInsets.all(10.w),
+                  decoration: BoxDecoration(
+                      color: Colors.blueGrey,
+                      borderRadius: BorderRadius.circular(10.w)),
+                  child: Image.network(
+                    "https:${widget.currentWeather.condition.icon}",
+                    height: 40.w,
+                    width: 40.w,
+                    fit: BoxFit.fill,
                     color: Colors.white,
-                    fontWeight: FontWeight.w700),
-                textAlign: TextAlign.left,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Text(
-            "Feel like ${widget.currentWeather.feelslikeF}° f",
-            style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w400),
-            textAlign: TextAlign.left,
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Text(
-            // "Cloudy",
-            widget.currentWeather.condition.text,
-            style: TextStyle(
-                fontSize: 22.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600),
-            textAlign: TextAlign.left,
-          ),
-
-          SizedBox(
-            height: 15.h,
-          ),
-          _buildAstroRow("assets/icons/dayLight.svg", widget.astro.sunrise,
-              widget.astro.sunset),
-
-          SizedBox(
-            height: 15.h,
-          ),
-          _buildAstroRow("assets/icons/moon.svg", widget.astro.moonrise,
-              widget.astro.moonset),
-          // SizedBox(
-          //   height: 30.h,
-          // ),
-          // Row(
-          //   children: [
-          //     const Spacer(),
-          //     Container(
-          //       height: 40.w,
-          //       width: 40.w,
-          //       padding: EdgeInsets.all(10.w),
-          //       decoration: BoxDecoration(
-          //           color: Colors.blueGrey,
-          //           borderRadius: BorderRadius.circular(10.w)),
-          //       child: SvgPicture.asset(
-          //         "assets/icons/compass.svg",
-          //         height: 15.w,
-          //         width: 15.w,
-          //       ),
-          //     ),
-          //     const Spacer(),
-          //     Text(
-          //       // "12.50 mph",
-          //       widget.currentWeather.current.windMph.toString(),
-          //       style: TextStyle(
-          //           fontSize: 14.sp,
-          //           color: Colors.white,
-          //           fontWeight: FontWeight.w600),
-          //       textAlign: TextAlign.left,
-          //     ),
-          //     const Spacer(),
-          //     Text(
-          //       // "SSW",
-          //       widget.currentWeather.current.windDir,
-          //       style: TextStyle(
-          //           fontSize: 14.sp,
-          //           color: Colors.white,
-          //           fontWeight: FontWeight.w600),
-          //       textAlign: TextAlign.left,
-          //     ),
-          //     const Spacer(),
-          //     Text(
-          //       // "210°",
-          //       widget.currentWeather.current.windDegree.toString(),
-          //       style: TextStyle(
-          //           fontSize: 14.sp,
-          //           color: Colors.white,
-          //           fontWeight: FontWeight.w600),
-          //       textAlign: TextAlign.left,
-          //     ),
-          //     const Spacer(),
-          //   ],
-          // ),
-          SizedBox(
-            height: 15.h,
-          ),
-
-          Flexible(
-            child: Card(
+                  ),
+                ),
+                SizedBox(
+                  width: 20.w,
+                ),
+                Text(
+                  // "64° f",
+                  "${widget.currentWeather.tempF.toString()}° f",
+                  style: TextStyle(
+                      fontSize: 40.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.left,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Text(
+              "Feel like ${widget.currentWeather.feelslikeF}° f",
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400),
+              textAlign: TextAlign.left,
+            ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Text(
+              // "Cloudy",
+              widget.currentWeather.condition.text,
+              style: TextStyle(
+                  fontSize: 22.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+              textAlign: TextAlign.left,
+            ),
+      
+            SizedBox(
+              height: 15.h,
+            ),
+            _buildAstroRow("assets/icons/dayLight.svg", widget.astro.sunrise,
+                widget.astro.sunset),
+      
+            SizedBox(
+              height: 15.h,
+            ),
+            _buildAstroRow("assets/icons/moon.svg", widget.astro.moonrise,
+                widget.astro.moonset),
+            // SizedBox(
+            //   height: 30.h,
+            // ),
+            // Row(
+            //   children: [
+            //     const Spacer(),
+            //     Container(
+            //       height: 40.w,
+            //       width: 40.w,
+            //       padding: EdgeInsets.all(10.w),
+            //       decoration: BoxDecoration(
+            //           color: Colors.blueGrey,
+            //           borderRadius: BorderRadius.circular(10.w)),
+            //       child: SvgPicture.asset(
+            //         "assets/icons/compass.svg",
+            //         height: 15.w,
+            //         width: 15.w,
+            //       ),
+            //     ),
+            //     const Spacer(),
+            //     Text(
+            //       // "12.50 mph",
+            //       widget.currentWeather.current.windMph.toString(),
+            //       style: TextStyle(
+            //           fontSize: 14.sp,
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.w600),
+            //       textAlign: TextAlign.left,
+            //     ),
+            //     const Spacer(),
+            //     Text(
+            //       // "SSW",
+            //       widget.currentWeather.current.windDir,
+            //       style: TextStyle(
+            //           fontSize: 14.sp,
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.w600),
+            //       textAlign: TextAlign.left,
+            //     ),
+            //     const Spacer(),
+            //     Text(
+            //       // "210°",
+            //       widget.currentWeather.current.windDegree.toString(),
+            //       style: TextStyle(
+            //           fontSize: 14.sp,
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.w600),
+            //       textAlign: TextAlign.left,
+            //     ),
+            //     const Spacer(),
+            //   ],
+            // ),
+            SizedBox(
+              height: 15.h,
+            ),
+      
+            Card(
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.w)),
@@ -233,12 +233,13 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 //         .map((e) => _buildDataRow(e["key"]!, e["value"]!))
                 //   ],
                 // ),
-
+      
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                   child: ListView.separated(
                       padding: EdgeInsets.zero,
+                      shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (_, index) {
                         return _buildDataRow(moreDetails[index]["key"]!,
@@ -254,11 +255,11 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 10.h,
-          )
-        ],
+            SizedBox(
+              height: 10.h,
+            )
+          ],
+        ),
       ),
     );
   }

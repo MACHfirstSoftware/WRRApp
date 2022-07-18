@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/all_posts/all_post_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_region_posts/my_region_posts.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/my_wrr_posts.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_page_appbar.dart';
@@ -20,7 +21,7 @@ class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: AppBar(
@@ -31,6 +32,9 @@ class _PostPageState extends State<PostPage> {
           automaticallyImplyLeading: false,
           bottom: const TabBar(tabs: [
             Tab(
+              text: "All",
+            ),
+            Tab(
               text: "My WRR",
             ),
             Tab(
@@ -38,7 +42,11 @@ class _PostPageState extends State<PostPage> {
             ),
           ]),
         ),
-        body: const TabBarView(children: [MyWRRPosts(), MyRegionPosts()]),
+        body: const TabBarView(children: [
+          AllPostsPage(),
+          MyWRRPosts(), 
+          MyRegionPosts()
+          ]),
       ),
     );
   }

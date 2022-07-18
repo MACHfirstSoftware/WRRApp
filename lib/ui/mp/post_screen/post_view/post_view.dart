@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/contest.dart';
-import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
@@ -207,6 +206,14 @@ class _PostViewState extends State<PostView> {
               alignment: Alignment.bottomLeft,
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
               color: Colors.white,
+              // decoration: BoxDecoration(
+              //   color: Colors.white,
+              //   borderRadius: BorderRadius.circular(5.h),
+              //   border: Border.all(
+              //     color: Colors.grey[400]!,
+              //     width: 1.h
+              //   )
+              // ),
               // height: 40.h,
               child: Row(
                 children: [
@@ -215,7 +222,7 @@ class _PostViewState extends State<PostView> {
                     style: TextStyle(
                         fontSize: 16.sp,
                         color: Colors.black,
-                        fontWeight: FontWeight.w600),
+                        fontWeight: FontWeight.w400),
                     textAlign: TextAlign.left,
                   ),
                   SizedBox(width: 25.w),
@@ -240,16 +247,19 @@ class _PostViewState extends State<PostView> {
           if (widget.post.postType == "General" ||
               widget.post.postType == "Report")
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 2.5.h),
+              padding: EdgeInsets.symmetric(vertical: 0.h),
               child: Container(
                 alignment: Alignment.center,
                 height: 50.h,
                 margin: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: BoxDecoration(
                     color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.h),
                     border: Border(
                       bottom: BorderSide(color: Colors.black54, width: 0.75.w),
                       top: BorderSide(color: Colors.black54, width: 0.75.w),
+                      left: BorderSide(color: Colors.black54, width: 0.75.w),
+                      right: BorderSide(color: Colors.black54, width: 0.75.w),
                     )),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -301,7 +311,7 @@ class _PostViewState extends State<PostView> {
                           children: [
                             Icon(
                               Icons.thumb_up_rounded,
-                              size: 30.h,
+                              size: 25.h,
                               color: likeIndex != null
                                   ? AppColors.btnColor
                                   : AppColors.iconGrey,
@@ -309,13 +319,16 @@ class _PostViewState extends State<PostView> {
                             SizedBox(
                               width: 5.w,
                             ),
-                            Text(
-                              "Like",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  color: AppColors.iconGrey,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.center,
+                            FittedBox(
+                              fit:BoxFit.scaleDown,
+                              child: Text(
+                                "Like",
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: AppColors.iconGrey,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ],
                         ),
@@ -334,20 +347,25 @@ class _PostViewState extends State<PostView> {
                           children: [
                             Icon(
                               Icons.comment_rounded,
-                              size: 27.5.h,
+                              size: 25.h,
                               color: AppColors.iconGrey,
                             ),
                             SizedBox(
                               width: 5.w,
                             ),
-                            Text(
-                              "Comments",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  color: AppColors.iconGrey,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.center,
-                            ),
+                           Expanded(
+                             child: FittedBox(
+                                fit:BoxFit.scaleDown,
+                                child: Text(
+                                  "Comments",
+                                  style: TextStyle(
+                                      fontSize: 15.sp,
+                                      color: AppColors.iconGrey,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                           ),
                           ],
                         ),
                       ),
@@ -367,19 +385,22 @@ class _PostViewState extends State<PostView> {
                           children: [
                             Icon(
                               Icons.group_rounded,
-                              size: 30.h,
+                              size: 25.h,
                               color: AppColors.iconGrey,
                             ),
                             SizedBox(
                               width: 5.w,
                             ),
-                            Text(
-                              "Share",
-                              style: TextStyle(
-                                  fontSize: 18.sp,
-                                  color: AppColors.iconGrey,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.center,
+                            FittedBox(
+                              fit:BoxFit.scaleDown,
+                              child: Text(
+                                "Share",
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: AppColors.iconGrey,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ],
                         ),
@@ -439,13 +460,13 @@ class _PostViewState extends State<PostView> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 7.5.w),
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Text(
           text,
           style: TextStyle(
-              fontSize: isTitle ? 18.sp : 16.sp,
-              color: isTitle ? Colors.black : Colors.grey[600],
-              fontWeight: isTitle ? FontWeight.w600 : FontWeight.w400),
+              fontSize: isTitle ? 16.sp : 12.sp,
+              color: isTitle ? Colors.black : Colors.grey[400],
+              fontWeight: isTitle ? FontWeight.w500 : FontWeight.w400),
           textAlign: TextAlign.left,
         ),
       ),
@@ -492,7 +513,7 @@ class _PostViewState extends State<PostView> {
                 Text(
                   county + " County",
                   style: TextStyle(
-                      fontSize: 11.sp,
+                      fontSize: 12.sp,
                       // color: Colors.grey[800],
                       color: Colors.black54,
                       fontWeight: FontWeight.w400),
@@ -501,7 +522,7 @@ class _PostViewState extends State<PostView> {
                 Text(
                   UtilCommon.convertToAgo(date),
                   style: TextStyle(
-                      fontSize: 14.sp,
+                      fontSize: 11.sp,
                       color: Colors.grey,
                       fontWeight: FontWeight.w400),
                   textAlign: TextAlign.left,
@@ -837,29 +858,39 @@ class ReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 0.w),
-      color: Colors.transparent,
+      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 0.w),
+      margin: EdgeInsets.only(top: 10.h, left: 10.w, right: 10.w, bottom: 0),
+      // color: Colors.transparent,
+      decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.h),
+                    border: Border(
+                      bottom: BorderSide(color: Colors.black54, width: 0.75.w),
+                      top: BorderSide(color: Colors.black54, width: 0.75.w),
+                      left: BorderSide(color: Colors.black54, width: 0.75.w),
+                      right: BorderSide(color: Colors.black54, width: 0.75.w),
+                    )),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReportDataRow("Start time : ", report.startDateTime,
+            _buildReportDataRow("Start time", report.startDateTime,
                 isTop: true),
-            _buildReportDataRow("End time : ", report.endDateTime),
+            // _buildReportDataRow("End time : ", report.endDateTime),
             _buildReportDataRow(
-                "Number of deer seen : ", report.numDeer.toString()),
+                "No. Deer Seen", report.numDeer.toString()),
             _buildReportDataRow(
-                "Number of bucks seen : ", report.numBucks.toString()),
+                "No. Bucks Seen", report.numBucks.toString()),
             _buildReportDataRow(
-                "Weather rate : ", report.weatherRating.toString()),
+                "Weather Rating", report.weatherRating.toString()),
             _buildReportDataRow(
-                "Hunting duration : ", "${report.numHours} hour/s"),
+                "Duration", "${report.numHours} hour/s"),
             _buildReportDataRow(
-                "Weapon used : ", report.weaponUsed == "A" ? "Bow" : "Gun"),
+                "Type", report.weaponUsed == "A" ? "Bow" : "Gun"),
             _buildReportDataRow(
-                "Hunt success : ", report.isSuccess ? "Yes" : "No"),
-            _buildReportDataRow("Hunt success time : ",
-                "${report.successTime == null || report.successTime == "" ? "-" : report.successTime}"),
+                "Successful?", report.isSuccess ? "Yes" : "No"),
+            // _buildReportDataRow("Hunt success time : ",
+            //     "${report.successTime == null || report.successTime == "" ? "-" : report.successTime}"),
           ]),
     );
   }
@@ -871,15 +902,15 @@ class ReportView extends StatelessWidget {
         alignment: Alignment.centerLeft,
         // height: 30.h,
         width: 428.w,
-        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 5.w),
-        decoration: BoxDecoration(
-            border: Border(
-                top: isTop
-                    ? BorderSide(
-                        color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
-                    : BorderSide.none,
-                bottom: BorderSide(
-                    color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
+        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 15.w),
+        // decoration: BoxDecoration(
+        //     border: Border(
+        //         top: isTop
+        //             ? BorderSide(
+        //                 color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
+        //             : BorderSide.none,
+        //         bottom: BorderSide(
+        //             color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -916,19 +947,28 @@ class ContestView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 0.w),
-      color: Colors.transparent,
+      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 0.w),
+      margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+      decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.h),
+                    border: Border(
+                      bottom: BorderSide(color: Colors.black54, width: 0.75.w),
+                      top: BorderSide(color: Colors.black54, width: 0.75.w),
+                      left: BorderSide(color: Colors.black54, width: 0.75.w),
+                      right: BorderSide(color: Colors.black54, width: 0.75.w),
+                    )),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReportDataRow("Spread : ", contest.spread.toString(),
+            _buildReportDataRow("Spread", contest.spread.toString(),
                 isTop: true),
-            _buildReportDataRow("Length : ", contest.length.toString()),
+            _buildReportDataRow("Length", contest.length.toString()),
             _buildReportDataRow(
-                "Number of tines : ", contest.numTines.toString()),
+                "Number of Tines", contest.numTines.toString()),
             _buildReportDataRow(
-                "Length tines : ", contest.lengthTines.toString()),
+                "Length Tines", contest.lengthTines.toString()),
           ]),
     );
   }
@@ -940,15 +980,15 @@ class ContestView extends StatelessWidget {
         alignment: Alignment.centerLeft,
         // height: 30.h,
         width: 428.w,
-        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 5.w),
-        decoration: BoxDecoration(
-            border: Border(
-                top: isTop
-                    ? BorderSide(
-                        color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
-                    : BorderSide.none,
-                bottom: BorderSide(
-                    color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
+        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 15.w),
+        // decoration: BoxDecoration(
+        //     border: Border(
+        //         top: isTop
+        //             ? BorderSide(
+        //                 color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
+        //             : BorderSide.none,
+        //         bottom: BorderSide(
+        //             color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

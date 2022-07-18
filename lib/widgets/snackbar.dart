@@ -141,15 +141,19 @@ class SnackBarContent extends StatelessWidget {
                       color: Colors.white,
                       fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  messageText,
-                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w300,
-                      ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: FittedBox(
+                    child: Text(
+                      messageText,
+                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                            color: Colors.white,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w300,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
               ],
             ),
