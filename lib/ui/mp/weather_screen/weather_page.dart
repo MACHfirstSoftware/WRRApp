@@ -59,17 +59,27 @@ class _WeatherPageState extends State<WeatherPage>
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           title: const WeatherAppBar(),
-          bottom: const TabBar(tabs: [
-            Tab(
-              text: "Current",
-            ),
-            Tab(
-              text: "Forecast",
-            ),
-            // Tab(
-            //   text: "History",
-            // ),
-          ]),
+          bottom: TabBar(
+              onTap: (int? tabIndex) {
+                if (tabIndex! == 0) {
+                  Provider.of<WeatherProvider>(context, listen: false)
+                      .onPagechange(-1);
+                } else {
+                  Provider.of<WeatherProvider>(context, listen: false)
+                      .onPagechange(0);
+                }
+              },
+              tabs: const [
+                Tab(
+                  text: "Current",
+                ),
+                Tab(
+                  text: "Forecast",
+                ),
+                // Tab(
+                //   text: "History",
+                // ),
+              ]),
         ),
         body: Consumer<WeatherProvider>(builder: (context, weatherProvider, _) {
           if (weatherProvider.apiStatus == ApiStatus.isBusy) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wisconsin_app/models/weather.dart';
+import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_body.dart';
 
 class ForecastWeather extends StatefulWidget {
@@ -13,7 +15,7 @@ class ForecastWeather extends StatefulWidget {
 
 class _ForecastWeatherState extends State<ForecastWeather> {
   late PageController _pageController;
-  int hour = 0;
+  // int hour = 0;
   @override
   void initState() {
     _pageController = PageController(initialPage: 0);
@@ -31,21 +33,12 @@ class _ForecastWeatherState extends State<ForecastWeather> {
     return PageView.builder(
         controller: _pageController,
         itemCount: widget.forecastDays.length,
+        onPageChanged: (int index) {
+          Provider.of<WeatherProvider>(context, listen: false)
+              .onPagechange(index);
+        },
         itemBuilder: (_, index) {
           return ForecastBody(forecastDay: widget.forecastDays[index]);
-          // return GestureDetector(
-          //   onTap: () {
-          //     setState(() {
-          //       hour = int.parse(DateFormat.H().format(DateTime.now())) - 1;
-          //     });
-          //   },
-          //   child: Container(
-          //     alignment: Alignment.center,
-          //     color: Colors.white,
-          //     child:
-          //         Text(hour.toString(), style: const TextStyle(fontSize: 25)),
-          //   ),
-          // );
         });
   }
 }

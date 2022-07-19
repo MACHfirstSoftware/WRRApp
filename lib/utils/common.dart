@@ -59,6 +59,12 @@ class UtilCommon {
     return DateFormat("MM/dd/yyyy").add_jms().parse(value);
     // return DateFormat.M().add_d().add_y().add_jms().parse(value);
   }
+
+  static String getDate(String value, {int forecasrDay = 0}) {
+    DateTime date = DateTime.parse(value.substring(0, 10) + " 00:00:00.000");
+    return DateFormat("MMM dd, yyyy")
+        .format(date.add(Duration(days: forecasrDay)));
+  }
 }
 
 class StoreUtils {

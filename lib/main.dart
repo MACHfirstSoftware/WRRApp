@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<RegionProvider>(create: (_) => RegionProvider()),
         ChangeNotifierProvider<ReportPostProvider>(
             create: (_) => ReportPostProvider()),
-            ChangeNotifierProvider<AllPostProvider>(
+        ChangeNotifierProvider<AllPostProvider>(
             create: (_) => AllPostProvider()),
         ChangeNotifierProvider<ContestProvider>(
             create: (_) => ContestProvider()),
@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> {
                 800: Color(0xCCF23A02),
                 900: Color(0xE6F23A02),
               }),
-              textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp),
+              textTheme: Typography.englishLike2018.apply(fontSizeFactor: 0.5),
             ),
             home: child,
           );

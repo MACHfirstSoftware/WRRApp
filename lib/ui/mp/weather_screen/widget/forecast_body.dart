@@ -20,7 +20,7 @@ class _ForecastBodyState extends State<ForecastBody> {
 
   @override
   void initState() {
-    hour = int.parse(DateFormat.H().format(DateTime.now())) - 1;
+    hour = int.parse(DateFormat.H().format(DateTime.now()));
     super.initState();
   }
 
