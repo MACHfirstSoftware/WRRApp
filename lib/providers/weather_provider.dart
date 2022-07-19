@@ -14,6 +14,7 @@ class WeatherProvider with ChangeNotifier {
   Weather? _weather;
   // CurrentWeather? _currentWeather;
   // Astros? _astro;
+  int pageNum = -1;
   String errorMessage = '';
 
   ApiStatus get apiStatus => _apiStatus;
@@ -21,6 +22,11 @@ class WeatherProvider with ChangeNotifier {
   // CurrentWeather get currentWeather => _currentWeather!;
   // Astros get astro => _astro!;
   Weather get weather => _weather!;
+
+  void onPagechange(int index) {
+    pageNum = index;
+    notifyListeners();
+  }
 
   void changeCounty(County _countyValue) {
     _county = _countyValue;
