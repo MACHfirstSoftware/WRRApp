@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:focused_menu/focused_menu.dart';
 import 'package:focused_menu/modals.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
@@ -17,18 +16,11 @@ import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 
-// GlobalKey<_CommentSectionState> globalKey = GlobalKey();
-
 class CommentSection extends StatefulWidget {
   final List<Comment> comments;
   final int postId;
   const CommentSection({Key? key, required this.comments, required this.postId})
       : super(key: key);
-  // aa() {
-  //   print("-----------------------------");
-  //   _CommentSectionState ss = _CommentSectionState();
-  //   ss.bb();
-  // }
 
   @override
   State<CommentSection> createState() => _CommentSectionState();
@@ -65,17 +57,6 @@ class _CommentSectionState extends State<CommentSection> {
     focusNodeEdit.dispose();
     super.dispose();
   }
-
-  // bb() {
-  //   print("bbb---------");
-
-  //   _isComment = true;
-  //   if (mounted) {
-  //     print("MOUNTED---------");
-  //     FocusScope.of(context).requestFocus(focusNode);
-  //   }
-  //   focusNode.requestFocus();
-  // }
 
   _submitComment() async {
     setState(() {
@@ -216,8 +197,8 @@ class _CommentSectionState extends State<CommentSection> {
         // if (!_isSeeAll && _comments.isNotEmpty)
         //   _buildCommentTile(_comments[0], 0),
         // if (_isSeeAll)
-          for (int index = 0; index < _comments.length; index++)
-            _buildCommentTile(_comments[index], index),
+        for (int index = 0; index < _comments.length; index++)
+          _buildCommentTile(_comments[index], index),
         // if (_comments.length > 1) _buildShowMoreIcon(),
         _isUpdate ? _buildEditField() : _buildWriteComment(),
       ],
@@ -462,7 +443,7 @@ class _CommentSectionState extends State<CommentSection> {
       color: Colors.transparent,
       width: 428.w,
       margin: EdgeInsets.symmetric(vertical: 7.5.h),
-      padding: EdgeInsets.symmetric(horizontal: 15.w),
+      padding: EdgeInsets.symmetric(horizontal: 10.w),
       child: Column(
         children: [
           if (!_isComment)
@@ -545,13 +526,13 @@ class _CommentSectionState extends State<CommentSection> {
                     decoration: TextDecoration.none),
                 border: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[600]!),
-                    borderRadius: BorderRadius.circular(15.w)),
+                    borderRadius: BorderRadius.circular(10.h)),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[600]!),
-                    borderRadius: BorderRadius.circular(15.w)),
+                    borderRadius: BorderRadius.circular(10.h)),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey[600]!),
-                    borderRadius: BorderRadius.circular(15.w)),
+                    borderRadius: BorderRadius.circular(10.h)),
               ),
             ),
           ),

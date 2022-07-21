@@ -38,7 +38,7 @@ class ViewModels {
         Text(
           errorMessage,
           style: TextStyle(
-              fontSize: 20.sp,
+              fontSize: 18.sp,
               color: AppColors.btnColor,
               fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
@@ -51,18 +51,26 @@ class ViewModels {
           onTap: onTap,
           child: Container(
             alignment: Alignment.center,
-            height: 60.h,
-            width: 190.w,
+            height: 40.h,
+            width: 150.w,
             decoration: BoxDecoration(
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Try Again",
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
+            child: SizedBox(
+              height: 30.h,
+              width: 130.w,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(
+                  "Try Again",
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
         ),
@@ -71,13 +79,98 @@ class ViewModels {
   }
 
   static postEmply() {
-    return Center(
-      child: Text(
-        "No Posts Available",
-        style: TextStyle(
-            fontSize: 20.sp, color: Colors.white, fontWeight: FontWeight.w500),
-        textAlign: TextAlign.center,
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 80.h,
+          width: 200.w,
+          child: Image.asset("assets/images/WRR.png"),
+        ),
+        SizedBox(
+          height: 5.h,
+        ),
+        SizedBox(
+          height: 20.h,
+          width: 400.w,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              "Sorry, no content to show",
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  static freeSubscription() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 80.h,
+          width: 200.w,
+          child: Image.asset("assets/images/WRR.png"),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        SizedBox(
+          height: 20.h,
+          width: 400.w,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              "This content is for premium members only",
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        GestureDetector(
+          onTap: () {},
+          child: Container(
+            alignment: Alignment.center,
+            height: 40.h,
+            width: 150.w,
+            decoration: BoxDecoration(
+                color: AppColors.btnColor,
+                borderRadius: BorderRadius.circular(5.w)),
+            child: SizedBox(
+              height: 30.h,
+              width: 130.w,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(
+                  "Upgrade",
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

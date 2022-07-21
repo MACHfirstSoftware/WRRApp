@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> {
                 800: Color(0xCCF23A02),
                 900: Color(0xE6F23A02),
               }),
-              textTheme: Typography.englishLike2018.apply(fontSizeFactor: 0.5),
+              textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp),
             ),
             home: child,
           );

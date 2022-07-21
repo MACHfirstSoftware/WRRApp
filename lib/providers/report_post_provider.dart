@@ -52,8 +52,11 @@ class ReportPostProvider with ChangeNotifier {
   }
 
   void updatePost(Post _post) {
+    // print("Provider update called");
     for (int i = 0; i < posts.length; i++) {
+      // print("Loop working : $i");
       if (_post.id == posts[i].id) {
+        // print("fount post");
         posts[i] = _post;
         break;
       }

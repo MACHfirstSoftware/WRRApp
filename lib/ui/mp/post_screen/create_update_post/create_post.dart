@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -115,6 +116,7 @@ class _NewPostState extends State<NewPost> {
             personId: _user.id,
             firstName: _user.firstName,
             lastName: _user.lastName,
+            personCode: _user.code,
             title: _titleController.text,
             body: _bodyController.text,
             postPersonCounty: _user.countyName!,
@@ -124,7 +126,11 @@ class _NewPostState extends State<NewPost> {
             modifiedOn: UtilCommon.getDateTimeNow(),
             likes: [],
             comments: [],
-            media: []);
+            media: [],
+            county: County(
+                id: _user.countyId,
+                name: _user.countyName!,
+                regionId: _user.regionId));
         setState(() {
           _isPostPublished = true;
         });
@@ -351,6 +357,7 @@ class _NewPostState extends State<NewPost> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            toolbarHeight: 70.h,
             leading: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -379,30 +386,44 @@ class _NewPostState extends State<NewPost> {
             elevation: 0,
             centerTitle: true,
             actions: [
-              GestureDetector(
-                onTap: () {
-                  if (_isPostPublished) {
-                    _uploadImage();
-                  } else {
-                    _publishPost();
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.all(10.w),
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(7.5.w)),
-                  child: Text(
-                    "Post",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_isPostPublished) {
+                        _uploadImage();
+                      } else {
+                        _publishPost();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40.h,
+                      width: 90.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(7.5.w)),
+                      child: SizedBox(
+                        height: 30.h,
+                        width: 70.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Post",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               )
             ],
           ),

@@ -3,17 +3,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
-import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
-import 'package:wisconsin_app/ui/mp/contest_screen/contest_page.dart';
+import 'package:wisconsin_app/ui/mp/contest_screen/contest_main_page.dart';
+import 'package:wisconsin_app/ui/mp/contest_screen/leaderboard.dart';
 import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
 
@@ -80,8 +79,10 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                 right: 40.w,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const ContestPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ContestMainPage()));
                   },
                   child: SvgPicture.asset(
                     'assets/icons/trophy-bold.svg',
@@ -202,7 +203,7 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
               .chnageRegion(_user.id, value.id);
           Provider.of<ReportPostProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);
-              Provider.of<AllPostProvider>(context, listen: false)
+          Provider.of<AllPostProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);
           Provider.of<ContestProvider>(context, listen: false)
               .chnageRegion(_user.id, value.id);

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
@@ -37,11 +37,16 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
   @override
   Widget build(BuildContext context) {
     return Consumer<WeatherProvider>(builder: (_, weatherProvider, __) {
-      String date = weatherProvider.weather.current.lastUpdated;
-      if (weatherProvider.pageNum == -1) {
-        date = UtilCommon.getDate(date);
-      } else {
-        date = UtilCommon.getDate(date, forecasrDay: weatherProvider.pageNum);
+      String date = "";
+      if (weatherProvider.apiStatus == ApiStatus.isIdle) {
+        if (weatherProvider.pageNum == -1) {
+          date = " - " +
+              UtilCommon.getDate(weatherProvider.weather.current.lastUpdated);
+        } else {
+          date = " - " +
+              UtilCommon.getDate(weatherProvider.weather.current.lastUpdated,
+                  forecasrDay: weatherProvider.pageNum);
+        }
       }
 
       return SizedBox(
@@ -60,7 +65,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.center,
                     child: Text(
-                      "${weatherProvider.county.name} County - $date",
+                      "${weatherProvider.county.name} County$date",
                       style: TextStyle(
                           fontSize: 18.sp,
                           color: Colors.white,

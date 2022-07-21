@@ -1,5 +1,6 @@
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/contest.dart';
+import 'package:wisconsin_app/models/county.dart';
 import 'dart:convert';
 
 import 'package:wisconsin_app/models/like.dart';
@@ -12,32 +13,34 @@ Post postFromJson(String str) => Post.fromJson(json.decode(str));
 String postToJson(Post data) => json.encode(data.toJson());
 
 class Post {
-  Post({
-    required this.id,
-    required this.personId,
-    required this.firstName,
-    required this.lastName,
-    required this.title,
-    required this.body,
-    required this.postPersonCounty,
-    required this.postType,
-    required this.createdOn,
-    this.modifiedOn,
-    required this.isShare,
-    this.sharePersonId,
-    this.sharePersonFirstName = "",
-    this.sharePersonLastName = "",
-    required this.likes,
-    required this.comments,
-    required this.media,
-    this.report,
-    this.contest,
-  });
+  Post(
+      {required this.id,
+      required this.personId,
+      required this.firstName,
+      required this.lastName,
+      required this.personCode,
+      required this.title,
+      required this.body,
+      required this.postPersonCounty,
+      required this.postType,
+      required this.createdOn,
+      this.modifiedOn,
+      required this.isShare,
+      this.sharePersonId,
+      this.sharePersonFirstName = "",
+      this.sharePersonLastName = "",
+      required this.likes,
+      required this.comments,
+      required this.media,
+      this.report,
+      this.contest,
+      required this.county});
 
   int id;
   String personId;
   String firstName;
   String lastName;
+  String personCode;
   String title;
   String body;
   String postPersonCounty;
@@ -53,12 +56,14 @@ class Post {
   List<Media> media;
   Report? report;
   Contest? contest;
+  County county;
 
   factory Post.fromJson(Map<String, dynamic> json) => Post(
       id: json["id"],
       personId: json["personId"],
       firstName: json["firstName"],
       lastName: json["lastName"],
+      personCode: json["personCode"],
       title: json["title"],
       body: json["body"],
       postPersonCounty: json["postPersonCounty"],
@@ -77,13 +82,18 @@ class Post {
       media: List<Media>.from(json["media"].map((x) => Media.fromJson(x))),
       report: json["report"] != null ? Report.fromJson(json["report"]) : null,
       contest:
-          json["contest"] != null ? Contest.fromJson(json["contest"]) : null);
+          json["contest"] != null ? Contest.fromJson(json["contest"]) : null,
+      county: County(
+          id: json["county"]["id"],
+          name: json["county"]["name"],
+          regionId: json["county"]["regionId"]));
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "personId": personId,
         "firstName": firstName,
         "lastName": lastName,
+        "personCode": personCode,
         "title": title,
         "body": body,
         "postPersonCounty": postPersonCounty,

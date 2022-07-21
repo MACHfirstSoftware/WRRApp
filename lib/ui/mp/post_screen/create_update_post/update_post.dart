@@ -34,17 +34,18 @@ class UpdatePost extends StatefulWidget {
 class _UpdatePostState extends State<UpdatePost> {
   late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  List<XFile> _images = [];
-  List<Media> _medias = [];
+  late List<XFile> _images;
+  late List<Media> _medias;
   Media? _mediaForDelete;
-  // Post? newPost;
   bool _isPostUpdate = false;
 
   @override
   void initState() {
+    _images = [];
+    _medias = [];
     _titleController = TextEditingController(text: widget.post.title);
     _bodyController = TextEditingController(text: widget.post.body);
-    _medias = widget.post.media;
+    _medias.addAll(widget.post.media);
     super.initState();
   }
 
@@ -313,6 +314,7 @@ class _UpdatePostState extends State<UpdatePost> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
+            toolbarHeight: 70.h,
             leading: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -341,30 +343,44 @@ class _UpdatePostState extends State<UpdatePost> {
             elevation: 0,
             centerTitle: true,
             actions: [
-              GestureDetector(
-                onTap: () {
-                  if (_isPostUpdate) {
-                    _updateImage();
-                  } else {
-                    _updatePost();
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  margin: EdgeInsets.all(10.w),
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(7.5.w)),
-                  child: Text(
-                    "Apply",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_isPostUpdate) {
+                        _updateImage();
+                      } else {
+                        _updatePost();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40.h,
+                      width: 90.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(7.5.w)),
+                      child: SizedBox(
+                        height: 30.h,
+                        width: 70.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Apply",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               )
             ],
           ),

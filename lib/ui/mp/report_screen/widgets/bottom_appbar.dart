@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/create_post.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/create_report_post.dart';
 
 class ReportBottomAppbar extends StatefulWidget {
@@ -30,18 +29,28 @@ class _ReportBottomAppbarState extends State<ReportBottomAppbar> {
               children: [
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(vertical: 10.w),
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  height: 40.h,
+                  width: 110.w,
+                  // margin: EdgeInsets.symmetric(vertical: 10.w),
+                  // padding: EdgeInsets.symmetric(horizontal: 15.w),
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(7.5.w)),
-                  child: Text(
-                    "New Report",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
+                  child: SizedBox(
+                    height: 30.h,
+                    width: 90.w,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "New Report",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/models/contest.dart';
+// import 'package:wisconsin_app/models/contest.dart';
 import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
@@ -20,6 +20,7 @@ import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/update_post.d
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
+import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/update_report_post.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
@@ -161,6 +162,7 @@ class _PostViewState extends State<PostView> {
                       " " +
                       widget.post.sharePersonLastName)
                   : (widget.post.firstName + " " + widget.post.lastName),
+              widget.post.personCode,
               widget.post.postPersonCounty,
               widget.post.createdOn),
           if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
@@ -178,6 +180,7 @@ class _PostViewState extends State<PostView> {
                 children: [
                   _buildPersonRow(
                       widget.post.firstName + " " + widget.post.lastName,
+                      widget.post.personCode,
                       widget.post.postPersonCounty,
                       widget.post.createdOn),
                   _buildPostTitleAndBody(widget.post.title),
@@ -188,8 +191,8 @@ class _PostViewState extends State<PostView> {
           if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
           if (widget.post.report != null)
             ReportView(report: widget.post.report!),
-          if (widget.post.contest != null)
-            ContestView(contest: widget.post.contest!),
+          // if (widget.post.contest != null)
+          //   ContestView(contest: widget.post.contest!),
           if (widget.post.isShare)
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10.w),
@@ -320,7 +323,7 @@ class _PostViewState extends State<PostView> {
                               width: 5.w,
                             ),
                             FittedBox(
-                              fit:BoxFit.scaleDown,
+                              fit: BoxFit.scaleDown,
                               child: Text(
                                 "Like",
                                 style: TextStyle(
@@ -353,9 +356,9 @@ class _PostViewState extends State<PostView> {
                             SizedBox(
                               width: 5.w,
                             ),
-                           Expanded(
-                             child: FittedBox(
-                                fit:BoxFit.scaleDown,
+                            Expanded(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
                                 child: Text(
                                   "Comments",
                                   style: TextStyle(
@@ -365,7 +368,7 @@ class _PostViewState extends State<PostView> {
                                   textAlign: TextAlign.center,
                                 ),
                               ),
-                           ),
+                            ),
                           ],
                         ),
                       ),
@@ -392,7 +395,7 @@ class _PostViewState extends State<PostView> {
                               width: 5.w,
                             ),
                             FittedBox(
-                              fit:BoxFit.scaleDown,
+                              fit: BoxFit.scaleDown,
                               child: Text(
                                 "Share",
                                 style: TextStyle(
@@ -473,7 +476,8 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Container _buildPersonRow(String name, String county, DateTime date) {
+  Container _buildPersonRow(
+      String name, String personCode, String county, DateTime date) {
     return Container(
       color: Colors.white,
       height: 75.h,
@@ -485,102 +489,273 @@ class _PostViewState extends State<PostView> {
           SizedBox(
             width: 7.5.w,
           ),
-          SizedBox(
+          Container(
+              alignment: Alignment.center,
               height: 60.h,
               width: 60.h,
+              padding: EdgeInsets.all(10.h),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryColor,
+                borderRadius: BorderRadius.circular(10.h),
+              ),
               child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5.h),
-                  child: Image.asset(
-                    "assets/images/bg.png",
-                    fit: BoxFit.cover,
-                  ))),
+                borderRadius: BorderRadius.circular(5.h),
+                // child: Image.asset(
+                //   "assets/images/WRR.png",
+                //   fit: BoxFit.fill,
+                // )
+                child: SizedBox(
+                  height: 40.h,
+                  width: 40.h,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      name.split(" ")[0].substring(0, 1).toUpperCase() +
+                          name.split(" ")[1].substring(0, 1).toUpperCase(),
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              )),
           SizedBox(
             width: 7.5.w,
           ),
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                      fontSize: 18.sp,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700),
-                  textAlign: TextAlign.left,
-                ),
-                Text(
-                  county + " County",
-                  style: TextStyle(
-                      fontSize: 12.sp,
-                      // color: Colors.grey[800],
-                      color: Colors.black54,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.left,
-                ),
-                Text(
-                  UtilCommon.convertToAgo(date),
-                  style: TextStyle(
-                      fontSize: 11.sp,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.left,
-                ),
-              ],
+            child: SizedBox(
+              height: 60.h,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 25.h,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        personCode,
+                        style: TextStyle(
+                            fontSize: 20.sp,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15.h,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        county + " County",
+                        style: TextStyle(
+                            fontSize: 11.sp,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 12.5.h,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        UtilCommon.convertToAgo(date),
+                        style: TextStyle(
+                            fontSize: 11.sp,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.left,
+                        maxLines: 1,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+          // Expanded(
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(
+          //         name,
+          //         style: TextStyle(
+          //             fontSize: 18.sp,
+          //             color: Colors.black,
+          //             fontWeight: FontWeight.w700),
+          //         textAlign: TextAlign.left,
+          //       ),
+          //       Text(
+          //         county + " County",
+          //         style: TextStyle(
+          //             fontSize: 12.sp,
+          //             // color: Colors.grey[800],
+          //             color: Colors.black54,
+          //             fontWeight: FontWeight.w400),
+          //         textAlign: TextAlign.left,
+          //       ),
+          //       Text(
+          //         UtilCommon.convertToAgo(date),
+          //         style: TextStyle(
+          //             fontSize: 11.sp,
+          //             color: Colors.grey,
+          //             fontWeight: FontWeight.w400),
+          //         textAlign: TextAlign.left,
+          //       ),
+          //     ],
+          //   ),
+          // ),
           SizedBox(
               height: 60.h,
               width: 60.h,
               child: PopupMenuButton(
-                icon: Icon(Icons.more_horiz_rounded, size: 40.h),
+                padding: EdgeInsets.zero,
+                color: AppColors.secondaryColor,
+                icon: Icon(Icons.more_horiz_rounded, size: 30.h),
                 itemBuilder: (context) => [
                   if (!widget.post.isShare && _user.id != widget.post.personId)
                     PopupMenuItem<String>(
                       value: "Report",
-                      child: ListTile(
-                        title: Text(
-                          "Report",
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
-                        ),
-                        trailing: const Icon(
-                          Icons.error_rounded,
-                          color: Colors.black,
+                      height: 20.h,
+                      padding: EdgeInsets.zero,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 80.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Report",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.error_rounded,
+                                    color: Colors.white,
+                                    size: 20.w,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   if (!widget.post.isShare && _user.id == widget.post.personId)
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: "Edit",
-                      child: ListTile(
-                        title: Text(
-                          "Edit",
-                        ),
-                        trailing: Icon(
-                          Icons.mode_edit_outline_outlined,
-                          color: Colors.black,
+                      height: 30.h,
+                      padding: EdgeInsets.zero,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 80.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Edit",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.mode_edit_outline_outlined,
+                                    color: Colors.white,
+                                    size: 20.w,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   if (!widget.post.isShare && _user.id == widget.post.personId)
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: "Delete",
-                      child: ListTile(
-                        title: Text(
-                          "Delete",
-                          style: TextStyle(color: Colors.redAccent),
-                        ),
-                        trailing: Icon(
-                          Icons.delete,
-                          color: Colors.redAccent,
+                      height: 30.h,
+                      padding: EdgeInsets.zero,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 80.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Delete",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.redAccent,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.delete,
+                                    color: Colors.redAccent,
+                                    size: 20.w,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    )
+                    ),
                 ],
                 onSelected: (String value) {
                   if (value == "Report") {
@@ -597,6 +772,13 @@ class _PostViewState extends State<PostView> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) => UpdatePost(
+                                  post: widget.post,
+                                )),
+                      );
+                    } else {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => UpdateReportPost(
                                   post: widget.post,
                                 )),
                       );
@@ -858,162 +1040,51 @@ class ReportView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 0.w),
+      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 25.w),
       margin: EdgeInsets.only(top: 10.h, left: 10.w, right: 10.w, bottom: 0),
-      // color: Colors.transparent,
       decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5.h),
-                    border: Border(
-                      bottom: BorderSide(color: Colors.black54, width: 0.75.w),
-                      top: BorderSide(color: Colors.black54, width: 0.75.w),
-                      left: BorderSide(color: Colors.black54, width: 0.75.w),
-                      right: BorderSide(color: Colors.black54, width: 0.75.w),
-                    )),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5.h),
+          border: Border.all(color: Colors.black54, width: 0.75.w)),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReportDataRow("Start time", report.startDateTime,
-                isTop: true),
-            // _buildReportDataRow("End time : ", report.endDateTime),
-            _buildReportDataRow(
-                "No. Deer Seen", report.numDeer.toString()),
-            _buildReportDataRow(
-                "No. Bucks Seen", report.numBucks.toString()),
+            _buildReportDataRow("Start time", report.startDateTime),
+            _buildReportDataRow("No. Deer Seen", report.numDeer.toString()),
+            _buildReportDataRow("No. Bucks Seen", report.numBucks.toString()),
             _buildReportDataRow(
                 "Weather Rating", report.weatherRating.toString()),
-            _buildReportDataRow(
-                "Duration", "${report.numHours} hour/s"),
+            _buildReportDataRow("Duration", "${report.numHours} hour/s"),
             _buildReportDataRow(
                 "Type", report.weaponUsed == "A" ? "Bow" : "Gun"),
-            _buildReportDataRow(
-                "Successful?", report.isSuccess ? "Yes" : "No"),
-            // _buildReportDataRow("Hunt success time : ",
-            //     "${report.successTime == null || report.successTime == "" ? "-" : report.successTime}"),
+            _buildReportDataRow("Successful?", report.isSuccess ? "Yes" : "No"),
           ]),
     );
   }
 
-  _buildReportDataRow(String name, String data, {bool isTop = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 10.w),
-      child: Container(
-        alignment: Alignment.centerLeft,
-        // height: 30.h,
-        width: 428.w,
-        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 15.w),
-        // decoration: BoxDecoration(
-        //     border: Border(
-        //         top: isTop
-        //             ? BorderSide(
-        //                 color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
-        //             : BorderSide.none,
-        //         bottom: BorderSide(
-        //             color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              name,
-              style: TextStyle(
-                  fontSize: 15.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.left,
-            ),
-            Expanded(
-              child: Text(
-                data,
-                style: TextStyle(
-                    fontSize: 15.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ],
+  _buildReportDataRow(String name, String data) {
+    return Row(
+      children: [
+        Text(
+          name,
+          style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.black,
+              fontWeight: FontWeight.w400),
+          textAlign: TextAlign.left,
         ),
-      ),
-    );
-  }
-}
-
-class ContestView extends StatelessWidget {
-  final Contest contest;
-  const ContestView({Key? key, required this.contest}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 0.w),
-      margin: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
-      decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5.h),
-                    border: Border(
-                      bottom: BorderSide(color: Colors.black54, width: 0.75.w),
-                      top: BorderSide(color: Colors.black54, width: 0.75.w),
-                      left: BorderSide(color: Colors.black54, width: 0.75.w),
-                      right: BorderSide(color: Colors.black54, width: 0.75.w),
-                    )),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildReportDataRow("Spread", contest.spread.toString(),
-                isTop: true),
-            _buildReportDataRow("Length", contest.length.toString()),
-            _buildReportDataRow(
-                "Number of Tines", contest.numTines.toString()),
-            _buildReportDataRow(
-                "Length Tines", contest.lengthTines.toString()),
-          ]),
-    );
-  }
-
-  _buildReportDataRow(String name, String data, {bool isTop = false}) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 10.w),
-      child: Container(
-        alignment: Alignment.centerLeft,
-        // height: 30.h,
-        width: 428.w,
-        padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 15.w),
-        // decoration: BoxDecoration(
-        //     border: Border(
-        //         top: isTop
-        //             ? BorderSide(
-        //                 color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h)
-        //             : BorderSide.none,
-        //         bottom: BorderSide(
-        //             color: Colors.blueGrey.withOpacity(0.5), width: 1.25.h))),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              name,
-              style: TextStyle(
-                  fontSize: 15.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.left,
-            ),
-            Expanded(
-              child: Text(
-                data,
-                style: TextStyle(
-                    fontSize: 15.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ],
+        Expanded(
+          child: Text(
+            data,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w500),
+            textAlign: TextAlign.right,
+          ),
         ),
-      ),
+      ],
     );
   }
 }

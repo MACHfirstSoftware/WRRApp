@@ -1,33 +1,47 @@
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/models/super_region.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 
 class ContestAppBar extends StatefulWidget {
-  const ContestAppBar({Key? key}) : super(key: key);
+  final int tabIndex;
+  const ContestAppBar({Key? key, required this.tabIndex}) : super(key: key);
 
   @override
   State<ContestAppBar> createState() => _ContestAppBarState();
 }
 
 class _ContestAppBarState extends State<ContestAppBar> {
-  late List<SuperRegion> _superRegions;
+  late List<CustomSuperRegion> _customSuperRegions;
+  String title = '';
   @override
   void initState() {
-    _superRegions =
-        Provider.of<ContestProvider>(context, listen: false).superRegions;
+    _customSuperRegions =
+        Provider.of<ContestProvider>(context, listen: false).customSuperRegions;
+
     super.initState();
+  }
+
+  _titleSet() {
+    if (widget.tabIndex == 0) {
+      title = "Leaderboard";
+    }
+    if (widget.tabIndex == 1) {
+      title = "Rules";
+    }
+    if (widget.tabIndex == 2) {
+      title = "How to Enter";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    _titleSet();
     return SizedBox(
       height: AppBar().preferredSize.height,
       width: 428.w,
@@ -47,15 +61,26 @@ class _ContestAppBarState extends State<ContestAppBar> {
                     color: Colors.white,
                   ))),
           Align(
-              alignment: Alignment.center,
-              child: Text(
-                "Contests",
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              )),
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 15.h),
+              child: SizedBox(
+                width: 300.w,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ),
           Align(
               alignment: Alignment.centerRight,
               child: _buildDropMenuForCounty()),
@@ -77,32 +102,36 @@ class _ContestAppBarState extends State<ContestAppBar> {
         color: Colors.white,
       ),
       color: AppColors.secondaryColor,
+      elevation: 2,
       itemBuilder: (context) => [
-        ..._superRegions.map((superRegion) => PopupMenuItem<SuperRegion>(
-            value: superRegion,
+        ..._customSuperRegions.map((val) => PopupMenuItem<CustomSuperRegion>(
+            value: val,
             child: SizedBox(
               width: 200.w,
               child: ListTile(
-                trailing: superRegion.id == contestProvider.superRegionId
+                trailing: val.superRegion.id ==
+                            contestProvider.customSuperRegion.superRegion.id &&
+                        val.weapon == contestProvider.customSuperRegion.weapon
                     ? const Icon(
                         Icons.check,
                         color: AppColors.btnColor,
                       )
                     : null,
                 title: Text(
-                  superRegion.name,
+                  val.superRegion.name +
+                      (val.weapon == "G" ? " - Gun" : " - Bow"),
                   style: const TextStyle(color: Colors.white),
                   maxLines: 1,
                 ),
               ),
             )))
       ],
-      onSelected: (SuperRegion value) {
-        if (contestProvider.superRegionId != value.id) {
+      onSelected: (CustomSuperRegion value) {
+        if (contestProvider.customSuperRegion != value) {
           contestProvider.chnageSuperRegion(
               Provider.of<UserProvider>(context, listen: false).user.id,
               Provider.of<UserProvider>(context, listen: false).user.regionId,
-              value.id);
+              value);
         }
       },
     );

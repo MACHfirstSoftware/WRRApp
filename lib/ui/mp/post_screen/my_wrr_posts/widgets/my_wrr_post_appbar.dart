@@ -32,18 +32,26 @@ class _MyWRRPostAppBarState extends State<MyWRRPostAppBar> {
               children: [
                 Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(vertical: 10.w),
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  height: 40.h,
+                  width: 110.w,
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(7.5.w)),
-                  child: Text(
-                    "New Post",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
+                  child: SizedBox(
+                    height: 30.h,
+                    width: 80.w,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "New Post",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
                 ),
               ],

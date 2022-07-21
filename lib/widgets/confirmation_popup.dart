@@ -78,15 +78,20 @@ class ConfirmationPopup extends StatelessWidget {
                                 ),
                                 width: 110.w,
                                 height: 45.h,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    leftBtnText,
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600),
-                                    textAlign: TextAlign.center,
+                                child: SizedBox(
+                                  width: 90.w,
+                                  height: 30.h,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      leftBtnText,
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ))),
                       ),
@@ -108,15 +113,20 @@ class ConfirmationPopup extends StatelessWidget {
                                         width: 1.5.w)),
                                 width: 110.w,
                                 height: 45.h,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    rightBtnText,
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w600),
-                                    textAlign: TextAlign.center,
+                                child: SizedBox(
+                                  width: 90.w,
+                                  height: 30.h,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      rightBtnText,
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: AppColors.btnColor,
+                                          fontWeight: FontWeight.w600),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ))),
                       ),

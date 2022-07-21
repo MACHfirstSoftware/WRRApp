@@ -9,6 +9,7 @@ import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/reply_comment.dart';
 import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
@@ -63,8 +64,7 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<List<Post>>> getAllPosts(
-      String userId, int regionId,
+  static Future<ApiResult<List<Post>>> getAllPosts(String userId, int regionId,
       {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
@@ -116,10 +116,10 @@ class PostService {
   }
 
   static Future<ApiResult<List<Post>>> getContest(
-      String userId, int regionId, int superRegionId) async {
+      String userId, int regionId, CustomSuperRegion customSuperRegion) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
-          "/Post/$userId/Contest?regionId=$regionId&superRegion=$superRegionId");
+          "/Post/$userId/Contest?regionId=$regionId&superRegion=${customSuperRegion.superRegion.id}&weapon=${customSuperRegion.weapon}");
 
       inspect(response.data);
       if (response.statusCode == 200) {
@@ -249,6 +249,64 @@ class PostService {
         {"path": "/title", "op": "Add", "value": title},
         {"path": "/body", "op": "Add", "value": body}
       ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  static Future<bool> updateReportPost(
+      int postId, String title, String body, int countyId, int regionId) async {
+    print("update call");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Patch?id=$postId", data: [
+        {"path": "/title", "op": "Add", "value": title},
+        {"path": "/body", "op": "Add", "value": body},
+        {"path": "/countyId", "op": "Add", "value": countyId},
+        {"path": "/regionId", "op": "Add", "value": regionId},
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  static Future<bool> updateReport(Report report) async {
+    log(report.toJson().toString());
+    print("update call");
+    try {
+      final response = await CustomHttp.getDio().patch(
+          Constant.baseUrl + "/ReportPatch?postId=${report.postId}",
+          data: [
+            {"path": "/numDeer", "op": "Add", "value": report.numDeer},
+            {"path": "/numBucks", "op": "Add", "value": report.numBucks},
+            {"path": "/numHours", "op": "Add", "value": report.numHours},
+            {"path": "/weaponUsed", "op": "Add", "value": report.weaponUsed},
+            {
+              "path": "/weatherRating",
+              "op": "Add",
+              "value": report.weatherRating
+            },
+            {
+              "path": "/startDateTime",
+              "op": "Add",
+              "value": report.startDateTime
+            },
+            {"path": "/endDateTime", "op": "Add", "value": report.endDateTime},
+            {"path": "/successTime", "op": "Add", "value": report.successTime},
+            {"path": "/isSuccess", "op": "Add", "value": report.isSuccess},
+          ]);
       if (response.statusCode == 200) {
         return true;
       } else {

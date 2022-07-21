@@ -26,7 +26,7 @@ SnackBar customSnackBar(
     double? margin}) {
   return SnackBar(
     backgroundColor: Colors.transparent,
-    duration: Duration(seconds: duration ?? 2),
+    duration: Duration(seconds: duration ?? 120),
     margin: EdgeInsets.only(bottom: margin ?? 0),
     content: SnackBarContent(
         type: type,
@@ -134,24 +134,44 @@ class SnackBarContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  titleText ?? title,
-                  style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                      fontSize: 18.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Container(
+                    // color: Colors.blue,
+                    alignment: Alignment.bottomLeft,
+                    // height: 25.h,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        titleText ?? title,
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
                 ),
                 Expanded(
-                  child: FittedBox(
-                    child: Text(
-                      messageText,
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: Colors.white,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w300,
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  child: Container(
+                    // color: Colors.red,
+                    alignment: Alignment.topLeft,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        messageText,
+                        // "adsadad adadajda aidaid adikandika aidaikd aidkna idaid adikandika aidaikd aidkna",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w300,
+                        ),
+                        textAlign: TextAlign.left,
+                        maxLines: 2,
+                        // overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ),
@@ -166,11 +186,17 @@ class SnackBarContent extends StatelessWidget {
               child: SizedBox(
                   width: 30.w,
                   height: 60.h,
-                  child: Center(
-                    child: Text(
-                      'OK',
-                      style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.w600),
+                  child: SizedBox(
+                    width: 25.w,
+                    height: 40.h,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        'OK',
+                        style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                            color: Colors.white, fontWeight: FontWeight.w500),
+                      ),
                     ),
                   )),
             )

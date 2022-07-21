@@ -137,12 +137,20 @@ class _MyAccountState extends State<MyAccount> {
                           child: Stack(
                             children: [
                               ClipRRect(
-                                  borderRadius: BorderRadius.circular(60.h),
-                                  child: Container(
-                                    color: Colors.white,
-                                    child:
-                                        Image.asset("assets/images/logo.png"),
-                                  )),
+                                borderRadius: BorderRadius.circular(60.h),
+                                child: SizedBox(
+                                    height: 120.h,
+                                    width: 120.h,
+                                    child: _image != null
+                                        ? Image.file(
+                                            File(
+                                              _image!.path,
+                                            ),
+                                            fit: BoxFit.fill,
+                                          )
+                                        : Image.asset(
+                                            "assets/images/logo.png")),
+                              ),
                               Positioned(
                                 bottom: 0.h,
                                 right: 0.h,
