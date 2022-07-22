@@ -120,7 +120,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
         alignment: Alignment.center,
         color: Colors.white,
       ),
-      color: AppColors.secondaryColor,
+      color: AppColors.popBGColor,
       itemBuilder: (context) => [
         ..._regions.map((region) => PopupMenuItem<Region>(
             value: region,
@@ -175,7 +175,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
       //     color: Colors.white,
       //   ),
       // ),
-      color: AppColors.secondaryColor,
+      color: AppColors.popBGColor,
       itemBuilder: (context) => [
         ..._counties.map((county) => PopupMenuItem<County>(
             value: county,

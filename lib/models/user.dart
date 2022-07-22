@@ -12,6 +12,7 @@ class User {
       required this.emailAddress,
       required this.username,
       required this.code,
+      this.profileImageUrl,
       required this.country,
       required this.stateOrTerritory,
       required this.countyId,
@@ -19,7 +20,9 @@ class User {
       required this.regionId,
       this.regionName,
       required this.isOptIn,
-      this.isFallowed = false});
+      this.isFollowed = false,
+      this.phoneMobile = "",
+      this.answerId});
 
   String id;
   String firstName;
@@ -27,6 +30,7 @@ class User {
   String emailAddress;
   String username;
   String code;
+  String? profileImageUrl;
   String country;
   String stateOrTerritory;
   int countyId;
@@ -34,7 +38,9 @@ class User {
   int regionId;
   String? regionName;
   bool isOptIn;
-  bool isFallowed;
+  bool isFollowed;
+  String phoneMobile;
+  int? answerId;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
@@ -43,12 +49,15 @@ class User {
         emailAddress: json["emailAddress"],
         username: json["username"],
         code: json["code"],
+        profileImageUrl: json["imageLocation"],
         country: json["country"],
         stateOrTerritory: json["stateOrTerritory"],
         countyId: json["countyId"],
         regionId: json["regionId"],
         isOptIn: json["isOptIn"],
-        isFallowed: json["isFallowed"] ?? false,
+        isFollowed: json["isFollowed"] ?? false,
+        phoneMobile: json["phoneMobile"] ?? "",
+        answerId: json["answer"] != null ? json["answer"]["id"] : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -58,11 +67,13 @@ class User {
         "emailAddress": emailAddress,
         "username": username,
         "code": code,
+        "imageLocation": profileImageUrl,
         "country": country,
         "stateOrTerritory": stateOrTerritory,
         "countyId": countyId,
         "regionId": regionId,
         "isOptIn": isOptIn,
-        "isFallowed": isFallowed
+        "isFollowed": isFollowed,
+        "phoneMobile": phoneMobile
       };
 }

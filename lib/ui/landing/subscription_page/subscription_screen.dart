@@ -6,6 +6,7 @@ import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/subscription.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
+import 'package:wisconsin_app/widgets/view_models.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   const SubscriptionScreen({
@@ -76,61 +77,21 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           height: 550.h,
           padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 50.h),
           decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: [0, .8],
-                colors: [AppColors.secondaryColor, AppColors.primaryColor],
-              ),
+              // gradient: const LinearGradient(
+              //   begin: Alignment.topCenter,
+              //   end: Alignment.bottomCenter,
+              //   stops: [0, .8],
+              //   colors: [AppColors.secondaryColor, AppColors.primaryColor],
+              // ),
+              color: AppColors.popBGColor,
               borderRadius: BorderRadius.circular(20.w)),
           child: isLoading
-              ? _buildLoader()
+              ? ViewModels.buildLoader()
               : showTryAgain
-                  ? _buildErrorWidget()
+                  ? ViewModels.buildErrorWidget(errorMessage, _init)
                   : _buildView(),
         ),
       ),
-    );
-  }
-
-  _buildErrorWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          errorMessage,
-          style: TextStyle(
-              fontSize: 25.sp,
-              color: AppColors.btnColor,
-              fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: 15.h,
-        ),
-        GestureDetector(
-          onTap: () {
-            _init();
-          },
-          child: Container(
-            alignment: Alignment.center,
-            height: 60.h,
-            width: 190.w,
-            decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Try Again",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -139,13 +100,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       // crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Choose your plan".toUpperCase(),
-          style: TextStyle(
-              fontSize: 25.sp,
-              color: AppColors.btnColor,
-              fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
+        SizedBox(
+          width: 360.w,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              "Choose your plan".toUpperCase(),
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  color: AppColors.btnColor,
+                  fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
         const Spacer(),
         SizedBox(
@@ -163,7 +131,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               title: Text(
                 "Premium",
                 style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 20.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
                 textAlign: TextAlign.left,
@@ -200,7 +168,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               title: Text(
                 "Free",
                 style: TextStyle(
-                    fontSize: 24.sp,
+                    fontSize: 20.sp,
                     color: Colors.white,
                     fontWeight: FontWeight.bold),
                 textAlign: TextAlign.left,
@@ -217,31 +185,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             ),
           ),
         ),
-        // CarouselSlider(
-        //     items: [
-        //       for (int i = 0; i < subscriptions.length; i++)
-        //         _buildPlan(
-        //             subscriptions[i].isPremium
-        //                 ? "assets/icons/premium.svg"
-        //                 : "assets/icons/free-label.svg",
-        //             subscriptions[i].displayName,
-        //             i)
-        //     ],
-        //     options: CarouselOptions(
-        //       height: 300.h,
-        //       aspectRatio: 16 / 9,
-        //       viewportFraction: 0.75,
-        //       initialPage: 0,
-        //       enableInfiniteScroll: true,
-        //       reverse: false,
-        //       autoPlay: false,
-        //       autoPlayInterval: const Duration(seconds: 3),
-        //       autoPlayAnimationDuration: const Duration(milliseconds: 800),
-        //       autoPlayCurve: Curves.fastOutSlowIn,
-        //       enlargeCenterPage: true,
-        //       onPageChanged: callbackFunction,
-        //       scrollDirection: Axis.horizontal,
-        //     )),
         const Spacer(),
         GestureDetector(
           onTap: () {
@@ -250,73 +193,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           },
           child: Container(
             alignment: Alignment.center,
-            height: 60.h,
-            width: 190.w,
+            height: 50.h,
+            width: 150.w,
             decoration: BoxDecoration(
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
-            child: Text(
-              "Next",
-              style: TextStyle(
-                  fontSize: 24.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+            child: SizedBox(
+              height: 30.h,
+              width: 100.w,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(
+                  "Next",
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
           ),
         ),
       ],
     );
   }
-
-  Center _buildLoader() {
-    return Center(
-      child: SizedBox(
-        height: 50.w,
-        width: 50.w,
-        child: const LoadingIndicator(
-            indicatorType: Indicator.lineSpinFadeLoader,
-            colors: [AppColors.btnColor],
-            strokeWidth: 2.0),
-      ),
-    );
-  }
-
-  // _buildPlan(String iconPath, String planName, int index) {
-  //   return Container(
-  //     alignment: Alignment.center,
-  //     decoration: BoxDecoration(
-  //         border: Border.all(
-  //             color: _selectedIndex == index
-  //                 ? AppColors.btnColor
-  //                 : Colors.grey[300]!,
-  //             width: 5.w),
-  //         borderRadius: BorderRadius.circular(20.w)),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.center,
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //       children: [
-  //         SvgPicture.asset(
-  //           // "assets/icons/free-label.svg",
-  //           iconPath,
-  //           color:
-  //               _selectedIndex == index ? AppColors.btnColor : Colors.grey[300],
-  //           width: 100.w,
-  //           height: 100.w,
-  //         ),
-  //         Text(
-  //           // "FREE",
-  //           planName,
-  //           style: TextStyle(
-  //               fontSize: 30.sp,
-  //               color: _selectedIndex == index
-  //                   ? AppColors.btnColor
-  //                   : Colors.grey[300],
-  //               fontWeight: FontWeight.w700),
-  //           textAlign: TextAlign.center,
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

@@ -26,7 +26,7 @@ SnackBar customSnackBar(
     double? margin}) {
   return SnackBar(
     backgroundColor: Colors.transparent,
-    duration: Duration(seconds: duration ?? 120),
+    duration: Duration(seconds: duration ?? 2),
     margin: EdgeInsets.only(bottom: margin ?? 0),
     content: SnackBarContent(
         type: type,

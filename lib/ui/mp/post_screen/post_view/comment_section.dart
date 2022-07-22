@@ -68,6 +68,7 @@ class _CommentSectionState extends State<CommentSection> {
         personId: _user.id,
         firstName: _user.firstName,
         lastName: _user.lastName,
+        code: _user.code,
         postId: widget.postId,
         body: _commentController.text,
         createdOn: UtilCommon.getDateTimeNow(),
@@ -103,6 +104,7 @@ class _CommentSectionState extends State<CommentSection> {
         personId: _user.id,
         firstName: _user.firstName,
         lastName: _user.lastName,
+        code: _user.code,
         postCommentId: _postCommentId!,
         body: _commentController.text,
         createdOn: UtilCommon.getDateTimeNow());
@@ -244,8 +246,7 @@ class _CommentSectionState extends State<CommentSection> {
                           _isUpdate = false;
                           _postCommentId = _comment.id;
                           _commentIndex = commentIndex;
-                          replyTo =
-                              _comment.firstName + " " + _comment.lastName;
+                          replyTo = _comment.code;
                         });
                         focusNode.requestFocus();
                       }),
@@ -284,8 +285,16 @@ class _CommentSectionState extends State<CommentSection> {
                 ],
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                  title: Text(_comment.firstName + " " + _comment.lastName),
-                  subtitle: Text(_comment.body),
+                  title: Text(_comment.code,
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500)),
+                  subtitle: Text(_comment.body,
+                      style: TextStyle(
+                          color: Colors.black45,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400)),
                 ),
               ),
             ),
@@ -308,27 +317,13 @@ class _CommentSectionState extends State<CommentSection> {
                         _isUpdate = false;
                         _postCommentId = _comment.id;
                         _commentIndex = commentIndex;
-                        replyTo = _comment.firstName + " " + _comment.lastName;
+                        replyTo = _comment.code;
                       });
                       focusNode.requestFocus();
                     },
                     child: const Text("Reply")),
               ],
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(left: 25.w, right: 10.w),
-            //   child: LimitedBox(
-            //     maxHeight: 250.h,
-            //     child: ListView.builder(
-            //         scrollDirection: Axis.vertical,
-            //         shrinkWrap: true,
-            //         itemCount: _comment.replyComments.length,
-            //         itemBuilder: (_, index) {
-            //           return _buildReplyCommentTile(
-            //               _comment.replyComments[index], commentIndex, index);
-            //         }),
-            //   ),
-            // ),
             for (int index = 0; index < _comment.replyComments.length; index++)
               Padding(
                 padding: EdgeInsets.only(left: 25.w, right: 10.w),
@@ -401,18 +396,31 @@ class _CommentSectionState extends State<CommentSection> {
                             }),
                       ],
                       child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                        title: Text(replyComment.firstName +
-                            " " +
-                            replyComment.lastName),
-                        subtitle: Text(replyComment.body),
-                      ),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10.w),
+                          title: Text(replyComment.code,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500)),
+                          subtitle: Text(replyComment.body,
+                              style: TextStyle(
+                                  color: Colors.black45,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w400))),
                     )
                   : ListTile(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
-                      title: Text(
-                          replyComment.firstName + " " + replyComment.lastName),
-                      subtitle: Text(replyComment.body),
+                      title: Text(replyComment.code,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 15.sp,
+                              fontWeight: FontWeight.w500)),
+                      subtitle: Text(replyComment.body,
+                          style: TextStyle(
+                              color: Colors.black45,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400)),
                     ),
             ),
             Padding(
@@ -661,18 +669,18 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 
-  _buildSeeAll() {
-    // return LimitedBox(
-    //   maxHeight: 300.h,
-    //   child: ListView.builder(
-    //       scrollDirection: Axis.vertical,
-    //       shrinkWrap: true,
-    //       itemCount: _comments.length,
-    //       itemBuilder: (_, index) {
-    //         return _buildCommentTile(_comments[index], index);
-    //       }),
-    // );
-    return List.generate(_comments.length,
-        (index) => _buildCommentTile(_comments[index], index));
-  }
+  // _buildSeeAll() {
+  //   // return LimitedBox(
+  //   //   maxHeight: 300.h,
+  //   //   child: ListView.builder(
+  //   //       scrollDirection: Axis.vertical,
+  //   //       shrinkWrap: true,
+  //   //       itemCount: _comments.length,
+  //   //       itemBuilder: (_, index) {
+  //   //         return _buildCommentTile(_comments[index], index);
+  //   //       }),
+  //   // );
+  //   return List.generate(_comments.length,
+  //       (index) => _buildCommentTile(_comments[index], index));
+  // }
 }

@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/contest.dart';
 import 'package:wisconsin_app/models/post.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/utils/common.dart';
 
 class ContestPostView extends StatefulWidget {
@@ -15,8 +17,24 @@ class ContestPostView extends StatefulWidget {
   State<ContestPostView> createState() => _ContestPostViewState();
 }
 
-class _ContestPostViewState extends State<ContestPostView> {
+class _ContestPostViewState extends State<ContestPostView>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
   bool showContest = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+        vsync: this, duration: const Duration(microseconds: 1500));
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,27 +43,42 @@ class _ContestPostViewState extends State<ContestPostView> {
       width: 428.w,
       child: Column(
         children: [
-          ExpansionTile(
-            tilePadding: EdgeInsets.symmetric(horizontal: 10.w),
-            title: _buildPersonRow(
-                widget.post.firstName + " " + widget.post.lastName,
-                widget.post.personCode,
-                widget.post.postPersonCounty,
-                widget.post.createdOn),
-            children: [
-              ContestView(contest: widget.post.contest!),
-              SizedBox(
-                height: 5.h,
-              )
-            ],
+          _buildPersonRow(widget.post.personCode, widget.post.postPersonCounty,
+              widget.post.createdOn),
+          AnimatedSwitcher(
+            duration: const Duration(microseconds: 1500),
+            reverseDuration: const Duration(microseconds: 1500),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (child, animation) =>
+                SizeTransition(child: child, sizeFactor: animation),
+            child: showContest
+                ? Column(
+                    key: const Key('1'),
+                    children: [
+                      if (widget.post.media.isNotEmpty)
+                        MediaView(media: widget.post.media),
+                      ContestView(contest: widget.post.contest!),
+                    ],
+                  )
+                : widget.post.media.isNotEmpty
+                    ? MediaView(
+                        key: const Key('2'),
+                        media: widget.post.media,
+                      )
+                    : const SizedBox(
+                        key: Key('2'),
+                      ),
+          ),
+          SizedBox(
+            height: showContest ? 0 : 10.h,
           )
         ],
       ),
     );
   }
 
-  _buildPersonRow(
-      String name, String personCode, String county, DateTime date) {
+  _buildPersonRow(String personCode, String county, DateTime date) {
     return SizedBox(
       height: 75.h,
       width: 428.w,
@@ -53,13 +86,16 @@ class _ContestPostViewState extends State<ContestPostView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(
+            width: 7.5.w,
+          ),
           Container(
               alignment: Alignment.center,
               height: 60.h,
               width: 60.h,
               padding: EdgeInsets.all(10.h),
               decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
+                color: AppColors.popBGColor,
                 borderRadius: BorderRadius.circular(10.h),
               ),
               child: ClipRRect(
@@ -143,6 +179,20 @@ class _ContestPostViewState extends State<ContestPostView> {
               ),
             ),
           ),
+          IconButton(
+              iconSize: 25.h,
+              splashColor: AppColors.btnColor.withOpacity(.5),
+              onPressed: () {
+                setState(() {
+                  showContest = !showContest;
+                  showContest ? controller.forward() : controller.reverse();
+                });
+              },
+              icon: AnimatedIcon(
+                icon: AnimatedIcons.menu_close,
+                progress: controller,
+                color: showContest ? AppColors.btnColor : Colors.black38,
+              ))
         ],
       ),
     );

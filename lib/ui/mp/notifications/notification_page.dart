@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/widgets/default_appbar.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -23,17 +24,11 @@ class _NotificationPageState extends State<NotificationPage> {
         ),
       ),
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Text(
-            "Notifications",
-            style: TextStyle(
-                fontSize: 20.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          title: const DefaultAppbar(title: "Notifications"),
           centerTitle: true,
           elevation: 0,
         ),

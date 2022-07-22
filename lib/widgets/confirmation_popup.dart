@@ -8,9 +8,11 @@ class ConfirmationPopup extends StatelessWidget {
   final String leftBtnText;
   final String rightBtnText;
   final VoidCallback onTap;
+  final VoidCallback? onRightTap;
   const ConfirmationPopup(
       {Key? key,
       required this.onTap,
+      this.onRightTap,
       required this.title,
       required this.message,
       required this.leftBtnText,
@@ -32,7 +34,7 @@ class ConfirmationPopup extends StatelessWidget {
               width: 350.w,
               padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 20.h),
               decoration: BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: AppColors.popBGColor,
                   borderRadius: BorderRadius.circular(15.w)),
               child: Column(
                 children: [
@@ -101,6 +103,9 @@ class ConfirmationPopup extends StatelessWidget {
                             splashColor: AppColors.btnColor.withOpacity(0.4),
                             customBorder: const StadiumBorder(),
                             onTap: () {
+                              if (onRightTap != null) {
+                                onRightTap!();
+                              }
                               Navigator.pop(context);
                             },
                             child: Container(

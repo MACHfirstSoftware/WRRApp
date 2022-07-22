@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/widgets/default_appbar.dart';
 
 class ShopPage extends StatefulWidget {
   const ShopPage({Key? key}) : super(key: key);
@@ -13,17 +15,11 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     // final user = Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "Shop",
-          style: TextStyle(
-              fontSize: 20.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
+        backgroundColor: AppColors.backgroundColor,
+        toolbarHeight: 70.h,
+        title: const DefaultAppbar(title: "Shop"),
         centerTitle: true,
         elevation: 0,
       ),

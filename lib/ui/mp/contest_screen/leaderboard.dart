@@ -59,7 +59,7 @@ class _LeaderboardState extends State<Leaderboard>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         body: Consumer<ContestProvider>(builder: (context, model, _) {
           if (model.apiStatus == ApiStatus.isBusy) {
             return ViewModels.buildLoader();
@@ -89,7 +89,7 @@ class _LeaderboardState extends State<Leaderboard>
             child: model.contestPosts.isEmpty
                 ? ViewModels.postEmply()
                 : ListView.builder(
-                    padding: EdgeInsets.zero,
+                    padding: EdgeInsets.symmetric(vertical: 5.h),
                     itemCount: model.contestPosts.length,
                     itemBuilder: (_, index) {
                       return ContestPostView(

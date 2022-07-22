@@ -13,6 +13,7 @@ class ReplyComment {
     required this.personId,
     required this.firstName,
     required this.lastName,
+    required this.code,
     required this.postCommentId,
     required this.body,
     required this.createdOn,
@@ -22,6 +23,7 @@ class ReplyComment {
   String personId;
   String firstName;
   String lastName;
+  String code;
   int postCommentId;
   String body;
   DateTime createdOn;
@@ -30,6 +32,7 @@ class ReplyComment {
         id: json["id"],
         personId: json["personId"],
         firstName: json["firstName"],
+        code: json["code"],
         lastName: json["lastName"],
         postCommentId: json["postCommentId"],
         body: json["body"],
@@ -41,6 +44,7 @@ class ReplyComment {
         "personId": personId,
         "firstName": firstName,
         "lastName": lastName,
+        "code": code,
         "postCommentId": postCommentId,
         "body": body,
         "createdOn": createdOn,

@@ -46,7 +46,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         .setRegionId(userProvider.user.regionId);
     Provider.of<ReportPostProvider>(context, listen: false)
         .setRegionId(userProvider.user.regionId);
-        Provider.of<AllPostProvider>(context, listen: false)
+    Provider.of<AllPostProvider>(context, listen: false)
         .setRegionId(userProvider.user.regionId);
     Provider.of<ContestProvider>(context, listen: false)
         .setRegionId(userProvider.user.regionId);
@@ -82,18 +82,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final weatherProvider = Provider.of<WeatherProvider>(context);
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0, .8],
-          colors: [AppColors.secondaryColor, AppColors.primaryColor],
-        ),
-      ),
-      child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: PageView(
+    return Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: SafeArea(
+          child: PageView(
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: [
@@ -106,8 +98,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
               const MyAccount()
             ],
           ),
-          bottomNavigationBar: _bottomNavbar()),
-    );
+        ),
+        bottomNavigationBar: _bottomNavbar());
   }
 
   _bottomNavbar() {

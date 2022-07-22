@@ -107,12 +107,12 @@ class _MyRegionPostsState extends State<MyRegionPosts>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const MyWRRPostAppBar(),
+          backgroundColor: AppColors.backgroundColor,
+          // title: const MyWRRPostAppBar(),
           elevation: 0,
-          toolbarHeight: 70.h,
+          toolbarHeight: 5.h,
           automaticallyImplyLeading: false,
         ),
         body: Consumer<RegionPostProvider>(builder: (context, model, _) {

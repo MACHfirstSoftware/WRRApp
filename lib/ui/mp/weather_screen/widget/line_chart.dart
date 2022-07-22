@@ -29,7 +29,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       padding:
           EdgeInsets.only(top: 30.h, bottom: 10.h, left: 15.w, right: 15.w),
       decoration: BoxDecoration(
-          color: AppColors.secondaryColor.withOpacity(.5),
+          color: AppColors.popBGColor.withOpacity(.75),
           borderRadius: BorderRadius.circular(15.w)),
       child: LineChart(
         mainData(),

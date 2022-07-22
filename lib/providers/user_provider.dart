@@ -21,4 +21,9 @@ class UserProvider with ChangeNotifier {
   void setUserRegionName(String value) {
     _user?.regionName = value;
   }
+
+  void setUserProfile(String url) {
+    _user?.profileImageUrl = url;
+    notifyListeners();
+  }
 }

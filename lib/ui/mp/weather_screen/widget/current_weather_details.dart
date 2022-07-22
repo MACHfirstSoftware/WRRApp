@@ -55,7 +55,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
       {"key": "UV Index", "value": widget.currentWeather.uv.toString()},
     ];
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,14 +72,14 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 Container(
                   height: 50.w,
                   width: 50.w,
-                  padding: EdgeInsets.all(10.w),
+                  padding: EdgeInsets.all(5.w),
                   decoration: BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: AppColors.popBGColor,
                       borderRadius: BorderRadius.circular(10.w)),
                   child: Image.network(
                     "https:${widget.currentWeather.condition.icon}",
-                    height: 40.w,
-                    width: 40.w,
+                    height: 45.w,
+                    width: 45.w,
                     fit: BoxFit.fill,
                     color: Colors.white,
                   ),
@@ -104,7 +104,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             Text(
               "Feel like ${widget.currentWeather.feelslikeF}° f",
               style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.left,
@@ -116,18 +116,18 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               // "Cloudy",
               widget.currentWeather.condition.text,
               style: TextStyle(
-                  fontSize: 22.sp,
+                  fontSize: 20.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
             ),
-      
+
             SizedBox(
               height: 15.h,
             ),
             _buildAstroRow("assets/icons/dayLight.svg", widget.astro.sunrise,
                 widget.astro.sunset),
-      
+
             SizedBox(
               height: 15.h,
             ),
@@ -188,12 +188,12 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             SizedBox(
               height: 15.h,
             ),
-      
+
             Card(
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.w)),
-              color: AppColors.secondaryColor.withOpacity(.5),
+              color: AppColors.popBGColor.withOpacity(.75),
               child: Center(
                 // child: GridView.builder(
                 //     shrinkWrap: true,
@@ -233,7 +233,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 //         .map((e) => _buildDataRow(e["key"]!, e["value"]!))
                 //   ],
                 // ),
-      
+
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
@@ -247,7 +247,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                       },
                       separatorBuilder: (_, index) {
                         return Divider(
-                          color: Colors.blueGrey,
+                          color: Colors.white10,
                           thickness: 1.25.h,
                         );
                       },
@@ -275,7 +275,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               width: 40.w,
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                  color: Colors.blueGrey,
+                  color: AppColors.popBGColor,
                   borderRadius: BorderRadius.circular(10.w)),
               child: SvgPicture.asset(
                 iconPath,

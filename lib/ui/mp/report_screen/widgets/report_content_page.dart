@@ -114,14 +114,7 @@ class _ReportContentsState extends State<ReportContents>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: const ReportBottomAppbar(),
-        elevation: 0,
-        toolbarHeight: 70.h,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: AppColors.backgroundColor,
       body: Consumer<ReportPostProvider>(builder: (context, model, _) {
         if (model.apiStatus == ApiStatus.isBusy) {
           return ViewModels.buildLoader();

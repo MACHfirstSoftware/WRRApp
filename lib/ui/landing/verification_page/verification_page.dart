@@ -112,19 +112,11 @@ class _VerificationPageState extends State<VerificationPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => Future.value(false),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0, .8],
-            colors: [AppColors.secondaryColor, AppColors.primaryColor],
-          ),
-        ),
-        child: Scaffold(
-            backgroundColor: Colors.transparent,
-            resizeToAvoidBottomInset: false,
-            body: Column(children: [
+      child: Scaffold(
+          backgroundColor: AppColors.backgroundColor,
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Column(children: [
               SizedBox(
                 height: 56.h,
               ),
@@ -160,36 +152,43 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: Container(
                   alignment: Alignment.center,
                   height: 50.h,
-                  width: 190.w,
+                  width: 150.w,
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
-                  child: Text(
-                    "Next",
-                    style: TextStyle(
-                        fontSize: 24.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
+                  child: SizedBox(
+                      height: 30.h,
+                      width: 100.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Next",
+                          style: TextStyle(
+                              fontSize: 24.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                      )),
                 ),
               ),
               SizedBox(
-                height: 20.h,
+                height: 15.h,
               ),
               GestureDetector(
                 onTap: () => _reSend(),
                 child: Text(
                   "Resend",
                   style: TextStyle(
-                      fontSize: 20.sp,
+                      fontSize: 18.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w400),
                   textAlign: TextAlign.center,
                 ),
               ),
-            ])),
-      ),
+            ]),
+          )),
     );
   }
 

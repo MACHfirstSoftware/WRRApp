@@ -13,6 +13,7 @@ class Comment {
     required this.personId,
     required this.firstName,
     required this.lastName,
+    required this.code,
     required this.postId,
     required this.body,
     required this.createdOn,
@@ -24,6 +25,7 @@ class Comment {
   String personId;
   String firstName;
   String lastName;
+  String code;
   int postId;
   String body;
   DateTime createdOn;
@@ -35,6 +37,7 @@ class Comment {
         personId: json["personId"],
         firstName: json["firstName"],
         lastName: json["lastName"],
+        code: json["code"],
         postId: json["postId"],
         body: json["body"],
         createdOn: UtilCommon.getDatefromString(json["createdOn"]),
@@ -50,6 +53,7 @@ class Comment {
         "personId": personId,
         "firstName": firstName,
         "lastName": lastName,
+        "code": code,
         "postId": postId,
         "body": body,
         "createdOn": createdOn,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class NewPost extends StatefulWidget {
 }
 
 class _NewPostState extends State<NewPost> {
-  late TextEditingController _titleController;
+  // late TextEditingController _titleController;
   late TextEditingController _bodyController;
   late List<XFile> _images;
   Post? newPost;
@@ -45,27 +46,27 @@ class _NewPostState extends State<NewPost> {
   @override
   void initState() {
     _images = [];
-    _titleController = TextEditingController();
+    // _titleController = TextEditingController();
     _bodyController = TextEditingController();
     super.initState();
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
+    // _titleController.dispose();
     _bodyController.dispose();
     super.dispose();
   }
 
   _validatePostDetails() {
     ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
-    if (_titleController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Title is required",
-          type: SnackBarType.error));
-      return false;
-    }
+    // if (_titleController.text.isEmpty) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Title is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
     if (_bodyController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
           context: context,
@@ -74,23 +75,6 @@ class _NewPostState extends State<NewPost> {
       return false;
     }
     return true;
-  }
-
-  String _getImageName(String str) {
-    str = str.replaceAll('.jpg', '');
-    str = str.replaceAll('.png', '');
-    str = str.replaceAll('.jpeg', '');
-    return str;
-  }
-
-  String _getImageExtension(String str) {
-    if (str.contains(".jpeg")) {
-      return ".jpeg";
-    }
-    if (str.contains(".png")) {
-      return ".png";
-    }
-    return ".jpg";
   }
 
   _publishPost() async {
@@ -102,10 +86,13 @@ class _NewPostState extends State<NewPost> {
         "postTypeId": 1,
         "regionId": _user.regionId,
         "countyId": _user.countyId,
-        "title": _titleController.text,
+        // "title": _titleController.text,
+        "title": "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
         "body": _bodyController.text,
         "isFlagged": false
       };
+
+      log(data.toString());
 
       PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
@@ -117,7 +104,9 @@ class _NewPostState extends State<NewPost> {
             firstName: _user.firstName,
             lastName: _user.lastName,
             personCode: _user.code,
-            title: _titleController.text,
+            profileImageUrl: _user.profileImageUrl,
+            // title: _titleController.text,
+            title: "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
             body: _bodyController.text,
             postPersonCounty: _user.countyName!,
             postType: "General",
@@ -137,14 +126,12 @@ class _NewPostState extends State<NewPost> {
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
           for (XFile image in _images) {
-            final bytes = File(image.path).readAsBytesSync();
-            String img64 = base64Encode(bytes);
             uploadList.add({
               "postId": newPost!.id,
               "caption": "No Caption",
-              "image": img64,
-              "fileName": _getImageName(image.name),
-              "type": _getImageExtension(image.name),
+              "image": ImageUtil.getBase64Image(image.path),
+              "fileName": ImageUtil.getImageName(image.name),
+              "type": ImageUtil.getImageExtension(image.name),
               "sortOrder": 0
             });
           }
@@ -218,14 +205,12 @@ class _NewPostState extends State<NewPost> {
       User _user = Provider.of<UserProvider>(context, listen: false).user;
       List<Map<String, dynamic>> uploadList = [];
       for (XFile image in _images) {
-        final bytes = File(image.path).readAsBytesSync();
-        String img64 = base64Encode(bytes);
         uploadList.add({
           "postId": newPost!.id,
           "caption": "No Caption",
-          "image": img64,
-          "fileName": _getImageName(image.name),
-          "type": _getImageExtension(image.name),
+          "image": ImageUtil.getBase64Image(image.path),
+          "fileName": ImageUtil.getImageName(image.name),
+          "type": ImageUtil.getImageExtension(image.name),
           "sortOrder": 0
         });
       }
@@ -344,102 +329,100 @@ class _NewPostState extends State<NewPost> {
                       onTap: _discardPost,
                     )));
       },
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0, .8],
-            colors: [AppColors.secondaryColor, AppColors.primaryColor],
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          leading: IconButton(
+            iconSize: 25.h,
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  HeroDialogRoute(
+                      builder: (_) => ConfirmationPopup(
+                            title: "Discard",
+                            message:
+                                "If you discard now, you'll lose this post.",
+                            leftBtnText: "Discard",
+                            rightBtnText: "Keep",
+                            onTap: _discardPost,
+                          )));
+            },
+            icon: const Icon(Icons.close_rounded),
+            splashColor: AppColors.btnColor.withOpacity(0.5),
           ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            toolbarHeight: 70.h,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    HeroDialogRoute(
-                        builder: (_) => ConfirmationPopup(
-                              title: "Discard",
-                              message:
-                                  "If you discard now, you'll lose this post.",
-                              leftBtnText: "Discard",
-                              rightBtnText: "Keep",
-                              onTap: _discardPost,
-                            )));
-              },
-              icon: const Icon(Icons.close_rounded),
-              splashColor: AppColors.btnColor.withOpacity(0.5),
-            ),
-            title: Text(
-              "Create WRR",
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  color: AppColors.btnColor,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            elevation: 0,
-            centerTitle: true,
-            actions: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (_isPostPublished) {
-                        _uploadImage();
-                      } else {
-                        _publishPost();
-                      }
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 40.h,
-                      width: 90.w,
-                      margin: EdgeInsets.only(right: 10.w),
-                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      decoration: BoxDecoration(
-                          color: AppColors.btnColor,
-                          borderRadius: BorderRadius.circular(7.5.w)),
-                      child: SizedBox(
-                        height: 30.h,
-                        width: 70.w,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Post",
-                            style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
+          title: SizedBox(
+              width: 300.w,
+              child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "New Post",
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ))),
+          elevation: 0,
+          centerTitle: true,
+          actions: [
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (_isPostPublished) {
+                      _uploadImage();
+                    } else {
+                      _publishPost();
+                    }
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40.h,
+                    width: 90.w,
+                    margin: EdgeInsets.only(right: 10.w),
+                    // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    decoration: BoxDecoration(
+                        color: AppColors.btnColor,
+                        borderRadius: BorderRadius.circular(7.5.w)),
+                    child: SizedBox(
+                      height: 30.h,
+                      width: 70.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Post",
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ),
-                ],
-              )
-            ],
-          ),
-          body: Column(
+                ),
+              ],
+            )
+          ],
+        ),
+        body: SafeArea(
+          child: Column(
             children: [
               SizedBox(
                 height: 15.h,
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 25.w),
-                child: CustomInputField(
-                  controller: _titleController,
-                  label: "Title",
-                  hintText: "Title",
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+              //   child: CustomInputField(
+              //     controller: _titleController,
+              //     label: "Title",
+              //     hintText: "Title",
+              //   ),
+              // ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.w),
                 child: CustomInputField(
@@ -448,6 +431,17 @@ class _NewPostState extends State<NewPost> {
                   hintText: "Body",
                   maxLines: 5,
                 ),
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              Text(
+                "Select image(s) to upload",
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: AppColors.btnColor,
+                    fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
               ),
               SizedBox(
                 height: 20.h,
@@ -509,7 +503,7 @@ class _NewPostState extends State<NewPost> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                              color: AppColors.secondaryColor.withOpacity(0.5),
+                              color: AppColors.popBGColor,
                               borderRadius: BorderRadius.circular(7.5.w)),
                           child: Icon(Icons.camera_alt_rounded,
                               color: AppColors.btnColor, size: 30.h),

@@ -158,14 +158,20 @@ class _PostViewState extends State<PostView> {
         children: [
           _buildPersonRow(
               widget.post.isShare
+                  ? widget.post.sharePersonImage
+                  : widget.post.profileImageUrl,
+              widget.post.isShare
                   ? (widget.post.sharePersonFirstName +
                       " " +
                       widget.post.sharePersonLastName)
                   : (widget.post.firstName + " " + widget.post.lastName),
-              widget.post.personCode,
+              widget.post.isShare
+                  ? widget.post.sharePersonCode
+                  : widget.post.personCode,
               widget.post.postPersonCounty,
-              widget.post.createdOn),
-          if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
+              widget.post.createdOn,
+              widget.post.isShare ? null : true),
+          // if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
           if (!widget.post.isShare)
             _buildPostTitleAndBody(widget.post.body, isTitle: false),
           if (widget.post.isShare)
@@ -179,11 +185,13 @@ class _PostViewState extends State<PostView> {
               child: Column(
                 children: [
                   _buildPersonRow(
+                      widget.post.profileImageUrl,
                       widget.post.firstName + " " + widget.post.lastName,
                       widget.post.personCode,
                       widget.post.postPersonCounty,
-                      widget.post.createdOn),
-                  _buildPostTitleAndBody(widget.post.title),
+                      widget.post.createdOn,
+                      true),
+                  // _buildPostTitleAndBody(widget.post.title),
                   _buildPostTitleAndBody(widget.post.body, isTitle: false),
                 ],
               ),
@@ -468,7 +476,7 @@ class _PostViewState extends State<PostView> {
           text,
           style: TextStyle(
               fontSize: isTitle ? 16.sp : 12.sp,
-              color: isTitle ? Colors.black : Colors.grey[400],
+              color: isTitle ? Colors.black : Colors.grey[600],
               fontWeight: isTitle ? FontWeight.w500 : FontWeight.w400),
           textAlign: TextAlign.left,
         ),
@@ -476,8 +484,8 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Container _buildPersonRow(
-      String name, String personCode, String county, DateTime date) {
+  Container _buildPersonRow(String? profileImageUrl, String name,
+      String personCode, String county, DateTime date, bool? isFollowed) {
     return Container(
       color: Colors.white,
       height: 75.h,
@@ -493,33 +501,62 @@ class _PostViewState extends State<PostView> {
               alignment: Alignment.center,
               height: 60.h,
               width: 60.h,
-              padding: EdgeInsets.all(10.h),
+              // padding: EdgeInsets.all(10.h),
               decoration: BoxDecoration(
-                color: AppColors.secondaryColor,
+                color: AppColors.popBGColor,
                 borderRadius: BorderRadius.circular(10.h),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(5.h),
-                // child: Image.asset(
-                //   "assets/images/WRR.png",
-                //   fit: BoxFit.fill,
-                // )
-                child: SizedBox(
-                  height: 40.h,
-                  width: 40.h,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      name.split(" ")[0].substring(0, 1).toUpperCase() +
-                          name.split(" ")[1].substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColors.btnColor,
-                          fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
+                borderRadius: BorderRadius.circular(10.h),
+                child: profileImageUrl != null
+                    ? SizedBox(
+                        height: 60.h,
+                        width: 60.h,
+                        child: CachedNetworkImage(
+                          imageUrl: profileImageUrl,
+                          imageBuilder: (context, imageProvider) {
+                            return Image(
+                              image: imageProvider,
+                              fit: BoxFit.fill,
+                              alignment: Alignment.center,
+                            );
+                          },
+                          progressIndicatorBuilder: (context, url, progress) =>
+                              Center(
+                            child: SizedBox(
+                              height: 10.h,
+                              width: 10.h,
+                              child: CircularProgressIndicator(
+                                value: progress.progress,
+                                color: AppColors.btnColor,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => Icon(
+                              Icons.broken_image_outlined,
+                              color: AppColors.btnColor,
+                              size: 10.h),
+                        ),
+                      )
+                    : SizedBox(
+                        height: 40.h,
+                        width: 40.h,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            name.split(" ")[0].substring(0, 1).toUpperCase() +
+                                name
+                                    .split(" ")[1]
+                                    .substring(0, 1)
+                                    .toUpperCase(),
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
               )),
           SizedBox(
             width: 7.5.w,
@@ -556,7 +593,7 @@ class _PostViewState extends State<PostView> {
                         county + " County",
                         style: TextStyle(
                             fontSize: 11.sp,
-                            color: Colors.black54,
+                            color: Colors.black87,
                             fontWeight: FontWeight.w400),
                         textAlign: TextAlign.left,
                         maxLines: 1,
@@ -572,7 +609,7 @@ class _PostViewState extends State<PostView> {
                         UtilCommon.convertToAgo(date),
                         style: TextStyle(
                             fontSize: 11.sp,
-                            color: Colors.grey,
+                            color: Colors.black87,
                             fontWeight: FontWeight.w400),
                         textAlign: TextAlign.left,
                         maxLines: 1,
@@ -583,45 +620,25 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           ),
-          // Expanded(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         name,
-          //         style: TextStyle(
-          //             fontSize: 18.sp,
-          //             color: Colors.black,
-          //             fontWeight: FontWeight.w700),
-          //         textAlign: TextAlign.left,
-          //       ),
-          //       Text(
-          //         county + " County",
-          //         style: TextStyle(
-          //             fontSize: 12.sp,
-          //             // color: Colors.grey[800],
-          //             color: Colors.black54,
-          //             fontWeight: FontWeight.w400),
-          //         textAlign: TextAlign.left,
-          //       ),
-          //       Text(
-          //         UtilCommon.convertToAgo(date),
-          //         style: TextStyle(
-          //             fontSize: 11.sp,
-          //             color: Colors.grey,
-          //             fontWeight: FontWeight.w400),
-          //         textAlign: TextAlign.left,
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          if (isFollowed != null)
+            SizedBox(
+                height: 60.h,
+                width: 40.h,
+                child: IconButton(
+                  splashColor: AppColors.btnColor.withOpacity(0.5),
+                  iconSize: 25.h,
+                  icon: Icon(
+                    Icons.person_add_alt_rounded,
+                    color: isFollowed ? AppColors.btnColor : Colors.black54,
+                  ),
+                  onPressed: () {},
+                )),
           SizedBox(
               height: 60.h,
-              width: 60.h,
+              width: 50.h,
               child: PopupMenuButton(
                 padding: EdgeInsets.zero,
-                color: AppColors.secondaryColor,
+                color: AppColors.popBGColor,
                 icon: Icon(Icons.more_horiz_rounded, size: 30.h),
                 itemBuilder: (context) => [
                   if (!widget.post.isShare && _user.id != widget.post.personId)
@@ -1026,8 +1043,8 @@ class MediaView extends StatelessWidget {
             ),
           ),
         ),
-        errorWidget: (context, url, error) =>
-            Icon(Icons.error, color: AppColors.btnColor, size: 30.h),
+        errorWidget: (context, url, error) => Icon(Icons.broken_image_outlined,
+            color: AppColors.btnColor, size: 30.h),
       ),
     );
   }

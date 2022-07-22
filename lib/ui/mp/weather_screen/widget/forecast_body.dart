@@ -55,7 +55,7 @@ class _ForecastBodyState extends State<ForecastBody> {
       {"key": "UV Index", "value": widget.forecastDay.hour[hour].uv.toString()},
     ];
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,14 +72,14 @@ class _ForecastBodyState extends State<ForecastBody> {
                 Container(
                   height: 50.w,
                   width: 50.w,
-                  padding: EdgeInsets.all(10.w),
+                  padding: EdgeInsets.all(5.w),
                   decoration: BoxDecoration(
-                      color: Colors.blueGrey,
+                      color: AppColors.popBGColor,
                       borderRadius: BorderRadius.circular(10.w)),
                   child: Image.network(
                     "https:${widget.forecastDay.hour[hour].condition.icon}",
-                    height: 40.w,
-                    width: 40.w,
+                    height: 45.w,
+                    width: 45.w,
                     fit: BoxFit.fill,
                     color: Colors.white,
                   ),
@@ -103,7 +103,7 @@ class _ForecastBodyState extends State<ForecastBody> {
             Text(
               "Feel like ${widget.forecastDay.hour[hour].feelslikeF}° f",
               style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.left,
@@ -114,9 +114,9 @@ class _ForecastBodyState extends State<ForecastBody> {
             Text(
               widget.forecastDay.hour[hour].condition.text,
               style: TextStyle(
-                  fontSize: 22.sp,
+                  fontSize: 20.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w500),
               textAlign: TextAlign.left,
             ),
             SizedBox(
@@ -149,7 +149,7 @@ class _ForecastBodyState extends State<ForecastBody> {
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.w)),
-              color: AppColors.secondaryColor.withOpacity(.5),
+              color: AppColors.popBGColor.withOpacity(.75),
               child: Center(
                 child: Padding(
                   padding:
@@ -164,7 +164,7 @@ class _ForecastBodyState extends State<ForecastBody> {
                       },
                       separatorBuilder: (_, index) {
                         return Divider(
-                          color: Colors.blueGrey,
+                          color: Colors.white10,
                           thickness: 1.25.h,
                         );
                       },
@@ -192,7 +192,7 @@ class _ForecastBodyState extends State<ForecastBody> {
               width: 40.w,
               padding: EdgeInsets.all(10.w),
               decoration: BoxDecoration(
-                  color: Colors.blueGrey,
+                  color: AppColors.popBGColor,
                   borderRadius: BorderRadius.circular(10.w)),
               child: SvgPicture.asset(
                 iconPath,

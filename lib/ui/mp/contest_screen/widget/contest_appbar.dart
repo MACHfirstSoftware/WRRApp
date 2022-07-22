@@ -101,7 +101,7 @@ class _ContestAppBarState extends State<ContestAppBar> {
         alignment: Alignment.center,
         color: Colors.white,
       ),
-      color: AppColors.secondaryColor,
+      color: AppColors.popBGColor,
       elevation: 2,
       itemBuilder: (context) => [
         ..._customSuperRegions.map((val) => PopupMenuItem<CustomSuperRegion>(

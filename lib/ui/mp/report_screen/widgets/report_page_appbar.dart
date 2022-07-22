@@ -143,7 +143,7 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
         alignment: Alignment.center,
         color: Colors.white,
       ),
-      color: AppColors.secondaryColor,
+      color: AppColors.popBGColor,
       // itemBuilder: (context) => [
       //   ..._counties.map((county) => PopupMenuItem<County>(
       //       value: county,

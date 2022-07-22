@@ -21,6 +21,7 @@ class PostService {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/MyWRR" +
           (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
+      inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)

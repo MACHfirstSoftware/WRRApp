@@ -113,18 +113,10 @@ class _LetsGoPageState extends State<LetsGoPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => Future.value(false),
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0, .8],
-            colors: [AppColors.secondaryColor, AppColors.primaryColor],
-          ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: Column(
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: SafeArea(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
@@ -143,7 +135,7 @@ class _LetsGoPageState extends State<LetsGoPage> {
                 child: Text(
                   "Welcome to the Wisconsin Rut Report!",
                   style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 20.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       height: 1.5),
@@ -158,17 +150,25 @@ class _LetsGoPageState extends State<LetsGoPage> {
                 child: Container(
                   alignment: Alignment.center,
                   height: 50.h,
-                  width: 190.w,
+                  width: 160.w,
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
-                  child: Text(
-                    "Let's go!",
-                    style: TextStyle(
-                        fontSize: 18.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                  child: SizedBox(
+                    height: 30.h,
+                    width: 110.w,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Let's go!",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
                 ),
               ),

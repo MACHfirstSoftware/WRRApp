@@ -19,6 +19,7 @@ class Post {
       required this.firstName,
       required this.lastName,
       required this.personCode,
+      this.profileImageUrl,
       required this.title,
       required this.body,
       required this.postPersonCounty,
@@ -29,6 +30,8 @@ class Post {
       this.sharePersonId,
       this.sharePersonFirstName = "",
       this.sharePersonLastName = "",
+      this.sharePersonCode = '',
+      this.sharePersonImage,
       required this.likes,
       required this.comments,
       required this.media,
@@ -41,6 +44,7 @@ class Post {
   String firstName;
   String lastName;
   String personCode;
+  String? profileImageUrl;
   String title;
   String body;
   String postPersonCounty;
@@ -51,6 +55,8 @@ class Post {
   String? sharePersonId;
   String sharePersonFirstName;
   String sharePersonLastName;
+  String sharePersonCode;
+  String? sharePersonImage;
   List<Like> likes;
   List<Comment> comments;
   List<Media> media;
@@ -64,6 +70,8 @@ class Post {
       firstName: json["firstName"],
       lastName: json["lastName"],
       personCode: json["personCode"],
+      profileImageUrl:
+          json["imageLocation"] != "" ? json["imageLocation"] : null,
       title: json["title"],
       body: json["body"],
       postPersonCounty: json["postPersonCounty"],
@@ -76,6 +84,9 @@ class Post {
       sharePersonId: json["sharePersonId"],
       sharePersonFirstName: json["sharePersonFirstName"],
       sharePersonLastName: json["sharePersonLastName"],
+      sharePersonCode: json["sharePersonCode"],
+      sharePersonImage:
+          json["sharePersonImage"] != "" ? json["sharePersonImage"] : null,
       likes: List<Like>.from(json["likes"].map((x) => Like.fromJson(x))),
       comments:
           List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),

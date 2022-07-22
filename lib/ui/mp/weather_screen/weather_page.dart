@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/current_weather_details.dart';
+import 'package:wisconsin_app/widgets/tab_title.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -55,9 +58,10 @@ class _WeatherPageState extends State<WeatherPage>
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 50.h,
           title: const WeatherAppBar(),
           bottom: TabBar(
               onTap: (int? tabIndex) {
@@ -71,14 +75,11 @@ class _WeatherPageState extends State<WeatherPage>
               },
               tabs: const [
                 Tab(
-                  text: "Current",
+                  child: TabTitle(title: "Current"),
                 ),
                 Tab(
-                  text: "Forecast",
-                ),
-                // Tab(
-                //   text: "History",
-                // ),
+                  child: TabTitle(title: "Forecast"),
+                )
               ]),
         ),
         body: Consumer<WeatherProvider>(builder: (context, weatherProvider, _) {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +9,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
+import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/edit_my_account.dart';
+import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/my_friends.dart';
 import 'package:wisconsin_app/utils/common.dart';
+import 'package:wisconsin_app/utils/hero_dialog_route.dart';
+import 'package:wisconsin_app/widgets/confirmation_popup.dart';
+import 'package:wisconsin_app/widgets/page_loader.dart';
+import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class MyAccount extends StatefulWidget {
   const MyAccount({Key? key}) : super(key: key);
@@ -22,6 +31,13 @@ class MyAccount extends StatefulWidget {
 class _MyAccountState extends State<MyAccount> {
   final picker = ImagePicker();
   XFile? _image;
+  late User _user;
+
+  @override
+  void initState() {
+    _user = Provider.of<UserProvider>(context, listen: false).user;
+    super.initState();
+  }
 
   _doLogout() async {
     await StoreUtils.removeUser();
@@ -40,6 +56,21 @@ class _MyAccountState extends State<MyAccount> {
         setState(() {
           _image = pickedFile;
         });
+        Navigator.push(
+            context,
+            HeroDialogRoute(
+                builder: (_) => ConfirmationPopup(
+                      title: "Update",
+                      message: "Do you want to change profile image?",
+                      leftBtnText: "Change",
+                      rightBtnText: "Keep",
+                      onTap: _updateProfileImage,
+                      onRightTap: () {
+                        setState(() {
+                          _image = null;
+                        });
+                      },
+                    )));
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -49,6 +80,33 @@ class _MyAccountState extends State<MyAccount> {
       if (kDebugMode) {
         print("Failed to pick image : $e");
       }
+    }
+  }
+
+  _updateProfileImage() async {
+    PageLoader.showLoader(context);
+    final data = {
+      "personId": _user.id,
+      "image": ImageUtil.getBase64Image(_image!.path),
+      "fileName": ImageUtil.getImageName(_image!.name),
+      "type": ImageUtil.getImageExtension(_image!.name)
+    };
+    final res = await UserService.updateProfileImage(data);
+    Navigator.pop(context);
+    if (res != null) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Successfully updated",
+          type: SnackBarType.success));
+      Provider.of<UserProvider>(context, listen: false).setUserProfile(res);
+    } else {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Something went wrong",
+          type: SnackBarType.error));
+      setState(() {
+        _image = null;
+      });
     }
   }
 
@@ -89,195 +147,248 @@ class _MyAccountState extends State<MyAccount> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context, listen: false).user;
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              Container(
-                height: 332.5.h,
-                width: 428.w,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25.w),
-                      bottomRight: Radius.circular(25.w),
-                    )),
-              ),
-              Container(
-                height: 325.h,
-                width: 428.w,
-                decoration: BoxDecoration(
-                    color: AppColors.btnColor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25.w),
-                      bottomRight: Radius.circular(25.w),
-                    )),
-                child: SafeArea(
-                    child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 50.w,
-                        ),
-                        SizedBox(
-                          height: 120.h,
-                          width: 120.h,
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(60.h),
-                                child: SizedBox(
-                                    height: 120.h,
-                                    width: 120.h,
-                                    child: _image != null
-                                        ? Image.file(
-                                            File(
-                                              _image!.path,
-                                            ),
-                                            fit: BoxFit.fill,
-                                          )
-                                        : Image.asset(
-                                            "assets/images/logo.png")),
-                              ),
-                              Positioned(
-                                bottom: 0.h,
-                                right: 0.h,
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    ImageSource? source =
-                                        await showImageSource(context);
-                                    if (source != null) {
-                                      getImage(source);
-                                    } else {
-                                      print("Get image source failed");
-                                    }
-                                  },
+      backgroundColor: AppColors.backgroundColor,
+      body: Consumer<UserProvider>(builder: (_, userModel, __) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: 332.5.h,
+                  width: 428.w,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(25.w),
+                        bottomRight: Radius.circular(25.w),
+                      )),
+                ),
+                Container(
+                  height: 325.h,
+                  width: 428.w,
+                  decoration: BoxDecoration(
+                      color: AppColors.btnColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(25.w),
+                        bottomRight: Radius.circular(25.w),
+                      )),
+                  child: SafeArea(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 50.w,
+                          ),
+                          SizedBox(
+                            height: 120.h,
+                            width: 120.h,
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(60.h),
                                   child: Container(
-                                    alignment: Alignment.center,
-                                    height: 40.h,
-                                    width: 40.h,
-                                    decoration: BoxDecoration(
                                       color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20.h),
-                                    ),
-                                    child: Icon(
-                                      Icons.camera_alt_outlined,
-                                      color: AppColors.btnColor,
-                                      size: 25.h,
+                                      height: 120.h,
+                                      width: 120.h,
+                                      child: _image != null
+                                          ? Image.file(
+                                              File(
+                                                _image!.path,
+                                              ),
+                                              fit: BoxFit.fill,
+                                            )
+                                          : userModel.user.profileImageUrl !=
+                                                  null
+                                              ? CachedNetworkImage(
+                                                  imageUrl: userModel
+                                                      .user.profileImageUrl!,
+                                                  imageBuilder:
+                                                      (context, imageProvider) {
+                                                    return Image(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.fill,
+                                                      alignment:
+                                                          Alignment.center,
+                                                    );
+                                                  },
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              progress) =>
+                                                          Center(
+                                                    child: SizedBox(
+                                                      height: 20.h,
+                                                      width: 20.h,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        value:
+                                                            progress.progress,
+                                                        color:
+                                                            AppColors.btnColor,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  errorWidget: (context, url,
+                                                          error) =>
+                                                      Icon(
+                                                          Icons
+                                                              .broken_image_outlined,
+                                                          color: AppColors
+                                                              .btnColor,
+                                                          size: 20.h),
+                                                )
+                                              : Image.asset(
+                                                  "assets/images/logo.png")),
+                                ),
+                                Positioned(
+                                  bottom: 0.h,
+                                  right: 0.h,
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      ImageSource? source =
+                                          await showImageSource(context);
+                                      if (source != null) {
+                                        getImage(source);
+                                      } else {
+                                        if (kDebugMode) {
+                                          print("Get image source failed");
+                                        }
+                                      }
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 40.h,
+                                      width: 40.h,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(20.h),
+                                      ),
+                                      child: Icon(
+                                        Icons.camera_alt_outlined,
+                                        color: AppColors.btnColor,
+                                        size: 25.h,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10.w),
+                          const Spacer(),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.w),
+                            ),
+                            height: 50.h,
+                            width: 150.w,
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Icon(Icons.arrow_circle_up_rounded,
+                                      color: AppColors.btnColor, size: 30.h),
+                                  Text(
+                                    "UPGRADE",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ]),
                           ),
-                          height: 50.h,
-                          width: 150.w,
+                          SizedBox(
+                            width: 40.w,
+                          ),
+                        ],
+                      ),
+                      Expanded(
                           child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 50.w,
+                          ),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.arrow_circle_up_rounded,
-                                    color: AppColors.btnColor, size: 30.h),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
                                 Text(
-                                  "UPGRADE",
+                                  userModel.user.firstName +
+                                      " " +
+                                      userModel.user.lastName,
                                   style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: AppColors.btnColor,
+                                      fontSize: 20.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                                Text(
+                                  userModel.user.emailAddress,
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.w500),
                                   textAlign: TextAlign.center,
                                 ),
-                              ]),
-                        ),
-                        SizedBox(
-                          width: 40.w,
-                        ),
-                      ],
-                    ),
-                    Expanded(
-                        child: Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 50.w,
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Text(
-                                user.firstName + " " + user.lastName,
-                                style: TextStyle(
-                                    fontSize: 20.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                user.emailAddress,
-                                style: TextStyle(
-                                    fontSize: 14.sp,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.notifications_outlined,
-                              color: Colors.white,
-                              size: 40.h,
-                            )),
-                        SizedBox(
-                          width: 30.w,
-                        ),
-                      ],
-                    ))
-                  ],
-                )),
-              ),
-            ],
-          ),
-          Expanded(
-              child: ListView(
-            padding: EdgeInsets.symmetric(vertical: 25.h, horizontal: 30.w),
-            children: [
-              _buildTile("My Posts & Reports", Icons.edit_note_rounded),
-              _buildTile("Edit My Account", Icons.account_circle_outlined),
-              _buildTile("Subscription", Icons.price_check_rounded),
-              _buildTile("Notification Setting", Icons.notifications_none),
-              _buildTile("Privacy Policy", Icons.lock_outline_rounded),
-              _buildTile("Terms of Use", Icons.share_outlined),
-              _buildLogoutBtn()
-            ],
-          )),
-        ],
-      ),
+                          IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.notifications_outlined,
+                                color: Colors.white,
+                                size: 40.h,
+                              )),
+                          SizedBox(
+                            width: 30.w,
+                          ),
+                        ],
+                      ))
+                    ],
+                  )),
+                ),
+              ],
+            ),
+            Expanded(
+                child: ListView(
+              padding: EdgeInsets.symmetric(vertical: 25.h, horizontal: 30.w),
+              children: [
+                _buildTile("My Friends", Icons.account_circle_outlined,
+                    onTap: (() => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const MyFriends())))),
+                _buildTile("Edit My Account", Icons.edit_note_rounded,
+                    onTap: (() => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const EditMyAccount())))),
+                _buildTile("Subscription", Icons.price_check_rounded),
+                _buildTile("Notification Setting", Icons.notifications_none),
+                _buildTile("Privacy Policy", Icons.lock_outline_rounded),
+                _buildTile("Terms of Use", Icons.share_outlined),
+                _buildLogoutBtn()
+              ],
+            )),
+          ],
+        );
+      }),
     );
   }
 
@@ -307,28 +418,35 @@ class _MyAccountState extends State<MyAccount> {
     );
   }
 
-  _buildTile(String title, IconData icon) {
-    return Container(
-      alignment: Alignment.center,
-      height: 75.h,
-      margin: EdgeInsets.symmetric(vertical: 5.h),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(color: AppColors.secondaryColor, width: 1.5.w),
-        borderRadius: BorderRadius.circular(7.5.w),
-      ),
-      child: ListTile(
-        leading: Icon(icon, color: Colors.white, size: 35.h),
-        title: Text(
-          title,
-          style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.w500),
-          textAlign: TextAlign.left,
+  _buildTile(String title, IconData icon, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        height: 75.h,
+        margin: EdgeInsets.symmetric(vertical: 5.h),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(color: AppColors.secondaryColor, width: 1.5.w),
+          borderRadius: BorderRadius.circular(7.5.w),
         ),
-        trailing: Icon(Icons.keyboard_arrow_down_rounded,
-            color: AppColors.secondaryColor, size: 40.h),
+        child: ListTile(
+          leading: Icon(icon, color: Colors.white, size: 35.h),
+          title: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.left,
+            ),
+          ),
+          trailing: Icon(Icons.keyboard_arrow_down_rounded,
+              color: AppColors.secondaryColor, size: 40.h),
+        ),
       ),
     );
   }

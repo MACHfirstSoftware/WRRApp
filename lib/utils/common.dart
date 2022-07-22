@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wisconsin_app/models/county.dart';
+import 'package:wisconsin_app/models/region.dart';
 
 class UtilCommon {
   static String convertToAgo(DateTime input) {
@@ -90,5 +93,61 @@ class StoreUtils {
   static Future<void> removeUser() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("USER");
+  }
+}
+
+class ImageUtil {
+  static String getImageName(String str) {
+    str = str.replaceAll('.jpg', '');
+    str = str.replaceAll('.png', '');
+    str = str.replaceAll('.jpeg', '');
+    return str;
+  }
+
+  static String getImageExtension(String str) {
+    if (str.contains(".jpeg")) {
+      return ".jpeg";
+    }
+    if (str.contains(".png")) {
+      return ".png";
+    }
+    return ".jpg";
+  }
+
+  static String getBase64Image(String path) {
+    final bytes = File(path).readAsBytesSync();
+    String img64 = base64Encode(bytes);
+    return img64;
+  }
+}
+
+class CountyUtil {
+  static String getCountyNameById(
+      {required List<County> counties, required int countyId}) {
+    print(countyId);
+    String countyName = '';
+    for (final county in counties) {
+      if (county.id == countyId) {
+        print(county.id);
+        print(county.name);
+        countyName = county.name;
+        break;
+      }
+    }
+    return countyName;
+  }
+
+  static String getRegionNameById(
+      {required List<Region> regions, required int regionId}) {
+    String regionName = '';
+    for (final region in regions) {
+      if (region.id == regionId) {
+        print(region.id);
+        print(region.name);
+        regionName = region.name;
+        break;
+      }
+    }
+    return regionName;
   }
 }

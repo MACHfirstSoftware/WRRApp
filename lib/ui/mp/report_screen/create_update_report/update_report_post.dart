@@ -35,7 +35,7 @@ class UpdateReportPost extends StatefulWidget {
 }
 
 class _UpdateReportPostState extends State<UpdateReportPost> {
-  late TextEditingController _titleController;
+  // late TextEditingController _titleController;
   late TextEditingController _bodyController;
   late TextEditingController _deerSeenController;
   late TextEditingController _bucksSeenController;
@@ -64,7 +64,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
     _medias.addAll(_post.media);
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
     _selectedCounty = _post.county;
-    _titleController = TextEditingController(text: _post.title);
+    // _titleController = TextEditingController(text: _post.title);
     _bodyController = TextEditingController(text: _post.body);
     _deerSeenController =
         TextEditingController(text: _post.report!.numDeer.toString());
@@ -93,7 +93,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
 
   @override
   void dispose() {
-    _titleController.dispose();
+    // _titleController.dispose();
     _bodyController.dispose();
     _deerSeenController.dispose();
     _bucksSeenController.dispose();
@@ -103,13 +103,13 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
 
   _validatePostDetails() {
     ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
-    if (_titleController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Title is required",
-          type: SnackBarType.error));
-      return false;
-    }
+    // if (_titleController.text.isEmpty) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Title is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
     if (_bodyController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
           context: context,
@@ -141,30 +141,15 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
     return true;
   }
 
-  String _getImageName(String str) {
-    str = str.replaceAll('.jpg', '');
-    str = str.replaceAll('.png', '');
-    str = str.replaceAll('.jpeg', '');
-    return str;
-  }
-
-  String _getImageExtension(String str) {
-    if (str.contains(".jpeg")) {
-      return ".jpeg";
-    }
-    if (str.contains(".png")) {
-      return ".png";
-    }
-    return ".jpg";
-  }
-
   _updateReportPost() async {
+    User _user = Provider.of<UserProvider>(context, listen: false).user;
     if (_validatePostDetails()) {
       ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
       PageLoader.showLoader(context);
       final postResponse = await PostService.updateReportPost(
           _post.id,
-          _titleController.text,
+          // _titleController.text,
+          "",
           _bodyController.text,
           _selectedCounty.id,
           _selectedCounty.regionId);
@@ -176,7 +161,9 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             firstName: _post.firstName,
             lastName: _post.lastName,
             personCode: _post.personCode,
-            title: _titleController.text,
+            profileImageUrl: _user.profileImageUrl,
+            // title: _titleController.text,
+            title: "",
             body: _bodyController.text,
             postPersonCounty: _post.postPersonCounty,
             postType: _post.postType,
@@ -265,14 +252,12 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
           if (_images.isNotEmpty) {
             List<Map<String, dynamic>> uploadList = [];
             for (XFile image in _images) {
-              final bytes = File(image.path).readAsBytesSync();
-              String img64 = base64Encode(bytes);
               uploadList.add({
                 "postId": widget.post.id,
                 "caption": "No Caption",
-                "image": img64,
-                "fileName": _getImageName(image.name),
-                "type": _getImageExtension(image.name),
+                "image": ImageUtil.getBase64Image(image.path),
+                "fileName": ImageUtil.getImageName(image.name),
+                "type": ImageUtil.getImageExtension(image.name),
                 "sortOrder": 0
               });
             }
@@ -280,9 +265,12 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             imageResponse.when(success: (List<Media> media) {
               _updatedPost!.media = media;
 //------------------------------------------ change bellow to update------------------
-
+              // final reportPostProvider =
+              //     Provider.of<ReportPostProvider>(context, listen: false);
+              // if (reportPostProvider.regionId == _selectedCounty.regionId) {
               Provider.of<ReportPostProvider>(context, listen: false)
                   .updatePost(_updatedPost!);
+              // }
 
 //---------------------------------------------------------------------------------------
               Navigator.pop(context);
@@ -334,14 +322,12 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
       PageLoader.showLoader(context);
       List<Map<String, dynamic>> uploadList = [];
       for (XFile image in _images) {
-        final bytes = File(image.path).readAsBytesSync();
-        String img64 = base64Encode(bytes);
         uploadList.add({
           "postId": widget.post.id,
           "caption": "No Caption",
-          "image": img64,
-          "fileName": _getImageName(image.name),
-          "type": _getImageExtension(image.name),
+          "image": ImageUtil.getBase64Image(image.path),
+          "fileName": ImageUtil.getImageName(image.name),
+          "type": ImageUtil.getImageExtension(image.name),
           "sortOrder": 0
         });
       }
@@ -448,103 +434,101 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                       onTap: _discardPost,
                     )));
       },
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: [0, .8],
-            colors: [AppColors.secondaryColor, AppColors.primaryColor],
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          leading: IconButton(
+            iconSize: 25.h,
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  HeroDialogRoute(
+                      builder: (_) => ConfirmationPopup(
+                            title: "Discard",
+                            message:
+                                "If you discard now, you'll lose these changes.",
+                            leftBtnText: "Discard",
+                            rightBtnText: "Keep",
+                            onTap: _discardPost,
+                          )));
+            },
+            icon: const Icon(Icons.close_rounded),
+            splashColor: AppColors.btnColor.withOpacity(0.5),
           ),
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            toolbarHeight: 70.h,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    HeroDialogRoute(
-                        builder: (_) => ConfirmationPopup(
-                              title: "Discard",
-                              message:
-                                  "If you discard now, you'll lose these changes.",
-                              leftBtnText: "Discard",
-                              rightBtnText: "Keep",
-                              onTap: _discardPost,
-                            )));
-              },
-              icon: const Icon(Icons.close_rounded),
-              splashColor: AppColors.btnColor.withOpacity(0.5),
-            ),
-            title: Text(
-              "update Report",
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  color: AppColors.btnColor,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            elevation: 0,
-            centerTitle: true,
-            actions: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      if (_isPostUpdate) {
-                        _updateImage();
-                      } else {
-                        _updateReportPost();
-                      }
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 40.h,
-                      width: 90.w,
-                      margin: EdgeInsets.only(right: 10.w),
-                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      decoration: BoxDecoration(
-                          color: AppColors.btnColor,
-                          borderRadius: BorderRadius.circular(7.5.w)),
-                      child: SizedBox(
-                        height: 30.h,
-                        width: 70.w,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.center,
-                          child: Text(
-                            "Apply",
-                            style: TextStyle(
-                                fontSize: 15.sp,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                          ),
+          title: SizedBox(
+              width: 300.w,
+              child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Update Report",
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ))),
+          elevation: 0,
+          centerTitle: true,
+          actions: [
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (_isPostUpdate) {
+                      _updateImage();
+                    } else {
+                      _updateReportPost();
+                    }
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40.h,
+                    width: 90.w,
+                    margin: EdgeInsets.only(right: 10.w),
+                    // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    decoration: BoxDecoration(
+                        color: AppColors.btnColor,
+                        borderRadius: BorderRadius.circular(7.5.w)),
+                    child: SizedBox(
+                      height: 30.h,
+                      width: 70.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Apply",
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ),
-                ],
-              )
-            ],
-          ),
-          body: SingleChildScrollView(
+                ),
+              ],
+            )
+          ],
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 SizedBox(
                   height: 15.h,
                 ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: CustomInputField(
-                    controller: _titleController,
-                    label: "Title",
-                    hintText: "Title",
-                  ),
-                ),
+                // Padding(
+                //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                //   child: CustomInputField(
+                //     controller: _titleController,
+                //     label: "Title",
+                //     hintText: "Title",
+                //   ),
+                // ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 25.w),
                   child: CustomInputField(
@@ -565,7 +549,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                       Text(
                         "County  :  ",
                         style: TextStyle(
-                            fontSize: 18.sp,
+                            fontSize: 16.sp,
                             color: AppColors.btnColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
@@ -585,7 +569,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                           Text(
                             "Start at  :  ",
                             style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                                 color: AppColors.btnColor,
                                 fontWeight: FontWeight.w500),
                             textAlign: TextAlign.left,
@@ -603,7 +587,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                                 child: Text(
                                   UtilCommon.formatDate(startAt),
                                   style: TextStyle(
-                                      fontSize: 18.sp,
+                                      fontSize: 16.sp,
                                       // color: AppColors.btnColor,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w400),
@@ -625,7 +609,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         child: Text(
                           "Number of deer seen  :  ",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
@@ -647,7 +631,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         child: Text(
                           "Number of bucks seen  :  ",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
@@ -667,7 +651,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                     child: Text(
                       "Weather Condition : ",
                       style: TextStyle(
-                          fontSize: 18.sp,
+                          fontSize: 16.sp,
                           color: AppColors.btnColor,
                           fontWeight: FontWeight.w500),
                       textAlign: TextAlign.left,
@@ -687,7 +671,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         child: Text(
                           "How long did you hunt  :  ",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
@@ -715,7 +699,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                           child: Text(
                             "How did you hunt  :  ",
                             style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                                 color: AppColors.btnColor,
                                 fontWeight: FontWeight.w500),
                             textAlign: TextAlign.left,
@@ -735,7 +719,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             Text(
                               "Gun",
                               style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 16.sp,
                                   // color: AppColors.btnColor,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500),
@@ -753,7 +737,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             Text(
                               "Bow",
                               style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 16.sp,
                                   // color: AppColors.btnColor,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500),
@@ -774,7 +758,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         child: Text(
                           "Was your hunt successful  :  ",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
@@ -799,7 +783,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             Text(
                               "Yes",
                               style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 16.sp,
                                   // color: AppColors.btnColor,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500),
@@ -817,7 +801,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             Text(
                               "No",
                               style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 16.sp,
                                   // color: AppColors.btnColor,
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500),
@@ -842,7 +826,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         child: Text(
                           "What time were you successful (Optional) : ",
                           style: TextStyle(
-                              fontSize: 18.sp,
+                              fontSize: 16.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
@@ -852,8 +836,132 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                     ],
                   ),
                 ),
+                if (_medias.isNotEmpty)
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Text(
+                        "Current available image(s) in post",
+                        style: TextStyle(
+                            fontSize: 15.sp,
+                            color: AppColors.btnColor,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 25.w),
+                        child: Scrollbar(
+                          thickness: 5.w,
+                          showTrackOnHover: true,
+                          isAlwaysShown: false,
+                          child: GridView.count(
+                            physics: const BouncingScrollPhysics(),
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 5.w,
+                            mainAxisSpacing: 5.w,
+                            shrinkWrap: true,
+                            children: [
+                              ..._medias.map((media) => Stack(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: AppColors.secondaryColor
+                                                  .withOpacity(0.5),
+                                              borderRadius:
+                                                  BorderRadius.circular(7.5.w)),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(7.5.w),
+                                            child: CachedNetworkImage(
+                                              imageUrl: media.imageUrl,
+                                              imageBuilder:
+                                                  (context, imageProvider) {
+                                                return Image(
+                                                  image: imageProvider,
+                                                  height: 300.h,
+                                                  width: 360.w,
+                                                  fit: BoxFit.fill,
+                                                );
+                                              },
+                                              progressIndicatorBuilder:
+                                                  (context, url, progress) =>
+                                                      Center(
+                                                child: SizedBox(
+                                                  height: 15.h,
+                                                  width: 15.h,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    value: progress.progress,
+                                                  ),
+                                                ),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) => Icon(
+                                                      Icons.error,
+                                                      color: AppColors.btnColor,
+                                                      size: 15.h),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: InkWell(
+                                          onTap: () {
+                                            _mediaForDelete = media;
+                                            Navigator.push(
+                                                context,
+                                                HeroDialogRoute(
+                                                    builder: (_) =>
+                                                        ConfirmationPopup(
+                                                          title: "Remove",
+                                                          message:
+                                                              "This image is currently available in the post. If you remove now, no longer available this image.",
+                                                          leftBtnText: "Remove",
+                                                          rightBtnText: "Keep",
+                                                          onTap: _removeImage,
+                                                        )));
+                                            //------------------------------------------------------------
+                                          },
+                                          child: SizedBox(
+                                            height: 50.w,
+                                            width: 50.w,
+                                            child: Icon(
+                                              Icons.cancel_outlined,
+                                              size: 30.w,
+                                              color: AppColors.btnColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 SizedBox(
                   height: 20.h,
+                ),
+                Text(
+                  "Select image(s) to upload",
+                  style: TextStyle(
+                      fontSize: 15.sp,
+                      color: AppColors.btnColor,
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10.h,
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 25.w),
@@ -868,78 +976,6 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                       mainAxisSpacing: 5.w,
                       shrinkWrap: true,
                       children: [
-                        ..._medias.map((media) => Stack(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        color: AppColors.secondaryColor
-                                            .withOpacity(0.5),
-                                        borderRadius:
-                                            BorderRadius.circular(7.5.w)),
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(7.5.w),
-                                      child: CachedNetworkImage(
-                                        imageUrl: media.imageUrl,
-                                        imageBuilder: (context, imageProvider) {
-                                          return Image(
-                                            image: imageProvider,
-                                            height: 300.h,
-                                            width: 360.w,
-                                            fit: BoxFit.fill,
-                                          );
-                                        },
-                                        progressIndicatorBuilder:
-                                            (context, url, progress) => Center(
-                                          child: SizedBox(
-                                            height: 15.h,
-                                            width: 15.h,
-                                            child: CircularProgressIndicator(
-                                              value: progress.progress,
-                                            ),
-                                          ),
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            Icon(Icons.error,
-                                                color: AppColors.btnColor,
-                                                size: 15.h),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: InkWell(
-                                    onTap: () {
-                                      _mediaForDelete = media;
-                                      Navigator.push(
-                                          context,
-                                          HeroDialogRoute(
-                                              builder: (_) => ConfirmationPopup(
-                                                    title: "Remove",
-                                                    message:
-                                                        "This image is currently available in the post. If you remove now, no longer available this image.",
-                                                    leftBtnText: "Remove",
-                                                    rightBtnText: "Keep",
-                                                    onTap: _removeImage,
-                                                  )));
-                                      //------------------------------------------------------------
-                                    },
-                                    child: SizedBox(
-                                      height: 50.w,
-                                      width: 50.w,
-                                      child: Icon(
-                                        Icons.cancel_outlined,
-                                        size: 30.w,
-                                        color: AppColors.btnColor,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            )),
                         ..._images.map(
                           (image) => Stack(
                             children: [
@@ -983,8 +1019,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                           },
                           child: Container(
                             decoration: BoxDecoration(
-                                color:
-                                    AppColors.secondaryColor.withOpacity(0.5),
+                                color: AppColors.popBGColor,
                                 borderRadius: BorderRadius.circular(7.5.w)),
                             child: Icon(Icons.camera_alt_rounded,
                                 color: AppColors.btnColor, size: 30.h),
@@ -1023,7 +1058,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
               data: SliderTheme.of(context).copyWith(
                 trackHeight: 10.h,
                 trackShape: const RoundedRectSliderTrackShape(),
-                activeTrackColor: AppColors.secondaryColor,
+                activeTrackColor: AppColors.popBGColor,
                 inactiveTrackColor: AppColors.primaryColor,
                 thumbShape: const RoundSliderThumbShape(
                   enabledThumbRadius: 14.0,
@@ -1036,7 +1071,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                 activeTickMarkColor: AppColors.btnColor,
                 inactiveTickMarkColor: Colors.white,
                 valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
-                valueIndicatorColor: AppColors.secondaryColor,
+                valueIndicatorColor: AppColors.popBGColor,
                 valueIndicatorTextStyle: TextStyle(
                   color: Colors.white,
                   fontSize: 20.sp,
@@ -1071,7 +1106,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
   _buildDropButton() {
     return DropdownButtonHideUnderline(
       child: DropdownButton<int>(
-          dropdownColor: AppColors.secondaryColor,
+          dropdownColor: AppColors.popBGColor,
           icon: Icon(
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.btnColor,
@@ -1182,7 +1217,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                 child: Text(
                   _selectedCounty.name,
                   style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 16.sp,
                       // color: AppColors.btnColor,
                       color: Colors.white,
                       fontWeight: FontWeight.w600),
@@ -1195,7 +1230,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
               ),
             ]),
       ),
-      color: AppColors.secondaryColor,
+      color: AppColors.popBGColor,
       itemBuilder: (context) => [
         ..._counties.map((county) => PopupMenuItem<County>(
             value: county,

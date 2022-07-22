@@ -39,40 +39,30 @@ class _AuthMainPageState extends State<AuthMainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0, .8],
-          colors: [AppColors.secondaryColor, AppColors.primaryColor],
-        ),
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image(
-              image: logoImage,
-              // color: AppColors.btnColor,
-              height: 200.h,
-              width: 320.w,
-              fit: BoxFit.fill,
-            ),
-            SizedBox(
-              height: 40.h,
-              width: 428.w,
-            ),
-            _buildSubmitBtn(() => _goSignIn(), "Sign In"),
-            SizedBox(
-              height: 20.h,
-              width: 428.w,
-            ),
-            _buildSubmitBtn(() => _goRegister(), "Register"),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image(
+            image: logoImage,
+            // color: AppColors.btnColor,
+            height: 200.h,
+            width: 320.w,
+            fit: BoxFit.fill,
+          ),
+          SizedBox(
+            height: 40.h,
+            width: 428.w,
+          ),
+          _buildSubmitBtn(() => _goSignIn(), "Sign In"),
+          SizedBox(
+            height: 20.h,
+            width: 428.w,
+          ),
+          _buildSubmitBtn(() => _goRegister(), "Register"),
+        ],
       ),
     );
   }

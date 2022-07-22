@@ -51,7 +51,7 @@ class _SearchHuntersState extends State<SearchHunters> {
     final res = await SearchService.personFollow(_user.id, followerId);
     if (res) {
       setState(() {
-        users[index].isFallowed = true;
+        users[index].isFollowed = true;
         isFollowing = false;
       });
     } else {
@@ -68,7 +68,7 @@ class _SearchHuntersState extends State<SearchHunters> {
     final res = await SearchService.personUnfollow(_user.id, unFollowerId);
     if (res) {
       setState(() {
-        users[index].isFallowed = false;
+        users[index].isFollowed = false;
         isFollowing = false;
       });
     } else {
@@ -80,79 +80,73 @@ class _SearchHuntersState extends State<SearchHunters> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0, .8],
-          colors: [AppColors.secondaryColor, AppColors.primaryColor],
-        ),
-      ),
-      child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              title: _buildSearchField(),
-              actions: [
-                IconButton(
-                    onPressed: () {
-                      _searchController.clear();
-                      users = [];
-                      setState(() {});
-                    },
-                    icon: const Icon(
-                      Icons.clear_rounded,
-                      color: Colors.white,
-                    ))
-              ]),
-          body: isSearching
-              ? ViewModels.postLoader()
-              : _searchController.text.length < 3
-                  ? _buildMessage("Search for Hunters")
-                  : users.isEmpty
-                      ? _buildMessage('Nothing Found')
-                      : _buildSearchSuccess()),
-    );
+    return Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+            backgroundColor: AppColors.backgroundColor,
+            elevation: 0,
+            title: _buildSearchField(),
+            actions: [
+              IconButton(
+                  iconSize: 25.h,
+                  onPressed: () {
+                    _searchController.clear();
+                    users = [];
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.clear_rounded,
+                    color: Colors.white,
+                  ))
+            ]),
+        body: isSearching
+            ? ViewModels.postLoader()
+            : _searchController.text.length < 3
+                ? _buildMessage("Search for Hunters")
+                : users.isEmpty
+                    ? _buildMessage('Nothing Found')
+                    : _buildSearchSuccess());
   }
 
   _buildSearchField() {
-    return TextField(
-      controller: _searchController,
-      autofocus: true,
-      style: TextStyle(
-          color: Colors.white,
-          fontSize: 16.sp,
-          decoration: TextDecoration.none),
-      textAlignVertical: TextAlignVertical.center,
-      cursorColor: AppColors.btnColor,
-      keyboardType: TextInputType.text,
-      onChanged: (String value) {
-        if (value.length > 2) {
-          _searching();
-        }
-      },
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-        fillColor: Colors.transparent,
-        filled: true,
-        hintText: "Name or Handle",
-        alignLabelWithHint: true,
-        hintStyle: TextStyle(
-          color: Colors.grey[200],
-          fontSize: 16.sp,
-          decoration: TextDecoration.none,
+    return SizedBox(
+      height: 40.h,
+      child: TextField(
+        controller: _searchController,
+        autofocus: true,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.sp,
+            decoration: TextDecoration.none),
+        textAlignVertical: TextAlignVertical.center,
+        cursorColor: AppColors.btnColor,
+        keyboardType: TextInputType.text,
+        onChanged: (String value) {
+          if (value.length > 2) {
+            _searching();
+          }
+        },
+        decoration: InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+          fillColor: Colors.transparent,
+          filled: true,
+          hintText: "Name or Handle",
+          alignLabelWithHint: true,
+          hintStyle: TextStyle(
+            color: Colors.grey[200],
+            fontSize: 16.sp,
+            decoration: TextDecoration.none,
+          ),
+          border: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(5.w)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: AppColors.btnColor),
+              borderRadius: BorderRadius.circular(5.w)),
+          enabledBorder: OutlineInputBorder(
+              borderSide: const BorderSide(color: Colors.white),
+              borderRadius: BorderRadius.circular(5.w)),
         ),
-        border: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(5.w)),
-        focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: AppColors.btnColor),
-            borderRadius: BorderRadius.circular(5.w)),
-        enabledBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Colors.white),
-            borderRadius: BorderRadius.circular(5.w)),
       ),
     );
   }
@@ -182,7 +176,7 @@ class _SearchHuntersState extends State<SearchHunters> {
                 child: IconButton(
                     onPressed: !isFollowing
                         ? () {
-                            if (!users[index].isFallowed) {
+                            if (!users[index].isFollowed) {
                               _personFollow(users[index].id, index);
                             } else {
                               _personUnfollow(users[index].id, index);
@@ -192,7 +186,7 @@ class _SearchHuntersState extends State<SearchHunters> {
                     icon: Icon(
                       Icons.person_add_alt_rounded,
                       size: 40.h,
-                      color: users[index].isFallowed
+                      color: users[index].isFollowed
                           ? AppColors.btnColor
                           : Colors.grey[350],
                     )),

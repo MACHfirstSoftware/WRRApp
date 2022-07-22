@@ -267,48 +267,38 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0, .8],
-          colors: [AppColors.secondaryColor, AppColors.primaryColor],
-        ),
-      ),
-      child: Scaffold(
-          backgroundColor: Colors.transparent,
-          // resizeToAvoidBottomInset: false,
-          body: _isLoading
-              ? Center(
-                  child: SizedBox(
-                    height: 50.w,
-                    width: 50.w,
-                    child: const LoadingIndicator(
-                        indicatorType: Indicator.lineSpinFadeLoader,
-                        colors: [AppColors.btnColor],
-                        strokeWidth: 2.0),
-                  ),
-                )
-              : Consumer<RegisterProvider>(builder: (context, pro, _) {
-                  return Column(
-                    children: [
-                      PageStepper(
-                          length: items.length, currentStep: _currentStep),
-                      Expanded(
-                        child: PageView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            controller: _pageController,
-                            itemCount: items.length,
-                            itemBuilder: (_, index) {
-                              return items[index];
-                            }),
-                      ),
-                      _buildBtnRow()
-                    ],
-                  );
-                })),
-    );
+    return Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        // resizeToAvoidBottomInset: false,
+        body: _isLoading
+            ? Center(
+                child: SizedBox(
+                  height: 50.w,
+                  width: 50.w,
+                  child: const LoadingIndicator(
+                      indicatorType: Indicator.lineSpinFadeLoader,
+                      colors: [AppColors.btnColor],
+                      strokeWidth: 2.0),
+                ),
+              )
+            : Consumer<RegisterProvider>(builder: (context, pro, _) {
+                return Column(
+                  children: [
+                    PageStepper(
+                        length: items.length, currentStep: _currentStep),
+                    Expanded(
+                      child: PageView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: _pageController,
+                          itemCount: items.length,
+                          itemBuilder: (_, index) {
+                            return items[index];
+                          }),
+                    ),
+                    _buildBtnRow()
+                  ],
+                );
+              }));
   }
 
   _buildBtnRow() {

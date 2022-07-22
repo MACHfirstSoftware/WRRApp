@@ -107,12 +107,11 @@ class _MyWRRPostsState extends State<MyWRRPosts>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const MyWRRPostAppBar(),
+          backgroundColor: AppColors.backgroundColor,
           elevation: 0,
-          toolbarHeight: 70.h,
+          toolbarHeight: 5.h,
           automaticallyImplyLeading: false,
         ),
         body: Consumer<WRRPostProvider>(builder: (context, model, _) {
@@ -145,7 +144,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
                 ? ViewModels.postEmply()
                 : ListView(
                     controller: scrollController,
-                    padding: const EdgeInsets.all(0),
+                    padding: EdgeInsets.symmetric(vertical: 0.h),
                     children: [
                       ...model.postsOfWRR
                           .map((post) => PostView(post: post))

@@ -39,8 +39,7 @@ class _AllPostsPageState extends State<AllPostsPage>
     _refreshController2 = RefreshController(initialRefresh: false);
     _init(isInit: true);
     scrollController.addListener(() async {
-      final postProvider =
-          Provider.of<AllPostProvider>(context, listen: false);
+      final postProvider = Provider.of<AllPostProvider>(context, listen: false);
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !postProvider.allPostLoaded) {
@@ -95,8 +94,7 @@ class _AllPostsPageState extends State<AllPostsPage>
   }
 
   Future<void> _onRefresh() async {
-    Provider.of<AllPostProvider>(context, listen: false).allPostLoaded =
-        false;
+    Provider.of<AllPostProvider>(context, listen: false).allPostLoaded = false;
     onLoading = false;
     await _init(isInit: true);
     _refreshController.refreshCompleted();
@@ -107,12 +105,12 @@ class _AllPostsPageState extends State<AllPostsPage>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: const MyWRRPostAppBar(),
+          backgroundColor: AppColors.backgroundColor,
+          // title: const MyWRRPostAppBar(),
           elevation: 0,
-          toolbarHeight: 70.h,
+          toolbarHeight: 5.h,
           automaticallyImplyLeading: false,
         ),
         body: Consumer<AllPostProvider>(builder: (context, model, _) {

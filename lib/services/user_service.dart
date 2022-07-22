@@ -80,4 +80,111 @@ class UserService {
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
+
+  static Future<String?> updateProfileImage(Map<String, dynamic> data) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .post(Constant.baseUrl + "/ProfileImage", data: data);
+      print(response.statusCode);
+      log(response.data);
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  static Future<ApiResult<List<User>>> getFollowing(String personId) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .get(Constant.baseUrl + "/Following?id=$personId");
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => User.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<ApiResult<List<User>>> getFollowers(String personId) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .get(Constant.baseUrl + "/Followers?id=$personId");
+      if (response.statusCode == 200) {
+        return ApiResult.success(
+            data: (response.data as List<dynamic>)
+                .map((d) => User.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<bool> updateUser(
+      String userId,
+      String firstName,
+      String lastName,
+      String code,
+      String phone,
+      int countyId,
+      int regionId) async {
+    print("update call");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Person/$userId", data: [
+        {"path": "/firstName", "op": "Add", "value": firstName},
+        {"path": "/lastName", "op": "Add", "value": lastName},
+        {"path": "/code", "op": "Add", "value": code},
+        {"path": "/phoneMobile", "op": "Add", "value": phone},
+        {"path": "/countyId", "op": "Add", "value": countyId},
+        {"path": "/regionId", "op": "Add", "value": regionId},
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  static Future<bool> updateWeapon(String userId, int answerId) async {
+    print("update call");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Profile?personId=$userId", data: [
+        {"path": "/answerId", "op": "Add", "value": answerId},
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

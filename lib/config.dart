@@ -11,4 +11,6 @@ class AppColors {
   static const Color secondaryColor = Color(0xFF343F57);
   static const Color btnColor = Color(0xFFF23A02);
   static Color iconGrey = Colors.grey[400]!;
+  static const Color popBGColor = Color(0xFF101010);
+  static const Color backgroundColor = Color(0xFF000000);
 }

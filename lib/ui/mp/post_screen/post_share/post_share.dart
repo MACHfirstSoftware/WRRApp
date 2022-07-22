@@ -97,7 +97,7 @@ class _PostSharePageState extends State<PostSharePage> {
                       padding: EdgeInsets.symmetric(
                           horizontal: 20.w, vertical: 25.h),
                       decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
+                          color: AppColors.popBGColor,
                           borderRadius: BorderRadius.circular(20.w)),
                       child: Column(
                         children: [
