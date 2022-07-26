@@ -51,9 +51,9 @@ class CollectDetailsPage extends StatelessWidget {
             Text(
               "Create Account",
               style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: 20.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
             SizedBox(

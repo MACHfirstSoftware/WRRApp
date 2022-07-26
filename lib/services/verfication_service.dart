@@ -5,7 +5,7 @@ class VerficationService {
   static Future<bool> sendCode(String id, String phoneNumber) async {
     try {
       final response = await CustomHttp.getDio().post(
-        Constant.baseUrl + "/Send/$id/$phoneNumber",
+        Constant.baseUrl + "/Send/$id?phoneNumber=$phoneNumber",
       );
       print(response);
       return true;

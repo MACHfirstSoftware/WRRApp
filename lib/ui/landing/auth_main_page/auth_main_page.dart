@@ -48,7 +48,7 @@ class _AuthMainPageState extends State<AuthMainPage> {
           Image(
             image: logoImage,
             // color: AppColors.btnColor,
-            height: 200.h,
+            height: 175.h,
             width: 320.w,
             fit: BoxFit.fill,
           ),
@@ -72,18 +72,26 @@ class _AuthMainPageState extends State<AuthMainPage> {
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
-        height: 60.h,
-        width: 200.w,
+        height: 50.h,
+        width: 150.w,
         decoration: BoxDecoration(
             color: AppColors.btnColor,
             borderRadius: BorderRadius.circular(10.w)),
-        child: Text(
-          title,
-          style: TextStyle(
-              fontSize: 20.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
+        child: SizedBox(
+          height: 20.h,
+          width: 100.w,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.center,
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 20.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );

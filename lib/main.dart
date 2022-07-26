@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
@@ -7,6 +8,7 @@ import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
+import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
@@ -26,6 +28,10 @@ import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   CustomHttp.setInterceptor();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   List<County> _counties = await QuestionnaireService.getCounties(-1);
@@ -87,6 +93,8 @@ class _MyAppState extends State<MyApp> {
             create: (_) => AllPostProvider()),
         ChangeNotifierProvider<ContestProvider>(
             create: (_) => ContestProvider()),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (_) => NotificationProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),

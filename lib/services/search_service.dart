@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
@@ -11,7 +13,9 @@ class SearchService {
           "/Search?loggedPersonId=$personId&searchText=$searchText&viewAll=$viewAll" +
           (skipCount != null ? "&skipCount=$skipCount" : ""));
       if (response.statusCode == 200) {
-        // log(response.data.toString());
+        inspect(response.data);
+        final list = response.data as List<dynamic>;
+        print(list.length);
         return (response.data as List<dynamic>)
             .map((d) => User.fromJson(d as Map<String, dynamic>))
             .toList();

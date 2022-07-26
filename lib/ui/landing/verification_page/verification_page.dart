@@ -157,7 +157,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
                   child: SizedBox(
-                      height: 30.h,
+                      height: 20.h,
                       width: 100.w,
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -165,7 +165,7 @@ class _VerificationPageState extends State<VerificationPage> {
                         child: Text(
                           "Next",
                           style: TextStyle(
-                              fontSize: 24.sp,
+                              fontSize: 20.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,

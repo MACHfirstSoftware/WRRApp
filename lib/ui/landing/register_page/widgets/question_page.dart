@@ -26,9 +26,9 @@ class _QuestionPageState extends State<QuestionPage> {
             child: Text(
               widget.question.prompt,
               style: TextStyle(
-                  fontSize: 30.sp,
+                  fontSize: 25.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold),
+                  fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
             ),
           ),
@@ -78,14 +78,18 @@ class _QuestionPageState extends State<QuestionPage> {
                 width: 3.w),
             color: _isSelected ? AppColors.btnColor : Colors.transparent,
             borderRadius: BorderRadius.circular(10.w)),
-        child: Text(
-          answer.optionValue,
-          style: TextStyle(
-              fontSize: 20.sp,
-              color: _isSelected ? Colors.white : Colors.grey[300],
-              fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.center,
+          child: Text(
+            answer.optionValue,
+            style: TextStyle(
+                fontSize: 18.sp,
+                color: _isSelected ? Colors.white : Colors.grey[300],
+                fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );

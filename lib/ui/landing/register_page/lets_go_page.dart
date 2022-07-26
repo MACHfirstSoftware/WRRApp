@@ -13,6 +13,7 @@ import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/subscription_page/subscription_screen.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
+import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -85,9 +86,8 @@ class _LetsGoPageState extends State<LetsGoPage> {
     PageLoader.showLoader(context);
     final res = await UserService.signIn(widget.email, widget.password);
     res.when(success: (User user) async {
-      // final countyProvider =
-      //     Provider.of<CountyProvider>(context, listen: false);
-      // await countyProvider.getAllCounties();
+      await StoreUtils.saveUser(
+          {"email": widget.email, "password": widget.password});
       Provider.of<UserProvider>(context, listen: false).setUser(user);
       Navigator.pop(context);
       Navigator.pushAndRemoveUntil(
@@ -155,7 +155,7 @@ class _LetsGoPageState extends State<LetsGoPage> {
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
                   child: SizedBox(
-                    height: 30.h,
+                    height: 20.h,
                     width: 110.w,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -163,7 +163,7 @@ class _LetsGoPageState extends State<LetsGoPage> {
                       child: Text(
                         "Let's go!",
                         style: TextStyle(
-                            fontSize: 18.sp,
+                            fontSize: 20.sp,
                             color: Colors.white,
                             fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,

@@ -7,12 +7,14 @@ import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
+import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/contest_main_page.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/leaderboard.dart';
+import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_free_subs.dart';
 import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
 
@@ -79,10 +81,18 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                 right: 40.w,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ContestMainPage()));
+                    if (userProvider.user.subscriptionPerson[0]
+                        .subscriptionApiModel.isPremium) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ContestMainPage()));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const ContestFreeSubs()));
+                    }
                   },
                   child: SvgPicture.asset(
                     'assets/icons/trophy-bold.svg',
@@ -103,29 +113,33 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                         MaterialPageRoute(
                             builder: (_) => const NotificationPage()));
                   },
-                  child: Stack(
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/notification.svg',
-                        fit: BoxFit.fill,
-                        alignment: Alignment.center,
-                        height: 27.5.h,
-                        width: 27.5.h,
-                        color: Colors.white,
-                      ),
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          height: 12.5.h,
-                          width: 12.5.h,
-                          decoration: BoxDecoration(
-                              color: Colors.redAccent,
-                              borderRadius: BorderRadius.circular(6.25.h)),
+                  child: Consumer<NotificationProvider>(
+                      builder: (context, model, _) {
+                    return Stack(
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/notification.svg',
+                          fit: BoxFit.fill,
+                          alignment: Alignment.center,
+                          height: 27.5.h,
+                          width: 27.5.h,
+                          color: Colors.white,
                         ),
-                      )
-                    ],
-                  ),
+                        if (!model.isAllViewed)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              height: 12.5.h,
+                              width: 12.5.h,
+                              decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  borderRadius: BorderRadius.circular(6.25.h)),
+                            ),
+                          )
+                      ],
+                    );
+                  }),
                 )),
           ],
         ),

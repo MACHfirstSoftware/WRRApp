@@ -26,9 +26,9 @@ class _CountySelectPageState extends State<CountySelectPage> {
               child: Text(
                 "Which county do you typically hunt in?",
                 style: TextStyle(
-                    fontSize: 30.sp,
+                    fontSize: 25.sp,
                     color: Colors.white,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.w600),
                 textAlign: TextAlign.left,
               ),
             ),
@@ -48,7 +48,7 @@ class _CountySelectPageState extends State<CountySelectPage> {
                         Text(
                           registerProvider.selectedCounty?.name ?? "County",
                           style: TextStyle(
-                              fontSize: 22.sp,
+                              fontSize: 20.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w600),
                           textAlign: TextAlign.left,

@@ -41,40 +41,50 @@ class _ContestPostViewState extends State<ContestPostView>
       margin: EdgeInsets.only(bottom: 4.h),
       color: Colors.white,
       width: 428.w,
-      child: Column(
+      child: ExpansionTile(
+        tilePadding: EdgeInsets.only(right: 10.w),
+        title: _buildPersonRow(widget.post.personCode,
+            widget.post.postPersonCounty, widget.post.createdOn),
         children: [
-          _buildPersonRow(widget.post.personCode, widget.post.postPersonCounty,
-              widget.post.createdOn),
-          AnimatedSwitcher(
-            duration: const Duration(microseconds: 1500),
-            reverseDuration: const Duration(microseconds: 1500),
-            switchInCurve: Curves.easeIn,
-            switchOutCurve: Curves.easeOut,
-            transitionBuilder: (child, animation) =>
-                SizeTransition(child: child, sizeFactor: animation),
-            child: showContest
-                ? Column(
-                    key: const Key('1'),
-                    children: [
-                      if (widget.post.media.isNotEmpty)
-                        MediaView(media: widget.post.media),
-                      ContestView(contest: widget.post.contest!),
-                    ],
-                  )
-                : widget.post.media.isNotEmpty
-                    ? MediaView(
-                        key: const Key('2'),
-                        media: widget.post.media,
-                      )
-                    : const SizedBox(
-                        key: Key('2'),
-                      ),
-          ),
-          SizedBox(
-            height: showContest ? 0 : 10.h,
-          )
+          if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
+          ContestView(contest: widget.post.contest!),
         ],
       ),
+      // child: Column(
+      //   children: [
+
+      // _buildPersonRow(widget.post.personCode, widget.post.postPersonCounty,
+      //     widget.post.createdOn),
+      //     AnimatedSwitcher(
+      //       duration: const Duration(microseconds: 1500),
+      //       reverseDuration: const Duration(microseconds: 1500),
+      //       switchInCurve: Curves.easeIn,
+      //       switchOutCurve: Curves.easeOut,
+      //       transitionBuilder: (child, animation) =>
+      //           SizeTransition(child: child, sizeFactor: animation),
+      //       child: showContest
+      //           ? Column(
+      //               key: const Key('1'),
+      //               children: [
+      //                 if (widget.post.media.isNotEmpty)
+      //   MediaView(media: widget.post.media),
+      // ContestView(contest: widget.post.contest!),
+      //               ],
+      //             )
+      //           : widget.post.media.isNotEmpty
+      //               ? MediaView(
+      //                   key: const Key('2'),
+      //                   media: widget.post.media,
+      //                 )
+      //               : const SizedBox(
+      //                   key: Key('2'),
+      //                 ),
+      //     ),
+      //     SizedBox(
+      //       height: showContest ? 0 : 10.h,
+      //     )
+      //   ],
+      // ),
     );
   }
 
@@ -179,20 +189,20 @@ class _ContestPostViewState extends State<ContestPostView>
               ),
             ),
           ),
-          IconButton(
-              iconSize: 25.h,
-              splashColor: AppColors.btnColor.withOpacity(.5),
-              onPressed: () {
-                setState(() {
-                  showContest = !showContest;
-                  showContest ? controller.forward() : controller.reverse();
-                });
-              },
-              icon: AnimatedIcon(
-                icon: AnimatedIcons.menu_close,
-                progress: controller,
-                color: showContest ? AppColors.btnColor : Colors.black38,
-              ))
+          // IconButton(
+          //     iconSize: 25.h,
+          //     splashColor: AppColors.btnColor.withOpacity(.5),
+          //     onPressed: () {
+          //       setState(() {
+          //         showContest = !showContest;
+          //         showContest ? controller.forward() : controller.reverse();
+          //       });
+          //     },
+          //     icon: AnimatedIcon(
+          //       icon: AnimatedIcons.menu_close,
+          //       progress: controller,
+          //       color: showContest ? AppColors.btnColor : Colors.black38,
+          //     ))
         ],
       ),
     );

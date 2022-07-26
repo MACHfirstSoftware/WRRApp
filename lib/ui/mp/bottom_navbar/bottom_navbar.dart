@@ -7,6 +7,7 @@ import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
+import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
@@ -29,7 +30,6 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 0;
   late PageController _pageController;
-
   List<String> listOfIcons = [
     "assets/icons/news-feed.svg",
     "assets/icons/WRR-icon.svg",
@@ -56,6 +56,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         Provider.of<CountyProvider>(context, listen: false).counties;
     List<Region> _regions =
         Provider.of<RegionProvider>(context, listen: false).regions;
+    Provider.of<NotificationProvider>(context, listen: false)
+        .getMyNotifications(userProvider.user.id, isInit: true);
     for (County county in _counties) {
       if (county.id == userProvider.user.countyId) {
         weatherProvider.setCounty(county);
@@ -81,21 +83,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    final weatherProvider = Provider.of<WeatherProvider>(context);
     return Scaffold(
         backgroundColor: AppColors.backgroundColor,
         body: SafeArea(
           child: PageView(
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
-            children: [
-              const PostPage(),
-              const ReportPage(),
-              WeatherPage(
-                county: weatherProvider.county,
-              ),
-              const ShopPage(),
-              const MyAccount()
+            children: const [
+              PostPage(),
+              ReportPage(),
+              WeatherPage(),
+              ShopPage(),
+              MyAccount()
             ],
           ),
         ),
@@ -105,8 +104,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   _bottomNavbar() {
     return Container(
         width: 428.w,
-        height: 70.h,
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 0.h),
         decoration: BoxDecoration(
           color: Colors.transparent,
           boxShadow: [
@@ -117,31 +115,39 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ...listOfIcons.map((e) => GestureDetector(
-                  onTap: (() => setState(() {
-                        currentIndex = listOfIcons.indexOf(e);
-                        _pageController.jumpToPage(listOfIcons.indexOf(e));
-                      })),
-                  child: Container(
-                      alignment: Alignment.center,
-                      color: Colors.transparent,
-                      height: 60.h,
-                      width: 60.h,
-                      child: SvgPicture.asset(
-                        e,
-                        height: 30.h,
-                        width: 30.h,
-                        fit: BoxFit.fill,
-                        alignment: Alignment.center,
-                        color: currentIndex == listOfIcons.indexOf(e)
-                            ? AppColors.btnColor
-                            : Colors.white,
-                      )),
-                ))
-          ],
+        child: SafeArea(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ...listOfIcons.map((e) => GestureDetector(
+                    onTap: (() => setState(() {
+                          currentIndex = listOfIcons.indexOf(e);
+                          _pageController.jumpToPage(listOfIcons.indexOf(e));
+                        })),
+                    child: SizedBox(
+                        height: 60.h,
+                        width: 60.h,
+                        child: Center(
+                          child: SizedBox(
+                            height: 30.h,
+                            width: 30.h,
+                            child: FittedBox(
+                              fit: BoxFit.fill,
+                              alignment: Alignment.center,
+                              child: SvgPicture.asset(
+                                e,
+                                fit: BoxFit.fill,
+                                alignment: Alignment.center,
+                                color: currentIndex == listOfIcons.indexOf(e)
+                                    ? AppColors.btnColor
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        )),
+                  ))
+            ],
+          ),
         ));
   }
 }

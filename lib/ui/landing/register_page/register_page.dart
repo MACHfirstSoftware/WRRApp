@@ -281,24 +281,26 @@ class _RegisterPageState extends State<RegisterPage> {
                       strokeWidth: 2.0),
                 ),
               )
-            : Consumer<RegisterProvider>(builder: (context, pro, _) {
-                return Column(
-                  children: [
-                    PageStepper(
-                        length: items.length, currentStep: _currentStep),
-                    Expanded(
-                      child: PageView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          controller: _pageController,
-                          itemCount: items.length,
-                          itemBuilder: (_, index) {
-                            return items[index];
-                          }),
-                    ),
-                    _buildBtnRow()
-                  ],
-                );
-              }));
+            : SafeArea(
+                child: Consumer<RegisterProvider>(builder: (context, pro, _) {
+                  return Column(
+                    children: [
+                      PageStepper(
+                          length: items.length, currentStep: _currentStep),
+                      Expanded(
+                        child: PageView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            controller: _pageController,
+                            itemCount: items.length,
+                            itemBuilder: (_, index) {
+                              return items[index];
+                            }),
+                      ),
+                      _buildBtnRow()
+                    ],
+                  );
+                }),
+              ));
   }
 
   _buildBtnRow() {
@@ -351,12 +353,16 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              "Next",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                "Next",
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
             SizedBox(
               width: 10.w,
@@ -399,12 +405,16 @@ class _RegisterPageState extends State<RegisterPage> {
             SizedBox(
               width: 10.w,
             ),
-            Text(
-              "Back",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                "Back",
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),

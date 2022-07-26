@@ -11,7 +11,7 @@ class PageStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 56.h, bottom: 30.h),
+      padding: EdgeInsets.only(top: 15.h, bottom: 30.h),
       child: SizedBox(
         height: 4.h,
         width: 410.w,

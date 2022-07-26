@@ -10,7 +10,6 @@ class LogoImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 100.h,
-      // width: 150.h,
       child: Image.asset(
         "assets/images/WRR.png",
         fit: BoxFit.cover,

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:wisconsin_app/models/subscription.dart';
+
 User userFromJson(String str) => User.fromJson(json.decode(str));
 
 String userToJson(User data) => json.encode(data.toJson());
@@ -22,6 +24,7 @@ class User {
       required this.isOptIn,
       this.isFollowed = false,
       this.phoneMobile = "",
+      required this.subscriptionPerson,
       this.answerId});
 
   String id;
@@ -40,6 +43,7 @@ class User {
   bool isOptIn;
   bool isFollowed;
   String phoneMobile;
+  List<SubscriptionPerson> subscriptionPerson;
   int? answerId;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -57,6 +61,9 @@ class User {
         isOptIn: json["isOptIn"],
         isFollowed: json["isFollowed"] ?? false,
         phoneMobile: json["phoneMobile"] ?? "",
+        subscriptionPerson: (json["subscriptionPerson"] as List<dynamic>)
+            .map((e) => SubscriptionPerson.fromJson(e as Map<String, dynamic>))
+            .toList(),
         answerId: json["answer"] != null ? json["answer"]["id"] : null,
       );
 

@@ -90,35 +90,35 @@ class PostOwner {
     required this.firstName,
     required this.lastName,
     required this.code,
-    required this.emailAddress,
-    required this.username,
-    required this.countyId,
-    required this.regionId,
-    required this.isFollowed,
-    required this.imageLocation,
+    // required this.emailAddress,
+    // required this.username,
+    // required this.countyId,
+    // required this.regionId,
+    // required this.isFollowed,
+    this.imageLocation,
   });
 
   String id;
   String firstName;
   String lastName;
   String code;
-  String emailAddress;
-  String username;
-  int countyId;
-  int regionId;
-  bool isFollowed;
-  String imageLocation;
+  // String emailAddress;
+  // String username;
+  // int countyId;
+  // int regionId;
+  // bool isFollowed;
+  String? imageLocation;
 
   factory PostOwner.fromJson(Map<String, dynamic> json) => PostOwner(
         id: json["id"],
         firstName: json["firstName"],
         lastName: json["lastName"],
         code: json["code"],
-        emailAddress: json["emailAddress"],
-        username: json["username"],
-        countyId: json["countyId"],
-        regionId: json["regionId"],
-        isFollowed: json["isFollowed"],
+        // emailAddress: json["emailAddress"],
+        // username: json["username"],
+        // countyId: json["countyId"],
+        // regionId: json["regionId"],
+        // isFollowed: json["isFollowed"],
         imageLocation: json["imageLocation"],
       );
 
@@ -127,11 +127,11 @@ class PostOwner {
         "firstName": firstName,
         "lastName": lastName,
         "code": code,
-        "emailAddress": emailAddress,
-        "username": username,
-        "countyId": countyId,
-        "regionId": regionId,
-        "isFollowed": isFollowed,
+        // "emailAddress": emailAddress,
+        // "username": username,
+        // "countyId": countyId,
+        // "regionId": regionId,
+        // "isFollowed": isFollowed,
         "imageLocation": imageLocation,
       };
 }

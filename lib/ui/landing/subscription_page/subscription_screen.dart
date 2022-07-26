@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/subscription.dart';
@@ -199,7 +198,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: SizedBox(
-              height: 30.h,
+              height: 20.h,
               width: 100.w,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
@@ -207,7 +206,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 child: Text(
                   "Next",
                   style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 20.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,

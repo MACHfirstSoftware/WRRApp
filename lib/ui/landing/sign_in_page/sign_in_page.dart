@@ -10,6 +10,7 @@ import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
+import 'package:wisconsin_app/ui/landing/reset_password/user_verify.dart';
 import 'package:wisconsin_app/ui/mp/bottom_navbar/bottom_navbar.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
@@ -143,9 +144,9 @@ class _SignInPageState extends State<SignInPage> {
                 Text(
                   "SIGN IN",
                   style: TextStyle(
-                      fontSize: 24.sp,
+                      fontSize: 20.sp,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold),
+                      fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -217,30 +218,42 @@ class _SignInPageState extends State<SignInPage> {
                   child: Container(
                     alignment: Alignment.center,
                     height: 50.h,
-                    width: 190.w,
+                    width: 150.w,
                     decoration: BoxDecoration(
                         color: AppColors.btnColor,
-                        borderRadius: BorderRadius.circular(5.w)),
-                    child: Text(
-                      "SIGN IN",
-                      style: TextStyle(
-                          fontSize: 24.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
+                        borderRadius: BorderRadius.circular(10.w)),
+                    child: SizedBox(
+                      height: 25.h,
+                      width: 100.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "SIGN IN",
+                          style: TextStyle(
+                              fontSize: 20.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(
                   height: 20.h,
                 ),
-                Text(
-                  "Forgot your password?",
-                  style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.center,
+                GestureDetector(
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const UserVerify())),
+                  child: Text(
+                    "Forgot your password?",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 const Spacer(),
 

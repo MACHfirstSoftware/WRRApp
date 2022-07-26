@@ -111,7 +111,7 @@ class ViewModels {
     );
   }
 
-  static freeSubscription() {
+  static freeSubscription({bool isShopPage = false}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,7 +131,7 @@ class ViewModels {
             fit: BoxFit.scaleDown,
             alignment: Alignment.center,
             child: Text(
-              "This content is for premium members only",
+              "This ${isShopPage ? "area" : "content"} is for premium members only",
               style: TextStyle(
                   fontSize: 20.sp,
                   color: Colors.white,
@@ -142,6 +142,7 @@ class ViewModels {
         ),
         SizedBox(
           height: 10.h,
+          width: 428.w,
         ),
         GestureDetector(
           onTap: () {},

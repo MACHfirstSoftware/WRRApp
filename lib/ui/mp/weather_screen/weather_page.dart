@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
-import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
@@ -12,8 +11,9 @@ import 'package:wisconsin_app/widgets/tab_title.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
 class WeatherPage extends StatefulWidget {
-  final County county;
-  const WeatherPage({Key? key, required this.county}) : super(key: key);
+  const WeatherPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<WeatherPage> createState() => _WeatherPageState();
@@ -21,7 +21,6 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage>
     with AutomaticKeepAliveClientMixin {
-  bool keepAlive = true;
   @override
   void initState() {
     _init();
@@ -34,23 +33,7 @@ class _WeatherPageState extends State<WeatherPage>
   }
 
   @override
-  void didUpdateWidget(WeatherPage oldWidget) {
-    if (oldWidget.county != widget.county) {
-      setState(() {
-        keepAlive = false;
-      });
-      updateKeepAlive();
-    } else {
-      setState(() {
-        keepAlive = true;
-      });
-      updateKeepAlive();
-    }
-    super.didUpdateWidget(oldWidget);
-  }
-
-  @override
-  bool get wantKeepAlive => keepAlive;
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {

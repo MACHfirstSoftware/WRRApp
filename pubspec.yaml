@@ -72,6 +72,9 @@ dependencies:
   #Chart package
   fl_chart: ^0.55.0
 
+  #URL launcher
+  url_launcher: ^6.1.5
+
 
   freezed_annotation: ^0.14.0
 

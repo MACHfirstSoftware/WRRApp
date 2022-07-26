@@ -187,4 +187,48 @@ class UserService {
       return false;
     }
   }
+
+  static Future<Map<String, dynamic>> changePassword(
+      String userName, String currentPassword, String newPassword) async {
+    print("change call");
+    try {
+      final response = await CustomHttp.getDio().post(Constant.baseUrl +
+          "/ChangePassword?userName=$userName&password=$currentPassword&newPassword=$newPassword");
+      print(response.statusCode);
+      if (response.statusCode == 204) {
+        return {"success": true, "message": "Successfully changed"};
+      } else {
+        return {"success": false, "message": "Something went wrong"};
+      }
+    } catch (e) {
+      print(e);
+      final err = NetworkExceptions.getErrorMessage(
+          NetworkExceptions.getDioException(e));
+      return {
+        "success": false,
+        "message":
+            err == "Unauthorized request" ? "Incorrect current password" : err
+      };
+    }
+  }
+
+  static Future<ApiResult<User>> verifyUser(String userName) async {
+    print("verify call");
+    try {
+      final response = await CustomHttp.getDio()
+          .get(Constant.baseUrl + "/ValidateUserName?userName=$userName");
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        return ApiResult.success(data: User.fromJson(response.data));
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }

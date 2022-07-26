@@ -8,12 +8,13 @@ import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 class NotificationProvider with ChangeNotifier {
   ApiStatus _apiStatus = ApiStatus.isInitial;
   String errorMessage = '';
-  bool _isAllViewed = false;
+  bool _isAllViewed = true;
   List<NotificationModel>? _notifications;
 
   ApiStatus get apiStatus => _apiStatus;
   bool get isAllViewed => _isAllViewed;
   List<NotificationModel> get notifications => _notifications!;
+  List<NotificationModel>? get notificationsList => _notifications;
 
   void setBusy() {
     _apiStatus = ApiStatus.isBusy;
@@ -36,16 +37,24 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool checkUnread() {
-    for (final noti in _notifications!) {
-      if (!noti.viewed) {
-        _isAllViewed = false;
-        break;
-      } else {
-        _isAllViewed = true;
+  void checkUnread() {
+    if (_notifications!.isEmpty) {
+      _isAllViewed = true;
+    } else {
+      _isAllViewed = true;
+      for (final noti in _notifications!) {
+        if (!noti.viewed) {
+          _isAllViewed = false;
+          break;
+        }
       }
     }
-    return _isAllViewed;
+  }
+
+  void markAsRead(int index) {
+    _notifications![index].viewed = true;
+    checkUnread();
+    notifyListeners();
   }
 
   Future<void> getMyNotifications(String userId, {bool isInit = false}) async {
@@ -55,6 +64,7 @@ class NotificationProvider with ChangeNotifier {
     notificationResponse.when(
         success: (List<NotificationModel> notificationList) async {
       _notifications = notificationList;
+      checkUnread();
       errorMessage = '';
       setIdle();
     }, failure: (NetworkExceptions error) {

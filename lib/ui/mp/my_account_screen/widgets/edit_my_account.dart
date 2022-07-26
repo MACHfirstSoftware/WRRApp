@@ -138,6 +138,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
                   counties: _counties, countyId: _selectedCounty.id),
               isFollowed: _user.isFollowed,
               phoneMobile: _phoneController.text,
+              subscriptionPerson: _user.subscriptionPerson,
               profileImageUrl: _user.profileImageUrl,
               regionName: CountyUtil.getRegionNameById(
                   regions: _regions, regionId: _selectedCounty.regionId));
