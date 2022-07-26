@@ -44,21 +44,37 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   _validate() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    if (_oldPassController.text.trim().isEmpty) {
+    if (_oldPassController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Current password required",
           type: SnackBarType.error));
       return false;
     }
-    if (_newPassController.text.trim().isEmpty) {
+    if (!RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,40}$")
+        .hasMatch(_oldPassController.text)) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Current password is incorrect",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_newPassController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "New password required",
           type: SnackBarType.error));
       return false;
     }
-    if (_newPassController.text.trim() != _conPassController.text.trim()) {
+    if (!RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,40}$")
+        .hasMatch(_newPassController.text)) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Incorrect format of new password",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_newPassController.text != _conPassController.text) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Password does not match",
@@ -71,18 +87,16 @@ class _ChangePasswordState extends State<ChangePassword> {
   _doUpdate() async {
     if (_validate()) {
       PageLoader.showLoader(context);
-      final res = await UserService.changePassword(_user.username,
-          _oldPassController.text.trim(), _newPassController.text.trim());
+      final res = await UserService.changePassword(
+          _user.username, _oldPassController.text, _newPassController.text);
       Navigator.pop(context);
       if (res["success"]) {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: res["message"],
             type: SnackBarType.success));
-        await StoreUtils.saveUser({
-          "email": _user.emailAddress,
-          "password": _newPassController.text.trim()
-        });
+        await StoreUtils.saveUser(
+            {"email": _user.emailAddress, "password": _newPassController.text});
       } else {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,

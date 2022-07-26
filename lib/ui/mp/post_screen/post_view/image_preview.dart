@@ -33,17 +33,18 @@ class _ImagePreviewState extends State<ImagePreview> {
         backgroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
+            iconSize: 25.h,
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.cancel_rounded, color: Colors.white, size: 40.h)),
+            icon: const Icon(Icons.cancel_rounded, color: Colors.white)),
         centerTitle: true,
         title: Text(
           "${_index + 1} of ${widget.medias.length}",
           style: TextStyle(
               color: Colors.white,
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w600),
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500),
         ),
       ),
       body: SafeArea(

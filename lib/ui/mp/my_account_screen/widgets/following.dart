@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -23,7 +25,9 @@ class Following extends StatefulWidget {
   State<Following> createState() => _FollowingState();
 }
 
-class _FollowingState extends State<Following> {
+class _FollowingState extends State<Following>
+    with AutomaticKeepAliveClientMixin {
+  late RefreshController _refreshController;
   late ApiStatus _apiStatus;
   List<User> following = [];
   late List<County> _counties;
@@ -31,13 +35,20 @@ class _FollowingState extends State<Following> {
   String errorMessage = '';
   @override
   void initState() {
+    _refreshController = RefreshController(initialRefresh: false);
     _user = Provider.of<UserProvider>(context, listen: false).user;
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
     _init();
     super.initState();
   }
 
-  void _init() async {
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  _init() async {
     setState(() {
       _apiStatus = ApiStatus.isBusy;
     });
@@ -61,6 +72,11 @@ class _FollowingState extends State<Following> {
         following = [];
       });
     });
+  }
+
+  Future<void> _onRefresh() async {
+    await _init();
+    _refreshController.refreshCompleted();
   }
 
   // _personFollow(int index) async {
@@ -102,40 +118,55 @@ class _FollowingState extends State<Following> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_apiStatus == ApiStatus.isBusy) {
       return ViewModels.buildLoader();
     }
     if (_apiStatus == ApiStatus.isError) {
-      return ViewModels.buildErrorWidget(errorMessage, () => _init());
+      return ViewModels.buildErrorWidget(errorMessage, () => _init);
     }
-    if (following.isEmpty) {
-      return ViewModels.postEmply();
-    }
-    return ListView.separated(
-        padding: EdgeInsets.only(top: 5.h),
-        itemBuilder: (_, index) {
-          return UserCard(
-            name: following[index].firstName + " " + following[index].lastName,
-            personCode: following[index].code,
-            county: CountyUtil.getCountyNameById(
-                counties: _counties, countyId: following[index].countyId),
-            profileImageUrl: following[index].profileImageUrl,
-            onTap: () {
-              // following[index].isFollowed
-              //     ? _personUnfollow(index)
-              //     : _personFollow(index);
+    return SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        enablePullUp: false,
+        onRefresh: _onRefresh,
+        header: const WaterDropMaterialHeader(
+          backgroundColor: AppColors.popBGColor,
+          color: AppColors.btnColor,
+        ),
+        child: following.isNotEmpty
+            ? ListView.separated(
+                padding: EdgeInsets.only(top: 5.h),
+                itemBuilder: (_, index) {
+                  return UserCard(
+                    name: following[index].firstName +
+                        " " +
+                        following[index].lastName,
+                    personCode: following[index].code,
+                    county: CountyUtil.getCountyNameById(
+                        counties: _counties,
+                        countyId: following[index].countyId),
+                    profileImageUrl: following[index].profileImageUrl,
+                    onTap: () {
+                      // following[index].isFollowed
+                      //     ? _personUnfollow(index)
+                      //     : _personFollow(index);
 
-              _personUnfollow(index);
-              // print("Pressed");
-            },
-            isFollowed: true,
-          );
-        },
-        separatorBuilder: (_, index) {
-          return SizedBox(
-            height: 5.h,
-          );
-        },
-        itemCount: following.length);
+                      _personUnfollow(index);
+                      // print("Pressed");
+                    },
+                    isFollowed: true,
+                  );
+                },
+                separatorBuilder: (_, index) {
+                  return SizedBox(
+                    height: 5.h,
+                  );
+                },
+                itemCount: following.length)
+            : ViewModels.postEmply());
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

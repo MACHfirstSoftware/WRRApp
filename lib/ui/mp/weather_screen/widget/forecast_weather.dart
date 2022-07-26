@@ -47,9 +47,6 @@ class _ForecastWeatherState extends State<ForecastWeather> {
         controller: _pageController,
         itemCount: widget.forecastDays.length,
         onPageChanged: (int index) {
-          // setState(() {
-
-          // });
           Provider.of<WeatherProvider>(context, listen: false)
               .onPagechange(index);
           _index = index;

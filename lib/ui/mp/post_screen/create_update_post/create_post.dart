@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -105,6 +104,7 @@ class _NewPostState extends State<NewPost> {
             lastName: _user.lastName,
             personCode: _user.code,
             profileImageUrl: _user.profileImageUrl,
+            isFollowed: true,
             // title: _titleController.text,
             title: "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
             body: _bodyController.text,

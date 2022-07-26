@@ -13,13 +13,13 @@ import 'package:wisconsin_app/providers/region_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/contest_main_page.dart';
-import 'package:wisconsin_app/ui/mp/contest_screen/leaderboard.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_free_subs.dart';
 import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
 
 class ReportPageAppBar extends StatefulWidget {
-  const ReportPageAppBar({Key? key}) : super(key: key);
+  final bool isReports;
+  const ReportPageAppBar({Key? key, this.isReports = true}) : super(key: key);
 
   @override
   State<ReportPageAppBar> createState() => _ReportPageAppBarState();
@@ -65,23 +65,42 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                     color: Colors.white,
                   ),
                 )),
-            Align(
-              alignment: Alignment.center,
-              child: SvgPicture.asset(
-                'assets/icons/WRR.svg',
-                // fit: BoxFit.fill,
+            if (!widget.isReports)
+              Align(
                 alignment: Alignment.center,
-                height: 55.h,
-                // width: 100.w,
-                // color: Colors.red,
+                child: SizedBox(
+                  height: 35.h,
+                  child: SvgPicture.asset(
+                    'assets/icons/WRR.svg',
+                    alignment: Alignment.center,
+                    height: 35.h,
+                  ),
+                ),
               ),
-            ),
+            if (widget.isReports)
+              Align(
+                alignment: Alignment.center,
+                child: SizedBox(
+                    width: 250.w,
+                    height: 30.h,
+                    child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Reports",
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ))),
+              ),
             Positioned(
                 bottom: 10.h,
                 right: 40.w,
                 child: GestureDetector(
                   onTap: () {
-                    if (userProvider.user.subscriptionPerson[0]
+                    if (userProvider.user.subscriptionPerson![0]
                         .subscriptionApiModel.isPremium) {
                       Navigator.push(
                           context,

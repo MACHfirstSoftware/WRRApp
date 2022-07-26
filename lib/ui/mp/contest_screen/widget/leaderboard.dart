@@ -7,7 +7,6 @@ import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
-import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_appbar.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_post_view.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
@@ -71,7 +70,7 @@ class _LeaderboardState extends State<Leaderboard>
                 enablePullUp: false,
                 onRefresh: _onRefresh,
                 header: const WaterDropMaterialHeader(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColors.popBGColor,
                   color: AppColors.btnColor,
                 ),
                 child: ViewModels.buildErrorWidget(model.errorMessage, _init));
@@ -83,7 +82,7 @@ class _LeaderboardState extends State<Leaderboard>
             enablePullUp: false,
             onRefresh: _onRefresh,
             header: const WaterDropMaterialHeader(
-              backgroundColor: AppColors.secondaryColor,
+              backgroundColor: AppColors.popBGColor,
               color: AppColors.btnColor,
             ),
             child: model.contestPosts.isEmpty

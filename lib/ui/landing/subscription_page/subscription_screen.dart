@@ -73,15 +73,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.w)),
         child: Container(
           width: 400.w,
-          height: 550.h,
+          height: 450.h,
           padding: EdgeInsets.symmetric(horizontal: 35.w, vertical: 50.h),
           decoration: BoxDecoration(
-              // gradient: const LinearGradient(
-              //   begin: Alignment.topCenter,
-              //   end: Alignment.bottomCenter,
-              //   stops: [0, .8],
-              //   colors: [AppColors.secondaryColor, AppColors.primaryColor],
-              // ),
               color: AppColors.popBGColor,
               borderRadius: BorderRadius.circular(20.w)),
           child: isLoading
@@ -192,13 +186,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           },
           child: Container(
             alignment: Alignment.center,
-            height: 50.h,
-            width: 150.w,
+            height: 40.h,
+            width: 130.w,
             decoration: BoxDecoration(
                 color: AppColors.btnColor,
                 borderRadius: BorderRadius.circular(5.w)),
             child: SizedBox(
-              height: 20.h,
+              height: 25.h,
               width: 100.w,
               child: FittedBox(
                 fit: BoxFit.scaleDown,

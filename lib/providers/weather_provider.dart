@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
-import 'package:wisconsin_app/models/astro.dart';
 import 'package:wisconsin_app/models/county.dart';
-import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/weather.dart';
 import 'package:wisconsin_app/services/weather_service.dart';

@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,8 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/ui/landing/register_page/widgets/terms_conditions.dart';
+import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 
 class CollectDetailsPage extends StatelessWidget {
   const CollectDetailsPage({
@@ -113,47 +116,124 @@ class CollectDetailsPage extends StatelessWidget {
             SizedBox(
               height: 20.h,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    registerProvider.sendMeUpdatesFunc();
-                  },
-                  child: SizedBox(
-                      height: 25.w,
-                      width: 25.w,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.btnColor,
-                              style: BorderStyle.solid,
-                              width: 2.5.w,
-                            ),
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(5.w)),
-                        child: registerProvider.sendMeUpdates
-                            ? Icon(
-                                Icons.check,
+            SizedBox(
+              width: 310.w,
+              height: 30.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      registerProvider.sendMeUpdatesFunc();
+                    },
+                    child: SizedBox(
+                        height: 25.w,
+                        width: 25.w,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
                                 color: AppColors.btnColor,
-                                size: 20.w,
-                              )
-                            : null,
-                      )),
-                ),
-                SizedBox(
-                  width: 15.w,
-                ),
-                Text(
-                  "Send me updates and alerts",
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                                style: BorderStyle.solid,
+                                width: 2.5.w,
+                              ),
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(5.w)),
+                          child: registerProvider.sendMeUpdates
+                              ? Icon(
+                                  Icons.check,
+                                  color: AppColors.btnColor,
+                                  size: 20.w,
+                                )
+                              : null,
+                        )),
+                  ),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Send me updates and alerts",
+                      style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            SizedBox(
+              width: 310.w,
+              height: 30.h,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      registerProvider.acceptTermsFunc();
+                    },
+                    child: SizedBox(
+                        height: 25.w,
+                        width: 25.w,
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.btnColor,
+                                style: BorderStyle.solid,
+                                width: 2.5.w,
+                              ),
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(5.w)),
+                          child: registerProvider.acceptTermsCondition
+                              ? Icon(
+                                  Icons.check,
+                                  color: AppColors.btnColor,
+                                  size: 20.w,
+                                )
+                              : null,
+                        )),
+                  ),
+                  SizedBox(
+                    width: 15.w,
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: RichText(
+                      text: TextSpan(
+                          text: "I accept the ",
+                          style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400),
+                          children: [
+                            TextSpan(
+                              text: "Terms and Conditions",
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () => Navigator.push(
+                                    context,
+                                    HeroDialogRoute(
+                                        builder: (_) =>
+                                            const TermsConditions())),
+                              style: TextStyle(
+                                  fontSize: 14.sp,
+                                  decoration: TextDecoration.underline,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w400),
+                            )
+                          ]),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

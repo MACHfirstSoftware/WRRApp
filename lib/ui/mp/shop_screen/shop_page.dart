@@ -27,7 +27,7 @@ class _ShopPageState extends State<ShopPage> {
   void initState() {
     isPremium = Provider.of<UserProvider>(context, listen: false)
         .user
-        .subscriptionPerson[0]
+        .subscriptionPerson![0]
         .subscriptionApiModel
         .isPremium;
     super.initState();
@@ -142,10 +142,10 @@ class _ShopContentState extends State<ShopContent>
           enablePullUp: false,
           onRefresh: _onRefresh,
           header: const WaterDropMaterialHeader(
-            backgroundColor: AppColors.secondaryColor,
+            backgroundColor: AppColors.popBGColor,
             color: AppColors.btnColor,
           ),
-          child: ViewModels.buildErrorWidget(errorMessage, () => _init()));
+          child: ViewModels.buildErrorWidget(errorMessage, () => _init));
     }
     return SmartRefresher(
         controller: _refreshController2,
@@ -153,7 +153,7 @@ class _ShopContentState extends State<ShopContent>
         enablePullUp: false,
         onRefresh: _onRefresh,
         header: const WaterDropMaterialHeader(
-          backgroundColor: AppColors.secondaryColor,
+          backgroundColor: AppColors.popBGColor,
           color: AppColors.btnColor,
         ),
         child: sponsors.isEmpty

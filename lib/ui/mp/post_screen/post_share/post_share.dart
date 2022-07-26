@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
+import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
@@ -125,7 +127,7 @@ class _PostSharePageState extends State<PostSharePage> {
                               itemCount: _followers.length,
                               itemBuilder: (_, index) {
                                 return Material(
-                                  color: AppColors.secondaryColor,
+                                  color: AppColors.popBGColor,
                                   borderRadius: BorderRadius.circular(10.w),
                                   child: CheckboxListTile(
                                     value: data.any((element) =>
@@ -164,6 +166,22 @@ class _PostSharePageState extends State<PostSharePage> {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
+                                    subtitle: Text(
+                                      (CountyUtil.getCountyNameById(
+                                              counties:
+                                                  Provider.of<CountyProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .counties,
+                                              countyId:
+                                                  _followers[index].countyId) +
+                                          " County"),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
                                   ),
                                 );
                               },
@@ -199,7 +217,7 @@ class _PostSharePageState extends State<PostSharePage> {
       },
       child: Container(
         alignment: Alignment.center,
-        height: 50.h,
+        height: 40.h,
         width: 130.w,
         decoration: BoxDecoration(
             border: Border.all(
@@ -221,12 +239,16 @@ class _PostSharePageState extends State<PostSharePage> {
             SizedBox(
               width: 10.w,
             ),
-            Text(
-              "Cancel",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
@@ -243,7 +265,7 @@ class _PostSharePageState extends State<PostSharePage> {
           : null,
       child: Container(
         alignment: Alignment.center,
-        height: 50.h,
+        height: 40.h,
         width: 130.w,
         decoration: BoxDecoration(
             color: AppColors.btnColor,
@@ -260,12 +282,16 @@ class _PostSharePageState extends State<PostSharePage> {
             SizedBox(
               width: 10.w,
             ),
-            Text(
-              "Share",
-              style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                "Share",
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),

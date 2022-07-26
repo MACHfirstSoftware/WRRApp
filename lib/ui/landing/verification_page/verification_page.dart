@@ -129,9 +129,9 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: Text(
                   "We have sent your phone a verification code, please enter it to complete your account.",
                   style: TextStyle(
-                      fontSize: 20.sp,
+                      fontSize: 18.sp,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold),
+                      fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -151,13 +151,13 @@ class _VerificationPageState extends State<VerificationPage> {
                 onTap: () => _verifyCode(),
                 child: Container(
                   alignment: Alignment.center,
-                  height: 50.h,
-                  width: 150.w,
+                  height: 40.h,
+                  width: 130.w,
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
                   child: SizedBox(
-                      height: 20.h,
+                      height: 25.h,
                       width: 100.w,
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -174,16 +174,18 @@ class _VerificationPageState extends State<VerificationPage> {
                 ),
               ),
               SizedBox(
-                height: 15.h,
+                height: 10.h,
               ),
               GestureDetector(
                 onTap: () => _reSend(),
                 child: Text(
                   "Resend",
                   style: TextStyle(
-                      fontSize: 18.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
+                    decoration: TextDecoration.underline,
+                    fontSize: 14.sp,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w400,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),

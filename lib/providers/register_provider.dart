@@ -4,10 +4,16 @@ import 'package:wisconsin_app/models/county.dart';
 class RegisterProvider with ChangeNotifier {
   County? selectedCounty;
   List<Map<String, dynamic>> selectedAnswers = [];
-  bool sendMeUpdates = false;
+  bool sendMeUpdates = true;
+  bool acceptTermsCondition = false;
 
   void sendMeUpdatesFunc() {
     sendMeUpdates = !sendMeUpdates;
+    notifyListeners();
+  }
+
+  void acceptTermsFunc() {
+    acceptTermsCondition = !acceptTermsCondition;
     notifyListeners();
   }
 
@@ -45,6 +51,7 @@ class RegisterProvider with ChangeNotifier {
   void clearData() {
     selectedCounty = null;
     selectedAnswers = [];
-    sendMeUpdates = false;
+    sendMeUpdates = true;
+    acceptTermsCondition = false;
   }
 }

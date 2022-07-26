@@ -7,8 +7,8 @@ class ViewModels {
   static buildLoader() {
     return Center(
       child: SizedBox(
-        height: 50.w,
-        width: 50.w,
+        height: 40.w,
+        width: 40.w,
         child: const LoadingIndicator(
             indicatorType: Indicator.lineSpinFadeLoader,
             colors: [AppColors.btnColor],

@@ -16,6 +16,7 @@ import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/services/search_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/update_post.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
@@ -38,11 +39,13 @@ class PostView extends StatefulWidget {
 class _PostViewState extends State<PostView> {
   int? likeIndex;
   late bool _isApiCall;
+  late bool _isFollowed;
   late User _user;
   bool _showComments = false;
   @override
   void initState() {
     _isApiCall = false;
+    _isFollowed = widget.post.isShare;
     _user = Provider.of<UserProvider>(context, listen: false).user;
     _setLikeIndex();
     super.initState();
@@ -148,6 +151,30 @@ class _PostViewState extends State<PostView> {
     }
   }
 
+  _personFollow(String followerId, bool isOwner) async {
+    setState(() {
+      isOwner ? widget.post.isFollowed = true : _isFollowed = true;
+    });
+    final res = await SearchService.personFollow(_user.id, followerId);
+    if (!res) {
+      setState(() {
+        isOwner ? widget.post.isFollowed = false : _isFollowed = false;
+      });
+    }
+  }
+
+  _personUnfollow(String unFollowerId, bool isOwner) async {
+    setState(() {
+      isOwner ? widget.post.isFollowed = false : _isFollowed = false;
+    });
+    final res = await SearchService.personUnfollow(_user.id, unFollowerId);
+    if (!res) {
+      setState(() {
+        isOwner ? widget.post.isFollowed = true : _isFollowed = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -170,7 +197,11 @@ class _PostViewState extends State<PostView> {
                   : widget.post.personCode,
               widget.post.postPersonCounty,
               widget.post.createdOn,
-              widget.post.isShare ? null : true),
+              widget.post.isShare ? _isFollowed : widget.post.isFollowed,
+              widget.post.isShare
+                  ? widget.post.sharePersonId!
+                  : widget.post.personId,
+              !widget.post.isShare),
           // if (!widget.post.isShare) _buildPostTitleAndBody(widget.post.title),
           if (!widget.post.isShare)
             _buildPostTitleAndBody(widget.post.body, isTitle: false),
@@ -190,7 +221,9 @@ class _PostViewState extends State<PostView> {
                       widget.post.personCode,
                       widget.post.postPersonCounty,
                       widget.post.createdOn,
-                      true),
+                      widget.post.isFollowed,
+                      widget.post.personId,
+                      widget.post.isShare),
                   // _buildPostTitleAndBody(widget.post.title),
                   _buildPostTitleAndBody(widget.post.body, isTitle: false),
                 ],
@@ -276,35 +309,6 @@ class _PostViewState extends State<PostView> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   // mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // IconButton(
-                    // onPressed: _isApiCall
-                    //     ? null
-                    //     : () {
-                    //         if (likeIndex == null) {
-                    //           _postLike();
-                    //         } else {
-                    //           _postLikeDelete();
-                    //         }
-                    //       },
-                    //     icon: Icon(
-                    //       Icons.thumb_up_off_alt_rounded,
-                    //       size: 40.h,
-                    // color: likeIndex != null
-                    //     ? AppColors.btnColor
-                    //     : AppColors.iconGrey,
-                    //     )),
-                    // IconButton(
-                    //     onPressed: () {
-                    //       // CommentSection cc = const CommentSection(comments: []);
-                    //       // cc.aa();
-                    //     },
-
-                    // icon: Icon(
-                    //   Icons.insert_comment_rounded,
-                    //   size: 40.h,
-                    //   color: AppColors.iconGrey,
-                    // )),
-
                     Expanded(
                       child: GestureDetector(
                         onTap: _isApiCall
@@ -484,8 +488,15 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  Container _buildPersonRow(String? profileImageUrl, String name,
-      String personCode, String county, DateTime date, bool? isFollowed) {
+  Container _buildPersonRow(
+      String? profileImageUrl,
+      String name,
+      String personCode,
+      String county,
+      DateTime date,
+      bool isFollowed,
+      String followerId,
+      bool isOwner) {
     return Container(
       color: Colors.white,
       height: 75.h,
@@ -620,19 +631,24 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           ),
-          if (isFollowed != null)
-            SizedBox(
-                height: 60.h,
-                width: 40.h,
-                child: IconButton(
-                  splashColor: AppColors.btnColor.withOpacity(0.5),
-                  iconSize: 25.h,
-                  icon: Icon(
-                    Icons.person_add_alt_rounded,
-                    color: isFollowed ? AppColors.btnColor : Colors.black54,
-                  ),
-                  onPressed: () {},
-                )),
+          SizedBox(
+              height: 60.h,
+              width: 40.h,
+              child: IconButton(
+                splashColor: AppColors.btnColor.withOpacity(0.5),
+                iconSize: 25.h,
+                icon: Icon(
+                  Icons.person_add_alt_rounded,
+                  color: isFollowed ? AppColors.btnColor : Colors.black54,
+                ),
+                onPressed: () {
+                  if (isFollowed) {
+                    _personUnfollow(followerId, isOwner);
+                  } else {
+                    _personFollow(followerId, isOwner);
+                  }
+                },
+              )),
           SizedBox(
               height: 60.h,
               width: 50.h,
@@ -641,7 +657,7 @@ class _PostViewState extends State<PostView> {
                 color: AppColors.popBGColor,
                 icon: Icon(Icons.more_horiz_rounded, size: 30.h),
                 itemBuilder: (context) => [
-                  if (!widget.post.isShare && _user.id != widget.post.personId)
+                  if (isOwner && _user.id != widget.post.personId)
                     PopupMenuItem<String>(
                       value: "Report",
                       height: 20.h,
@@ -1071,8 +1087,8 @@ class ReportView extends StatelessWidget {
             _buildReportDataRow("No. Deer Seen", report.numDeer.toString()),
             _buildReportDataRow("No. Bucks Seen", report.numBucks.toString()),
             _buildReportDataRow(
-                "Weather Rating", report.weatherRating.toString()),
-            _buildReportDataRow("Duration", "${report.numHours} hour/s"),
+                "Weather Rating", report.weatherRating.toString() + "/5"),
+            _buildReportDataRow("Duration", "${report.numHours} hour(s)"),
             _buildReportDataRow(
                 "Type", report.weaponUsed == "A" ? "Bow" : "Gun"),
             _buildReportDataRow("Successful?", report.isSuccess ? "Yes" : "No"),

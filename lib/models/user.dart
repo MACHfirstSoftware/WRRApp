@@ -24,7 +24,7 @@ class User {
       required this.isOptIn,
       this.isFollowed = false,
       this.phoneMobile = "",
-      required this.subscriptionPerson,
+      this.subscriptionPerson,
       this.answerId});
 
   String id;
@@ -43,7 +43,7 @@ class User {
   bool isOptIn;
   bool isFollowed;
   String phoneMobile;
-  List<SubscriptionPerson> subscriptionPerson;
+  List<SubscriptionPerson>? subscriptionPerson;
   int? answerId;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -61,9 +61,12 @@ class User {
         isOptIn: json["isOptIn"],
         isFollowed: json["isFollowed"] ?? false,
         phoneMobile: json["phoneMobile"] ?? "",
-        subscriptionPerson: (json["subscriptionPerson"] as List<dynamic>)
-            .map((e) => SubscriptionPerson.fromJson(e as Map<String, dynamic>))
-            .toList(),
+        subscriptionPerson: json["subscriptionPerson"] != null
+            ? (json["subscriptionPerson"] as List<dynamic>)
+                .map((e) =>
+                    SubscriptionPerson.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : null,
         answerId: json["answer"] != null ? json["answer"]["id"] : null,
       );
 

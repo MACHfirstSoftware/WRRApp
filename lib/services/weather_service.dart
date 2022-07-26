@@ -1,8 +1,6 @@
 import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/models/astro.dart';
 import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/weather.dart';

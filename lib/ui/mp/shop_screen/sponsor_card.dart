@@ -109,6 +109,34 @@ class SponsorCard extends StatelessWidget {
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.left,
             ),
+            trailing: GestureDetector(
+              onTap: () {},
+              child: Container(
+                alignment: Alignment.center,
+                height: 30.h,
+                width: 100.w,
+                decoration: BoxDecoration(
+                  color: AppColors.btnColor,
+                  borderRadius: BorderRadius.circular(5.w),
+                ),
+                child: SizedBox(
+                  height: 25.h,
+                  width: 80.w,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Visit",
+                      style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
           ...sponsor.discounts
               .map((Discount discount) => _buildDiscountRow(discount: discount))
@@ -119,90 +147,99 @@ class SponsorCard extends StatelessWidget {
 
   _buildDiscountRow({required Discount discount}) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 5.h),
+      padding: EdgeInsets.only(bottom: 5.h, left: 70.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(width: 60.w),
-          Container(
-            alignment: Alignment.center,
-            height: 30.h,
-            width: 75.w,
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(5.w),
-                border: Border.all(color: AppColors.btnColor, width: 1.h)),
-            child: SizedBox(
-              height: 25.h,
-              width: 65.w,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: Text(
-                  discount.offer,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            alignment: Alignment.center,
-            height: 30.h,
-            width: 125.w,
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(5.w),
-                border: Border.all(color: AppColors.btnColor, width: 1.h)),
-            child: SizedBox(
-              height: 25.h,
-              width: 115.w,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: Text(
-                  discount.discountCode,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _launch(discount.link),
-            child: Container(
+          if (discount.discountCode != null)
+            Container(
               alignment: Alignment.center,
               height: 30.h,
-              width: 100.w,
+              padding: EdgeInsets.symmetric(vertical: 2.5.h),
+              width: 175.w,
               decoration: BoxDecoration(
-                color: AppColors.btnColor,
-                borderRadius: BorderRadius.circular(5.w),
-              ),
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(5.w),
+                  border: Border.all(color: AppColors.btnColor, width: 1.h)),
               child: SizedBox(
                 height: 25.h,
-                width: 80.w,
+                width: 125.w,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.center,
                   child: Text(
-                    "Show Now",
+                    "Code : " + discount.discountCode!,
                     style: TextStyle(
                         fontSize: 14.sp,
                         color: Colors.white,
-                        fontWeight: FontWeight.w500),
+                        fontWeight: FontWeight.w400),
                     textAlign: TextAlign.left,
                   ),
                 ),
               ),
+            )
+          else
+            SizedBox(
+              height: 30.h,
+              width: 175.w,
+            ),
+
+          Container(
+            alignment: Alignment.center,
+            height: 30.h,
+            width: 125.w,
+            padding: EdgeInsets.symmetric(vertical: 2.5.h),
+            decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(5.w),
+                border: Border.all(color: AppColors.btnColor, width: 1.h)),
+            child: SizedBox(
+              height: 25.h,
+              width: 100.w,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: Text(
+                  "Offer : " + discount.offer,
+                  style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.left,
+                ),
+              ),
             ),
           ),
+
+          // GestureDetector(
+          //   onTap: () => _launch(discount.link),
+          //   child: Container(
+          //     alignment: Alignment.center,
+          //     height: 30.h,
+          //     width: 100.w,
+          //     decoration: BoxDecoration(
+          //       color: AppColors.btnColor,
+          //       borderRadius: BorderRadius.circular(5.w),
+          //     ),
+          //     child: SizedBox(
+          //       height: 25.h,
+          //       width: 80.w,
+          //       child: FittedBox(
+          //         fit: BoxFit.scaleDown,
+          //         alignment: Alignment.center,
+          //         child: Text(
+          //           "Show Now",
+          //           style: TextStyle(
+          //               fontSize: 14.sp,
+          //               color: Colors.white,
+          //               fontWeight: FontWeight.w500),
+          //           textAlign: TextAlign.left,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

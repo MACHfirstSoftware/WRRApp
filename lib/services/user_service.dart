@@ -64,6 +64,7 @@ class UserService {
     try {
       final response = await CustomHttp.getDio()
           .get(Constant.baseUrl + "/FollowedList?id=$personId");
+      inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -144,6 +145,7 @@ class UserService {
       String userId,
       String firstName,
       String lastName,
+      String email,
       String code,
       String phone,
       int countyId,
@@ -154,6 +156,8 @@ class UserService {
           .patch(Constant.baseUrl + "/Person/$userId", data: [
         {"path": "/firstName", "op": "Add", "value": firstName},
         {"path": "/lastName", "op": "Add", "value": lastName},
+        {"path": "/emailAddress", "op": "Add", "value": email},
+        {"path": "/username", "op": "Add", "value": email},
         {"path": "/code", "op": "Add", "value": code},
         {"path": "/phoneMobile", "op": "Add", "value": phone},
         {"path": "/countyId", "op": "Add", "value": countyId},
@@ -220,6 +224,27 @@ class UserService {
       print(response.statusCode);
       if (response.statusCode == 200) {
         return ApiResult.success(data: User.fromJson(response.data));
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<ApiResult<bool>> resetPassword(
+      String userId, String password) async {
+    print("reset call");
+    try {
+      final response = await CustomHttp.getDio().post(
+          Constant.baseUrl + "/ResetPassword?id=$userId&password=$password");
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        return const ApiResult.success(data: true);
       } else {
         return ApiResult.responseError(
             responseError: ResponseError(

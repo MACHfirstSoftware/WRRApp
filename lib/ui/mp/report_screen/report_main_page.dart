@@ -21,7 +21,7 @@ class _ReportPageState extends State<ReportPage> {
   void initState() {
     isPremium = Provider.of<UserProvider>(context, listen: false)
         .user
-        .subscriptionPerson[0]
+        .subscriptionPerson![0]
         .subscriptionApiModel
         .isPremium;
     super.initState();

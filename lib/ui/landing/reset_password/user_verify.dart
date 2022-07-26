@@ -114,12 +114,12 @@ class _UserVerifyState extends State<UserVerify> {
         child: Column(
           children: [
             SizedBox(
-              height: 35.h,
+              height: 50.h,
               width: 428.w,
             ),
             const LogoImage(),
             SizedBox(
-              height: 35.h,
+              height: 75.h,
             ),
             InputField(
               hintText: "Email",
@@ -128,7 +128,7 @@ class _UserVerifyState extends State<UserVerify> {
               textInputType: TextInputType.emailAddress,
             ),
             SizedBox(
-              height: 55.h,
+              height: 35.h,
               width: 428.w,
             ),
             GestureDetector(

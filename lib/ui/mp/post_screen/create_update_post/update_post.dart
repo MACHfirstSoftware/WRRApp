@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -11,9 +10,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
-import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
-import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/utils/common.dart';
@@ -425,7 +422,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                       Center(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                              color: AppColors.secondaryColor
+                                              color: AppColors.popBGColor
                                                   .withOpacity(0.5),
                                               borderRadius:
                                                   BorderRadius.circular(7.5.w)),

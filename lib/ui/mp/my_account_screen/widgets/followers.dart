@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/response_error.dart';
@@ -23,7 +25,9 @@ class Followers extends StatefulWidget {
   State<Followers> createState() => _FollowersState();
 }
 
-class _FollowersState extends State<Followers> {
+class _FollowersState extends State<Followers>
+    with AutomaticKeepAliveClientMixin {
+  late RefreshController _refreshController;
   late ApiStatus _apiStatus;
   List<User> followers = [];
   late List<County> _counties;
@@ -31,13 +35,20 @@ class _FollowersState extends State<Followers> {
   String errorMessage = '';
   @override
   void initState() {
+    _refreshController = RefreshController(initialRefresh: false);
     _user = Provider.of<UserProvider>(context, listen: false).user;
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
     _init();
     super.initState();
   }
 
-  void _init() async {
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
+  _init() async {
     setState(() {
       _apiStatus = ApiStatus.isBusy;
     });
@@ -61,6 +72,11 @@ class _FollowersState extends State<Followers> {
         followers = [];
       });
     });
+  }
+
+  Future<void> _onRefresh() async {
+    await _init();
+    _refreshController.refreshCompleted();
   }
 
   _personFollow(int index) async {
@@ -102,38 +118,50 @@ class _FollowersState extends State<Followers> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_apiStatus == ApiStatus.isBusy) {
       return ViewModels.buildLoader();
     }
     if (_apiStatus == ApiStatus.isError) {
-      return ViewModels.buildErrorWidget(errorMessage, () => _init());
+      return ViewModels.buildErrorWidget(errorMessage, () => _init);
     }
-    if (followers.isEmpty) {
-      return ViewModels.postEmply();
-    }
-    return ListView.separated(
-        padding: EdgeInsets.only(top: 5.h),
-        itemBuilder: (_, index) {
-          return UserCard(
-            name: followers[index].firstName + " " + followers[index].lastName,
-            personCode: followers[index].code,
-            county: CountyUtil.getCountyNameById(
-                counties: _counties, countyId: followers[index].countyId),
-            profileImageUrl: followers[index].profileImageUrl,
-            onTap: () {
-              // followers[index].isFollowed
-              //     ? _personUnfollow(index)
-              //     :
-              _personFollow(index);
-            },
-            isFollowed: followers[index].isFollowed,
-          );
-        },
-        separatorBuilder: (_, index) {
-          return SizedBox(
-            height: 5.h,
-          );
-        },
-        itemCount: followers.length);
+    return SmartRefresher(
+        controller: _refreshController,
+        enablePullDown: true,
+        enablePullUp: false,
+        onRefresh: _onRefresh,
+        header: const WaterDropMaterialHeader(
+          backgroundColor: AppColors.popBGColor,
+          color: AppColors.btnColor,
+        ),
+        child: followers.isNotEmpty
+            ? ListView.separated(
+                padding: EdgeInsets.only(top: 5.h),
+                itemBuilder: (_, index) {
+                  return UserCard(
+                    name: followers[index].firstName +
+                        " " +
+                        followers[index].lastName,
+                    personCode: followers[index].code,
+                    county: CountyUtil.getCountyNameById(
+                        counties: _counties,
+                        countyId: followers[index].countyId),
+                    profileImageUrl: followers[index].profileImageUrl,
+                    onTap: () {
+                      _personFollow(index);
+                    },
+                    isFollowed: followers[index].isFollowed,
+                  );
+                },
+                separatorBuilder: (_, index) {
+                  return SizedBox(
+                    height: 5.h,
+                  );
+                },
+                itemCount: followers.length)
+            : ViewModels.postEmply());
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

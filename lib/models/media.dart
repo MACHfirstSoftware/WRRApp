@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:wisconsin_app/utils/common.dart';
-
 Media mediaFromJson(String str) => Media.fromJson(json.decode(str));
 
 String mediaToJson(Media data) => json.encode(data.toJson());

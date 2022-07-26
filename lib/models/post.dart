@@ -26,12 +26,14 @@ class Post {
       required this.postType,
       required this.createdOn,
       this.modifiedOn,
+      required this.isFollowed,
       required this.isShare,
       this.sharePersonId,
       this.sharePersonFirstName = "",
       this.sharePersonLastName = "",
       this.sharePersonCode = '',
       this.sharePersonImage,
+      // required this.timeAgo,
       required this.likes,
       required this.comments,
       required this.media,
@@ -51,12 +53,14 @@ class Post {
   String postType;
   DateTime createdOn;
   DateTime? modifiedOn;
+  bool isFollowed;
   bool isShare;
   String? sharePersonId;
   String sharePersonFirstName;
   String sharePersonLastName;
   String sharePersonCode;
   String? sharePersonImage;
+  // String timeAgo;
   List<Like> likes;
   List<Comment> comments;
   List<Media> media;
@@ -70,6 +74,7 @@ class Post {
       firstName: json["firstName"],
       lastName: json["lastName"],
       personCode: json["personCode"],
+      isFollowed: json["isFollowed"],
       profileImageUrl:
           json["imageLocation"] != "" ? json["imageLocation"] : null,
       title: json["title"],
@@ -87,6 +92,7 @@ class Post {
       sharePersonCode: json["sharePersonCode"],
       sharePersonImage:
           json["sharePersonImage"] != "" ? json["sharePersonImage"] : null,
+      // timeAgo: json["time"],
       likes: List<Like>.from(json["likes"].map((x) => Like.fromJson(x))),
       comments:
           List<Comment>.from(json["comments"].map((x) => Comment.fromJson(x))),
@@ -115,6 +121,7 @@ class Post {
         "sharePersonId": sharePersonId,
         "sharePersonFirstName": sharePersonFirstName,
         "sharePersonLastName": sharePersonLastName,
+        // "time":timeAgo,
         "likes": List<dynamic>.from(likes.map((x) => x.toJson())),
         "comments": List<dynamic>.from(comments.map((x) => x.toJson())),
         "media": List<dynamic>.from(media.map((x) => x.toJson())),

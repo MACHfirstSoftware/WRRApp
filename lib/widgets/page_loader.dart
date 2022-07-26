@@ -17,8 +17,8 @@ class PageLoader {
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.transparent,
               ),
-              height: 50.w,
-              width: 50.w,
+              height: 40.w,
+              width: 40.w,
               child: const LoadingIndicator(
                   indicatorType: Indicator.lineSpinFadeLoader,
                   colors: [Colors.white],

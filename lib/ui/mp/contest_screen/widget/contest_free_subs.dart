@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
-import 'package:wisconsin_app/widgets/default_appbar.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
 class ContestFreeSubs extends StatelessWidget {

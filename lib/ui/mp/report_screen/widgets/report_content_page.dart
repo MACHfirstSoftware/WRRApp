@@ -11,7 +11,6 @@ import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
-import 'package:wisconsin_app/ui/mp/report_screen/widgets/bottom_appbar.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
@@ -126,7 +125,7 @@ class _ReportContentsState extends State<ReportContents>
               enablePullUp: false,
               onRefresh: _onRefresh,
               header: const WaterDropMaterialHeader(
-                backgroundColor: AppColors.secondaryColor,
+                backgroundColor: AppColors.popBGColor,
                 color: AppColors.btnColor,
               ),
               child: ViewModels.buildErrorWidget(model.errorMessage, _init));
@@ -138,7 +137,7 @@ class _ReportContentsState extends State<ReportContents>
             enablePullUp: false,
             onRefresh: _onRefresh2,
             header: const WaterDropMaterialHeader(
-              backgroundColor: AppColors.secondaryColor,
+              backgroundColor: AppColors.popBGColor,
               color: AppColors.btnColor,
             ),
             child: model.posts.isEmpty

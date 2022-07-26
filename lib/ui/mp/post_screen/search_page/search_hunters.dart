@@ -3,8 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/search_service.dart';
+import 'package:wisconsin_app/utils/common.dart';
+import 'package:wisconsin_app/widgets/user_card_widget.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
 class SearchHunters extends StatefulWidget {
@@ -156,44 +159,59 @@ class _SearchHuntersState extends State<SearchHunters> {
       padding: EdgeInsets.only(top: 10.h),
       itemCount: users.length,
       itemBuilder: (_, index) {
-        return Padding(
-          padding: EdgeInsets.only(left: 15.w, right: 15.w),
-          child: Material(
-            color: AppColors.secondaryColor,
-            child: ListTile(
-              contentPadding: EdgeInsets.only(left: 35.w, right: 15.w),
-              title: Text(
-                users[index].firstName + " " + users[index].lastName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              trailing: SizedBox(
-                height: 60.h,
-                width: 60.h,
-                child: IconButton(
-                    onPressed: !isFollowing
-                        ? () {
-                            if (!users[index].isFollowed) {
-                              _personFollow(users[index].id, index);
-                            } else {
-                              _personUnfollow(users[index].id, index);
-                            }
-                          }
-                        : null,
-                    icon: Icon(
-                      Icons.person_add_alt_rounded,
-                      size: 40.h,
-                      color: users[index].isFollowed
-                          ? AppColors.btnColor
-                          : Colors.grey[350],
-                    )),
-              ),
-            ),
-          ),
-        );
+        return UserCard(
+            name: users[index].firstName + " " + users[index].lastName,
+            personCode: users[index].code,
+            county: CountyUtil.getCountyNameById(
+                counties: Provider.of<CountyProvider>(context, listen: false)
+                    .counties,
+                countyId: users[index].countyId),
+            onTap: !isFollowing
+                ? () {
+                    users[index].isFollowed
+                        ? _personUnfollow(users[index].id, index)
+                        : _personFollow(users[index].id, index);
+                  }
+                : () {},
+            isFollowed: users[index].isFollowed);
+        // return Padding(
+        //   padding: EdgeInsets.only(left: 15.w, right: 15.w),
+        //   child: Material(
+        //     color: AppColors.secondaryColor,
+        //     child: ListTile(
+        //       contentPadding: EdgeInsets.only(left: 35.w, right: 15.w),
+        //       title: Text(
+        //         users[index].firstName + " " + users[index].lastName,
+        //         style: TextStyle(
+        //           color: Colors.white,
+        //           fontSize: 18.sp,
+        //           fontWeight: FontWeight.w600,
+        //         ),
+        //       ),
+        //       trailing: SizedBox(
+        //         height: 60.h,
+        //         width: 60.h,
+        //         child: IconButton(
+        //             onPressed: !isFollowing
+        //                 ? () {
+        //                     if (!users[index].isFollowed) {
+        //                       _personFollow(users[index].id, index);
+        //                     } else {
+        //                       _personUnfollow(users[index].id, index);
+        //                     }
+        //                   }
+        //                 : null,
+        //             icon: Icon(
+        //               Icons.person_add_alt_rounded,
+        //               size: 40.h,
+        //               color: users[index].isFollowed
+        //                   ? AppColors.btnColor
+        //                   : Colors.grey[350],
+        //             )),
+        //       ),
+        //     ),
+        //   ),
+        // );
       },
       separatorBuilder: (_, index) {
         return Container(

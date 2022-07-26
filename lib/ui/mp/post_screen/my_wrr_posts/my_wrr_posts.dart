@@ -9,7 +9,6 @@ import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/my_wrr_posts/widgets/my_wrr_post_appbar.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
@@ -125,7 +124,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
                 enablePullUp: false,
                 onRefresh: _onRefresh,
                 header: const WaterDropMaterialHeader(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColors.popBGColor,
                   color: AppColors.btnColor,
                 ),
                 child: ViewModels.buildErrorWidget(model.errorMessage, _init));
@@ -137,7 +136,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
             enablePullUp: false,
             onRefresh: _onRefresh,
             header: const WaterDropMaterialHeader(
-              backgroundColor: AppColors.secondaryColor,
+              backgroundColor: AppColors.popBGColor,
               color: AppColors.btnColor,
             ),
             child: model.postsOfWRR.isEmpty

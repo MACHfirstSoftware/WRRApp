@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
@@ -155,7 +154,7 @@ class _LetsGoPageState extends State<LetsGoPage> {
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(5.w)),
                   child: SizedBox(
-                    height: 20.h,
+                    height: 25.h,
                     width: 110.w,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,

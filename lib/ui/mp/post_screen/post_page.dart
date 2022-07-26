@@ -29,7 +29,7 @@ class _PostPageState extends State<PostPage> {
         backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,
-          title: const ReportPageAppBar(),
+          title: const ReportPageAppBar(isReports: false),
           elevation: 0,
           toolbarHeight: 70.h,
           automaticallyImplyLeading: false,

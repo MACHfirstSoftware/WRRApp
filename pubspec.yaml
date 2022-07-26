@@ -75,6 +75,9 @@ dependencies:
   #URL launcher
   url_launcher: ^6.1.5
 
+  #Web content to flutter widget
+  flutter_widget_from_html: ^0.8.5
+
 
   freezed_annotation: ^0.14.0
 

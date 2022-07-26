@@ -1,7 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/line_chart.dart';
@@ -20,7 +22,12 @@ class _ForecastBodyState extends State<ForecastBody> {
 
   @override
   void initState() {
-    hour = int.parse(DateFormat.H().format(DateTime.now()));
+    // hour = int.parse(DateFormat.H().format(DateTime.now()));
+    List<double> tempF = [];
+    for (final data in widget.forecastDay.hour) {
+      tempF.add(data.tempF);
+    }
+    hour = tempF.indexOf(tempF.reduce(max));
     super.initState();
   }
 

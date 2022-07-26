@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/default_appbar.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
@@ -78,7 +81,28 @@ class _ResetPasswordState extends State<ResetPassword> {
           widget.user.id, _otpController.text);
 
       if (otpVerify) {
+        final reset = await UserService.resetPassword(
+            widget.user.id, _newPassController.text);
+        Navigator.pop(context);
+        reset.when(success: (bool success) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Successfully reset your password",
+              type: SnackBarType.success));
+          Navigator.pop(context);
+        }, failure: (NetworkExceptions error) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: NetworkExceptions.getErrorMessage(error),
+              type: SnackBarType.error));
+        }, responseError: (ResponseError responseError) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: responseError.error,
+              type: SnackBarType.error));
+        });
       } else {
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
             messageText: "Something went wrong",
@@ -108,7 +132,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             ),
             const LogoImage(),
             SizedBox(
-              height: 35.h,
+              height: 55.h,
             ),
             InputField(
                 hintText: "New Password",

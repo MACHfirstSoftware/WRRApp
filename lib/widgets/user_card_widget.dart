@@ -146,7 +146,7 @@ class UserCard extends StatelessWidget {
               height: 60.h,
               width: 60.h,
               child: IconButton(
-                splashColor: AppColors.btnColor.withOpacity(0.5),
+                // splashColor: AppColors.btnColor.withOpacity(0.5),
                 iconSize: 25.h,
                 icon: Icon(
                   Icons.person_add_alt_rounded,

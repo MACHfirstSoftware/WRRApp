@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/config.dart';
-// import 'package:wisconsin_app/models/astro.dart';
-// import 'package:wisconsin_app/models/current_weather.dart';
 import 'package:wisconsin_app/models/weather.dart';
 
 class CurrentWeatherDetails extends StatefulWidget {
-  // final CurrentWeather currentWeather;
-  // final Astros astro;
   final Current currentWeather;
   final Astro astro;
   const CurrentWeatherDetails({
     Key? key,
     required this.currentWeather,
     required this.astro,
-    // required this.currentWeather, required this.astro
   }) : super(key: key);
 
   @override
@@ -121,119 +116,25 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                   fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
             ),
-
             SizedBox(
               height: 15.h,
             ),
             _buildAstroRow("assets/icons/dayLight.svg", widget.astro.sunrise,
                 widget.astro.sunset),
-
             SizedBox(
               height: 15.h,
             ),
             _buildAstroRow("assets/icons/moon.svg", widget.astro.moonrise,
                 widget.astro.moonset),
-            // SizedBox(
-            //   height: 30.h,
-            // ),
-            // Row(
-            //   children: [
-            //     const Spacer(),
-            //     Container(
-            //       height: 40.w,
-            //       width: 40.w,
-            //       padding: EdgeInsets.all(10.w),
-            //       decoration: BoxDecoration(
-            //           color: Colors.blueGrey,
-            //           borderRadius: BorderRadius.circular(10.w)),
-            //       child: SvgPicture.asset(
-            //         "assets/icons/compass.svg",
-            //         height: 15.w,
-            //         width: 15.w,
-            //       ),
-            //     ),
-            //     const Spacer(),
-            //     Text(
-            //       // "12.50 mph",
-            //       widget.currentWeather.current.windMph.toString(),
-            //       style: TextStyle(
-            //           fontSize: 14.sp,
-            //           color: Colors.white,
-            //           fontWeight: FontWeight.w600),
-            //       textAlign: TextAlign.left,
-            //     ),
-            //     const Spacer(),
-            //     Text(
-            //       // "SSW",
-            //       widget.currentWeather.current.windDir,
-            //       style: TextStyle(
-            //           fontSize: 14.sp,
-            //           color: Colors.white,
-            //           fontWeight: FontWeight.w600),
-            //       textAlign: TextAlign.left,
-            //     ),
-            //     const Spacer(),
-            //     Text(
-            //       // "210°",
-            //       widget.currentWeather.current.windDegree.toString(),
-            //       style: TextStyle(
-            //           fontSize: 14.sp,
-            //           color: Colors.white,
-            //           fontWeight: FontWeight.w600),
-            //       textAlign: TextAlign.left,
-            //     ),
-            //     const Spacer(),
-            //   ],
-            // ),
             SizedBox(
               height: 15.h,
             ),
-
             Card(
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.w)),
               color: AppColors.popBGColor.withOpacity(.75),
               child: Center(
-                // child: GridView.builder(
-                //     shrinkWrap: true,
-                //     physics: const BouncingScrollPhysics(),
-                //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                //         crossAxisCount: 3,
-                //         mainAxisExtent: 80.h,
-                //         crossAxisSpacing: 0.w,
-                //         mainAxisSpacing: 5.h),
-                //     itemCount: moreDetails.length,
-                //     itemBuilder: (_, index) {
-                //       return Column(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           Text(
-                //             moreDetails[index]["value"].toString(),
-                //             style: TextStyle(
-                //                 fontSize: 14.sp,
-                //                 color: Colors.white,
-                //                 fontWeight: FontWeight.w600),
-                //             textAlign: TextAlign.left,
-                //           ),
-                //           Text(
-                //             moreDetails[index]["key"],
-                //             style: TextStyle(
-                //                 fontSize: 14.sp,
-                //                 color: Colors.white,
-                //                 fontWeight: FontWeight.w600),
-                //             textAlign: TextAlign.left,
-                //           ),
-                //         ],
-                //       );
-                //     }),
-                // child: Column(
-                //   children: [
-                //     ...moreDetails
-                //         .map((e) => _buildDataRow(e["key"]!, e["value"]!))
-                //   ],
-                // ),
-
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),

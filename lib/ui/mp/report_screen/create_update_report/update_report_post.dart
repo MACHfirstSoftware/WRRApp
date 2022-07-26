@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
@@ -162,6 +161,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             lastName: _post.lastName,
             personCode: _post.personCode,
             profileImageUrl: _user.profileImageUrl,
+            isFollowed: true,
             // title: _titleController.text,
             title: "",
             body: _bodyController.text,
@@ -871,7 +871,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                                       Center(
                                         child: Container(
                                           decoration: BoxDecoration(
-                                              color: AppColors.secondaryColor
+                                              color: AppColors.popBGColor
                                                   .withOpacity(0.5),
                                               borderRadius:
                                                   BorderRadius.circular(7.5.w)),

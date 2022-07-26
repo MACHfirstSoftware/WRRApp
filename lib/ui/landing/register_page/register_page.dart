@@ -195,6 +195,14 @@ class _RegisterPageState extends State<RegisterPage> {
           type: SnackBarType.error));
       return false;
     }
+    if (!Provider.of<RegisterProvider>(context, listen: false)
+        .acceptTermsCondition) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Accept terms and conditions",
+          type: SnackBarType.error));
+      return false;
+    }
     return true;
   }
 

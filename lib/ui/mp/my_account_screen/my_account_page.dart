@@ -165,7 +165,7 @@ class _MyAccountState extends State<MyAccount> {
                 child: Stack(
                   children: [
                     if (!_user
-                        .subscriptionPerson[0].subscriptionApiModel.isPremium)
+                        .subscriptionPerson![0].subscriptionApiModel.isPremium)
                       Positioned(
                           top: 0.h,
                           right: 75.w,
@@ -616,78 +616,97 @@ class _MyAccountState extends State<MyAccount> {
     return showModalBottomSheet(
         backgroundColor: Colors.transparent,
         context: context,
-        builder: (context) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.w),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    height: 50.h,
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.h),
-                        topRight: Radius.circular(20.h),
-                      ),
-                    ),
-                    child: Text(
-                      "Are you sure you want to log out?",
-                      style: TextStyle(
-                          fontSize: 15.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(color: AppColors.secondaryColor, height: 2.h),
-                  GestureDetector(
-                    onTap: () => _doLogout(),
-                    child: Container(
+        builder: (context) => SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 30.w),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
                       alignment: Alignment.center,
-                      height: 60.h,
-                      decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20.h),
-                            bottomRight: Radius.circular(20.h),
-                          )),
-                      child: Text(
-                        "Log Out",
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 60.h,
+                      height: 50.h,
                       decoration: BoxDecoration(
                         color: AppColors.primaryColor,
-                        borderRadius: BorderRadius.circular(20.h),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.h),
+                          topRight: Radius.circular(20.h),
+                        ),
                       ),
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            color: AppColors.btnColor,
-                            fontWeight: FontWeight.w600),
-                        textAlign: TextAlign.center,
+                      child: SizedBox(
+                        height: 25.h,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Are you sure you want to log out?",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                ],
+                    Container(color: Colors.grey[200], height: .5.h),
+                    GestureDetector(
+                      onTap: () => _doLogout(),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                            color: AppColors.primaryColor,
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(20.h),
+                              bottomRight: Radius.circular(20.h),
+                            )),
+                        child: SizedBox(
+                            height: 30.h,
+                            child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Log Out",
+                                  style: TextStyle(
+                                      fontSize: 18.sp,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.center,
+                                ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryColor,
+                          borderRadius: BorderRadius.circular(20.h),
+                        ),
+                        child: SizedBox(
+                            height: 30.h,
+                            child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                      fontSize: 18.sp,
+                                      color: AppColors.btnColor,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                ))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                  ],
+                ),
               ),
             ));
   }

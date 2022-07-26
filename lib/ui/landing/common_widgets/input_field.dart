@@ -30,7 +30,7 @@ class _InputFieldState extends State<InputField> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50.h,
-      width: 310.w,
+      width: 320.w,
       child: TextField(
         controller: widget.controller,
         inputFormatters: widget.hintText == "Phone Number"

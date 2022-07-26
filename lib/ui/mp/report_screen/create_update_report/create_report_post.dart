@@ -143,6 +143,7 @@ class _NewReportPostState extends State<NewReportPost> {
             lastName: _user.lastName,
             personCode: _user.code,
             profileImageUrl: _user.profileImageUrl,
+            isFollowed: true,
             // title: _titleController.text,
             title: "Report - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
             body: _bodyController.text,

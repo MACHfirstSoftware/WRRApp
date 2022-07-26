@@ -29,6 +29,7 @@ class EditMyAccount extends StatefulWidget {
 }
 
 class _EditMyAccountState extends State<EditMyAccount> {
+  late TextEditingController _emailController;
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _personCodeController;
@@ -47,6 +48,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
     _regions = Provider.of<RegionProvider>(context, listen: false).regions;
     _selectedCounty = County(
         id: _user.countyId, name: _user.countyName!, regionId: _user.regionId);
+    _emailController = TextEditingController(text: _user.emailAddress);
     _firstNameController = TextEditingController(text: _user.firstName);
     _lastNameController = TextEditingController(text: _user.lastName);
     _personCodeController = TextEditingController(text: _user.code);
@@ -58,6 +60,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
 
   @override
   void dispose() {
+    _emailController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
     _personCodeController.dispose();
@@ -78,6 +81,22 @@ class _EditMyAccountState extends State<EditMyAccount> {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
           messageText: "Last name is empty",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (_emailController.text.trim().isEmpty) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Email is required",
+          type: SnackBarType.error));
+      return false;
+    }
+    if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(_emailController.text.trim())) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Email is invalid",
           type: SnackBarType.error));
       return false;
     }
@@ -112,6 +131,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
           _user.id,
           _firstNameController.text,
           _lastNameController.text,
+          _emailController.text,
           _personCodeController.text,
           _phoneController.text,
           _selectedCounty.id,
@@ -125,8 +145,8 @@ class _EditMyAccountState extends State<EditMyAccount> {
               id: _user.id,
               lastName: _lastNameController.text,
               firstName: _firstNameController.text,
-              emailAddress: _user.emailAddress,
-              username: _user.username,
+              emailAddress: _emailController.text,
+              username: _emailController.text,
               code: _personCodeController.text,
               country: _user.country,
               stateOrTerritory: _user.stateOrTerritory,
@@ -154,6 +174,12 @@ class _EditMyAccountState extends State<EditMyAccount> {
               .chnageRegion(_user.id, _selectedCounty.regionId);
           Provider.of<WeatherProvider>(context, listen: false)
               .changeCounty(_selectedCounty);
+
+          Map<String, dynamic>? userData = await StoreUtils.getUser();
+          await StoreUtils.saveUser({
+            "email": _emailController.text,
+            "password": userData!["password"]
+          });
           ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
               context: context,
               messageText: "Succefully updated",
@@ -164,13 +190,13 @@ class _EditMyAccountState extends State<EditMyAccount> {
               messageText: "Unable to update",
               type: SnackBarType.error));
         }
+      } else {
+        Navigator.pop(context);
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "Unable to update",
+            type: SnackBarType.error));
       }
-    } else {
-      Navigator.pop(context);
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Unable to update",
-          type: SnackBarType.error));
     }
   }
 
@@ -213,6 +239,15 @@ class _EditMyAccountState extends State<EditMyAccount> {
                 prefixIconPath: "assets/icons/user.svg",
                 controller: _lastNameController,
                 textInputType: TextInputType.text,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
+              InputField(
+                hintText: "Email/Login",
+                prefixIconPath: "assets/icons/mail.svg",
+                controller: _emailController,
+                textInputType: TextInputType.emailAddress,
               ),
               SizedBox(
                 height: 20.h,
