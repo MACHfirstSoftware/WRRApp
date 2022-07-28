@@ -5,7 +5,6 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
@@ -107,6 +106,13 @@ class _EditMyAccountState extends State<EditMyAccount> {
           type: SnackBarType.error));
       return false;
     }
+    if (!_personCodeController.text.trim().startsWith("@")) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Handle should start with @ symbol",
+          type: SnackBarType.error));
+      return false;
+    }
     if (_phoneController.text.trim().isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -137,7 +143,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
           _selectedCounty.id,
           _selectedCounty.regionId);
 
-      if (updateUser) {
+      if (updateUser["success"]) {
         final res = await UserService.updateWeapon(_user.id, _selectedWeaponId);
         Navigator.pop(context);
         if (res) {
@@ -168,8 +174,8 @@ class _EditMyAccountState extends State<EditMyAccount> {
               .chnageRegion(_user.id, _selectedCounty.regionId);
           Provider.of<ReportPostProvider>(context, listen: false)
               .chnageRegion(_user.id, _selectedCounty.regionId);
-          Provider.of<AllPostProvider>(context, listen: false)
-              .chnageRegion(_user.id, _selectedCounty.regionId);
+          // Provider.of<AllPostProvider>(context, listen: false)
+          //     .chnageRegion(_user.id, _selectedCounty.regionId);
           Provider.of<ContestProvider>(context, listen: false)
               .chnageRegion(_user.id, _selectedCounty.regionId);
           Provider.of<WeatherProvider>(context, listen: false)
@@ -194,7 +200,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Unable to update",
+            messageText: updateUser["message"],
             type: SnackBarType.error));
       }
     }
@@ -315,13 +321,13 @@ class _EditMyAccountState extends State<EditMyAccount> {
                   onTap: _doUpdate,
                   child: Container(
                     alignment: Alignment.center,
-                    height: 40.h,
+                    height: 50.h,
                     width: 150.w,
                     decoration: BoxDecoration(
                         color: AppColors.btnColor,
                         borderRadius: BorderRadius.circular(7.5.w)),
                     child: SizedBox(
-                      height: 30.h,
+                      height: 25.h,
                       width: 100.w,
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
@@ -329,9 +335,9 @@ class _EditMyAccountState extends State<EditMyAccount> {
                         child: Text(
                           "Update",
                           style: TextStyle(
-                              fontSize: 14.sp,
+                              fontSize: 18.sp,
                               color: Colors.white,
-                              fontWeight: FontWeight.w500),
+                              fontWeight: FontWeight.w600),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -400,6 +406,9 @@ class _EditMyAccountState extends State<EditMyAccount> {
             )))
       ],
       onSelected: (County value) {
+        print(value.id);
+        print(value.name);
+        print(value.regionId);
         setState(() {
           _selectedCounty = value;
         });

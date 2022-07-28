@@ -134,9 +134,9 @@ class _LetsGoPageState extends State<LetsGoPage> {
                 child: Text(
                   "Welcome to the Wisconsin Rut Report!",
                   style: TextStyle(
-                      fontSize: 20.sp,
+                      fontSize: 18.sp,
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                       height: 1.5),
                   textAlign: TextAlign.center,
                 ),

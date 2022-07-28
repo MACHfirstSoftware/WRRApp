@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
-import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
@@ -46,8 +45,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
         .setRegionId(userProvider.user.regionId);
     Provider.of<ReportPostProvider>(context, listen: false)
         .setRegionId(userProvider.user.regionId);
-    Provider.of<AllPostProvider>(context, listen: false)
-        .setRegionId(userProvider.user.regionId);
+    // Provider.of<AllPostProvider>(context, listen: false)
+    //     .setRegionId(userProvider.user.regionId);
     Provider.of<ContestProvider>(context, listen: false)
         .setRegionId(userProvider.user.regionId);
     final weatherProvider =

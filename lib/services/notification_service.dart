@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/notification.dart';
+import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
@@ -33,19 +34,22 @@ class NotificationService {
     }
   }
 
-  static Future<bool> notificationClick(int id) async {
+  static Future<ApiResult<Post>> notificationClick(int id) async {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/ClickPostShare?id=$id");
       log(response.data.toString());
       if (response.statusCode == 200) {
-        return true;
+        return ApiResult.success(data: Post.fromJson(response.data));
       } else {
-        return false;
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
       print(e);
-      return false;
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 }

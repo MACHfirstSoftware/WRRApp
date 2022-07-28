@@ -16,6 +16,7 @@ class ReplyComment {
     required this.code,
     required this.postCommentId,
     required this.body,
+    required this.timeAgo,
     required this.createdOn,
   });
 
@@ -26,6 +27,7 @@ class ReplyComment {
   String code;
   int postCommentId;
   String body;
+  String timeAgo;
   DateTime createdOn;
 
   factory ReplyComment.fromJson(Map<String, dynamic> json) => ReplyComment(
@@ -36,6 +38,7 @@ class ReplyComment {
         lastName: json["lastName"],
         postCommentId: json["postCommentId"],
         body: json["body"],
+        timeAgo: json["time"],
         createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
@@ -47,6 +50,7 @@ class ReplyComment {
         "code": code,
         "postCommentId": postCommentId,
         "body": body,
+        "time": timeAgo,
         "createdOn": createdOn,
       };
 }

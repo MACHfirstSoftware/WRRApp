@@ -10,23 +10,23 @@ class AllPostProvider with ChangeNotifier {
   String errorMessage = '';
   List<Post> allPosts = [];
   bool allPostLoaded = false;
-  int? _regionId;
+  // int? _regionId;
   DateTime? lastRecordTime;
 
   ApiStatus get apiStatus => _apiStatus;
-  int get regionId => _regionId!;
+  // int get regionId => _regionId!;
 
-  void setRegionId(int rId) {
-    _regionId = rId;
-  }
+  // void setRegionId(int rId) {
+  //   _regionId = rId;
+  // }
 
-  void chnageRegion(String userId, int rId) {
-    allPostLoaded = false;
-    allPosts = [];
-    lastRecordTime = null;
-    _regionId = rId;
-    getAllPosts(userId);
-  }
+  // void chnageRegion(String userId, int rId) {
+  //   allPostLoaded = false;
+  //   allPosts = [];
+  //   lastRecordTime = null;
+  //   _regionId = rId;
+  //   getAllPosts(userId);
+  // }
 
   void setBusy() {
     _apiStatus = ApiStatus.isBusy;
@@ -75,7 +75,7 @@ class AllPostProvider with ChangeNotifier {
 
   Future<void> getAllPosts(String userId, {bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final postResponse = await PostService.getAllPosts(userId, _regionId!);
+    final postResponse = await PostService.getAllPosts(userId);
     postResponse.when(success: (List<Post> postsList) async {
       allPosts = postsList;
       if (postsList.isNotEmpty) {

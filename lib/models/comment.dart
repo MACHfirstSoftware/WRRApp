@@ -16,6 +16,7 @@ class Comment {
     required this.code,
     required this.postId,
     required this.body,
+    required this.timeAgo,
     required this.createdOn,
     this.modifiedOn,
     required this.replyComments,
@@ -28,6 +29,7 @@ class Comment {
   String code;
   int postId;
   String body;
+  String timeAgo;
   DateTime createdOn;
   DateTime? modifiedOn;
   List<ReplyComment> replyComments;
@@ -40,6 +42,7 @@ class Comment {
         code: json["code"],
         postId: json["postId"],
         body: json["body"],
+        timeAgo: json["time"],
         createdOn: UtilCommon.getDatefromString(json["createdOn"]),
         modifiedOn: json["modifiedOn"] != null && json["modifiedOn"] != ""
             ? UtilCommon.getDatefromString(json["modifiedOn"])
@@ -56,6 +59,7 @@ class Comment {
         "code": code,
         "postId": postId,
         "body": body,
+        "time": timeAgo,
         "createdOn": createdOn,
         "modifiedOn": modifiedOn,
         "replyComments":

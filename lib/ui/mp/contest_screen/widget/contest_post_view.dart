@@ -41,9 +41,18 @@ class _ContestPostViewState extends State<ContestPostView>
       color: Colors.white,
       width: 428.w,
       child: ExpansionTile(
-        tilePadding: EdgeInsets.only(right: 10.w),
+        onExpansionChanged: (bool expanded) {
+          setState(() => showContest = expanded);
+        },
+        trailing: Icon(
+          showContest
+              ? Icons.keyboard_arrow_up_rounded
+              : Icons.keyboard_arrow_down_rounded,
+          size: 30.h,
+        ),
+        tilePadding: EdgeInsets.only(right: 15.w),
         title: _buildPersonRow(widget.post.personCode,
-            widget.post.postPersonCounty, widget.post.createdOn),
+            widget.post.postPersonCounty, widget.post.timeAgo),
         children: [
           if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
           ContestView(contest: widget.post.contest!),
@@ -87,7 +96,7 @@ class _ContestPostViewState extends State<ContestPostView>
     );
   }
 
-  _buildPersonRow(String personCode, String county, DateTime date) {
+  _buildPersonRow(String personCode, String county, String timeAgo) {
     return SizedBox(
       height: 75.h,
       width: 428.w,
@@ -174,7 +183,8 @@ class _ContestPostViewState extends State<ContestPostView>
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.topLeft,
                       child: Text(
-                        UtilCommon.convertToAgo(date),
+                        timeAgo,
+                        // UtilCommon.convertToAgo(date),
                         style: TextStyle(
                             fontSize: 11.sp,
                             color: Colors.grey,

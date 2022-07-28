@@ -161,13 +161,13 @@ class _ChangePasswordState extends State<ChangePassword> {
                 onTap: _doUpdate,
                 child: Container(
                   alignment: Alignment.center,
-                  height: 40.h,
+                  height: 50.h,
                   width: 150.w,
                   decoration: BoxDecoration(
                       color: AppColors.btnColor,
                       borderRadius: BorderRadius.circular(7.5.w)),
                   child: SizedBox(
-                    height: 30.h,
+                    height: 25.h,
                     width: 100.w,
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -175,9 +175,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                       child: Text(
                         "Update",
                         style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 18.sp,
                             color: Colors.white,
-                            fontWeight: FontWeight.w500),
+                            fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,
                       ),
                     ),

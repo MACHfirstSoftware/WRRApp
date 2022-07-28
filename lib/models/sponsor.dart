@@ -47,7 +47,7 @@ class Discount {
     required this.sponsorId,
     this.discountCode,
     required this.link,
-    required this.offer,
+    this.offer,
     required this.startDateTime,
     required this.endDateTime,
     required this.sortOrder,
@@ -58,7 +58,7 @@ class Discount {
   int sponsorId;
   String? discountCode;
   String link;
-  String offer;
+  String? offer;
   DateTime startDateTime;
   DateTime endDateTime;
   int sortOrder;

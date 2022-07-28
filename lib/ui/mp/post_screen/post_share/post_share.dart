@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -129,57 +130,181 @@ class _PostSharePageState extends State<PostSharePage> {
                                 return Material(
                                   color: AppColors.popBGColor,
                                   borderRadius: BorderRadius.circular(10.w),
-                                  child: CheckboxListTile(
-                                    value: data.any((element) =>
-                                        element["sharePersonId"] ==
-                                        _followers[index].id),
-                                    onChanged: (bool? value) {
-                                      if (value!) {
-                                        setState(() {
-                                          data.add({
-                                            "personId": _user.id,
-                                            "sharePersonId":
-                                                _followers[index].id,
-                                            "postId": widget.postId
-                                          });
-                                        });
-                                      } else {
-                                        for (final answerData in data) {
-                                          if (answerData["sharePersonId"] ==
-                                              _followers[index].id) {
-                                            data.remove(answerData);
-                                            break;
-                                          }
-                                        }
-                                        setState(() {});
-                                      }
-                                    },
-                                    contentPadding: EdgeInsets.only(
-                                        left: 35.w, right: 15.w),
-                                    title: Text(
-                                      _followers[index].firstName +
-                                          " " +
-                                          _followers[index].lastName,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                  child: Theme(
+                                    data: ThemeData(
+                                      unselectedWidgetColor: Colors.white,
                                     ),
-                                    subtitle: Text(
-                                      (CountyUtil.getCountyNameById(
-                                              counties:
-                                                  Provider.of<CountyProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .counties,
-                                              countyId:
-                                                  _followers[index].countyId) +
-                                          " County"),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11.sp,
-                                        fontWeight: FontWeight.w400,
+                                    child: CheckboxListTile(
+                                      tileColor: Colors.white10,
+                                      activeColor: AppColors.btnColor,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.w)),
+                                      value: data.any((element) =>
+                                          element["sharePersonId"] ==
+                                          _followers[index].id),
+                                      onChanged: (bool? value) {
+                                        if (value!) {
+                                          setState(() {
+                                            data.add({
+                                              "personId": _user.id,
+                                              "sharePersonId":
+                                                  _followers[index].id,
+                                              "postId": widget.postId
+                                            });
+                                          });
+                                        } else {
+                                          for (final answerData in data) {
+                                            if (answerData["sharePersonId"] ==
+                                                _followers[index].id) {
+                                              data.remove(answerData);
+                                              break;
+                                            }
+                                          }
+                                          setState(() {});
+                                        }
+                                      },
+                                      contentPadding: EdgeInsets.only(
+                                          left: 15.w, right: 15.w),
+                                      controlAffinity:
+                                          ListTileControlAffinity.trailing,
+                                      secondary: Container(
+                                          alignment: Alignment.center,
+                                          height: 60.h,
+                                          width: 60.h,
+                                          // padding: EdgeInsets.all(10.h),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.popBGColor,
+                                            borderRadius:
+                                                BorderRadius.circular(10.h),
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(10.h),
+                                            child: _followers[index]
+                                                        .profileImageUrl !=
+                                                    null
+                                                ? SizedBox(
+                                                    height: 60.h,
+                                                    width: 60.h,
+                                                    child: CachedNetworkImage(
+                                                      imageUrl:
+                                                          _followers[index]
+                                                              .profileImageUrl!,
+                                                      imageBuilder: (context,
+                                                          imageProvider) {
+                                                        return Image(
+                                                          image: imageProvider,
+                                                          fit: BoxFit.fill,
+                                                          alignment:
+                                                              Alignment.center,
+                                                        );
+                                                      },
+                                                      progressIndicatorBuilder:
+                                                          (context, url,
+                                                                  progress) =>
+                                                              Center(
+                                                        child: SizedBox(
+                                                          height: 10.h,
+                                                          width: 10.h,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            value: progress
+                                                                .progress,
+                                                            color: AppColors
+                                                                .btnColor,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Icon(
+                                                              Icons
+                                                                  .broken_image_outlined,
+                                                              color: AppColors
+                                                                  .btnColor,
+                                                              size: 10.h),
+                                                    ),
+                                                  )
+                                                : SizedBox(
+                                                    height: 40.h,
+                                                    width: 40.h,
+                                                    child: FittedBox(
+                                                      fit: BoxFit.scaleDown,
+                                                      child: Text(
+                                                        _followers[index]
+                                                                .firstName
+                                                                .substring(0, 1)
+                                                                .toUpperCase() +
+                                                            _followers[index]
+                                                                .lastName
+                                                                .substring(0, 1)
+                                                                .toUpperCase(),
+                                                        style: TextStyle(
+                                                            fontSize: 18.sp,
+                                                            color: AppColors
+                                                                .btnColor,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                      ),
+                                                    ),
+                                                  ),
+                                          )),
+                                      title: SizedBox(
+                                        height: 20.h,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          alignment: Alignment.bottomLeft,
+                                          child: Text(
+                                            _followers[index].code,
+                                            style: TextStyle(
+                                                fontSize: 18.sp,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700),
+                                            textAlign: TextAlign.left,
+                                            maxLines: 1,
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Text(
+                                      //   // _followers[index].firstName +
+                                      //   //     " " +
+                                      //   //     _followers[index].lastName,
+                                      //   _followers[index].code,
+                                      //   style: TextStyle(
+                                      //     color: Colors.white,
+                                      //     fontSize: 18.sp,
+                                      //     fontWeight: FontWeight.w600,
+                                      //   ),
+                                      // ),
+                                      subtitle: SizedBox(
+                                        height: 15.h,
+                                        child: FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          alignment: Alignment.topLeft,
+                                          child: Text(
+                                            (CountyUtil.getCountyNameById(
+                                                    counties: Provider.of<
+                                                                CountyProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .counties,
+                                                    countyId: _followers[index]
+                                                        .countyId) +
+                                                " County"),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11.sp,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            textAlign: TextAlign.left,
+                                            maxLines: 1,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),

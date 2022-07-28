@@ -21,7 +21,7 @@ class PostService {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/MyWRR" +
           (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
-      inspect(response.data);
+      log(response.data.toString());
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -65,14 +65,14 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<List<Post>>> getAllPosts(String userId, int regionId,
+  static Future<ApiResult<List<Post>>> getAllPosts(String userId,
       {DateTime? lastRecordTime}) async {
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/All" +
           (lastRecordTime != null
-              ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
-              : "?regionId=$regionId"));
+              ? "?lastRecordTime=$lastRecordTime&regionId=0"
+              : "?regionId=0"));
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)

@@ -3,10 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-// import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
-import 'package:wisconsin_app/ui/mp/weather_screen/widget/line_chart.dart';
 
 class ForecastBody extends StatefulWidget {
   final Forecastday forecastDay;
@@ -140,15 +138,15 @@ class _ForecastBodyState extends State<ForecastBody> {
                 "assets/icons/moon.svg",
                 widget.forecastDay.astro.moonrise,
                 widget.forecastDay.astro.moonset),
-            SizedBox(
-              height: 30.h,
-            ),
-            SizedBox(
-                height: 300.h,
-                width: 408.w,
-                child: LineChartWidget(
-                  dayHours: widget.forecastDay.hour,
-                )),
+            // SizedBox(
+            //   height: 30.h,
+            // ),
+            // SizedBox(
+            //     height: 300.h,
+            //     width: 408.w,
+            //     child: LineChartWidget(
+            //       dayHours: widget.forecastDay.hour,
+            //     )),
             SizedBox(
               height: 15.h,
             ),

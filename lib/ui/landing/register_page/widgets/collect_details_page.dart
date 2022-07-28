@@ -7,6 +7,7 @@ import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/register_page/widgets/terms_conditions.dart';
+import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_and_conditions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 
 class CollectDetailsPage extends StatelessWidget {
@@ -216,13 +217,13 @@ class CollectDetailsPage extends StatelessWidget {
                               fontWeight: FontWeight.w400),
                           children: [
                             TextSpan(
-                              text: "Terms and Conditions",
+                              text: "Terms & Conditions",
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () => Navigator.push(
                                     context,
                                     HeroDialogRoute(
                                         builder: (_) =>
-                                            const TermsConditions())),
+                                            const TermsAndConditions())),
                               style: TextStyle(
                                   fontSize: 14.sp,
                                   decoration: TextDecoration.underline,

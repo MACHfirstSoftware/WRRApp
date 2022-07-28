@@ -78,7 +78,7 @@ class _AuthMainPageState extends State<AuthMainPage> {
             color: AppColors.btnColor,
             borderRadius: BorderRadius.circular(10.w)),
         child: SizedBox(
-          height: 20.h,
+          height: 25.h,
           width: 100.w,
           child: FittedBox(
             fit: BoxFit.scaleDown,

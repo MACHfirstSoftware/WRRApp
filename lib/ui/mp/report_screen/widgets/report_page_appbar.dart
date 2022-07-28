@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
@@ -16,6 +15,7 @@ import 'package:wisconsin_app/ui/mp/contest_screen/contest_main_page.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_free_subs.dart';
 import 'package:wisconsin_app/ui/mp/notifications/notification_page.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/search_page/search_hunters.dart';
+import 'package:wisconsin_app/widgets/view_map.dart';
 
 class ReportPageAppBar extends StatefulWidget {
   final bool isReports;
@@ -177,37 +177,32 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
         color: Colors.white,
       ),
       color: AppColors.popBGColor,
-      // itemBuilder: (context) => [
-      //   ..._counties.map((county) => PopupMenuItem<County>(
-      //       value: county,
-      //       child: SizedBox(
-      //         width: 200.w,
-      //         child: ListTile(
-      //           trailing: county.name == userProvider.user.countyName
-      //               ? const Icon(
-      //                   Icons.check,
-      //                   color: AppColors.btnColor,
-      //                 )
-      //               : null,
-      //           title: Text(
-      //             county.name,
-      //             style: const TextStyle(color: Colors.white),
-      //             maxLines: 1,
-      //           ),
-      //         ),
-      //       )))
-      // ],
-      // onSelected: (County value) {
-      //   User _user = userProvider.user;
-      //   _user.countyName = value.name;
-      //   userProvider.setUser(_user);
-      //   Provider.of<WeatherProvider>(context, listen: false)
-      //       .changeCounty(value);
-      //   Provider.of<CountyPostProvider>(context, listen: false)
-      //       .chnageCounty(_user.id, value.id);
-      // },
-
       itemBuilder: (context) => [
+        PopupMenuItem<Region>(
+          value: Region(id: -1, name: "View Map"),
+          child: SizedBox(
+              width: 200.w,
+              child: Center(
+                child: Container(
+                    alignment: Alignment.center,
+                    height: 45.h,
+                    width: 180.w,
+                    decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(20.w)),
+                    child: SizedBox(
+                        height: 25.h,
+                        width: 120.w,
+                        child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.center,
+                            child: Text("View Map",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.btnColor))))),
+              )),
+        ),
         ..._regions.map((region) => PopupMenuItem<Region>(
             value: region,
             child: SizedBox(
@@ -228,18 +223,23 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
             )))
       ],
       onSelected: (Region value) {
-        if (userProvider.user.regionName != value.name) {
-          User _user = userProvider.user;
-          _user.regionName = value.name;
-          userProvider.setUser(_user);
-          Provider.of<RegionPostProvider>(context, listen: false)
-              .chnageRegion(_user.id, value.id);
-          Provider.of<ReportPostProvider>(context, listen: false)
-              .chnageRegion(_user.id, value.id);
-          Provider.of<AllPostProvider>(context, listen: false)
-              .chnageRegion(_user.id, value.id);
-          Provider.of<ContestProvider>(context, listen: false)
-              .chnageRegion(_user.id, value.id);
+        if (value.id == -1) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const ViewMap()));
+        } else {
+          if (userProvider.user.regionName != value.name) {
+            User _user = userProvider.user;
+            _user.regionName = value.name;
+            userProvider.setUser(_user);
+            Provider.of<RegionPostProvider>(context, listen: false)
+                .chnageRegion(_user.id, value.id);
+            Provider.of<ReportPostProvider>(context, listen: false)
+                .chnageRegion(_user.id, value.id);
+            // Provider.of<AllPostProvider>(context, listen: false)
+            //     .chnageRegion(_user.id, value.id);
+            Provider.of<ContestProvider>(context, listen: false)
+                .chnageRegion(_user.id, value.id);
+          }
         }
       },
     );

@@ -71,6 +71,7 @@ class _CommentSectionState extends State<CommentSection> {
         code: _user.code,
         postId: widget.postId,
         body: _commentController.text,
+        timeAgo: "Just Now",
         createdOn: UtilCommon.getDateTimeNow(),
         modifiedOn: UtilCommon.getDateTimeNow(),
         replyComments: []);
@@ -107,6 +108,7 @@ class _CommentSectionState extends State<CommentSection> {
         code: _user.code,
         postCommentId: _postCommentId!,
         body: _commentController.text,
+        timeAgo: "Just Now",
         createdOn: UtilCommon.getDateTimeNow());
     final res = await PostService.postCommentReply(replyCommentData);
     if (res != null) {
@@ -305,7 +307,7 @@ class _CommentSectionState extends State<CommentSection> {
                 SizedBox(
                   width: 10.w,
                 ),
-                Text(UtilCommon.convertToAgoShort(_comment.createdOn)),
+                Text(UtilCommon.toAgoShortForm(_comment.timeAgo)),
                 SizedBox(
                   width: 30.w,
                 ),
@@ -425,7 +427,7 @@ class _CommentSectionState extends State<CommentSection> {
             ),
             Padding(
               padding: EdgeInsets.only(left: 15.w),
-              child: Text(UtilCommon.convertToAgoShort(replyComment.createdOn)),
+              child: Text(UtilCommon.toAgoShortForm(replyComment.timeAgo)),
             ),
           ],
         ),
@@ -505,8 +507,6 @@ class _CommentSectionState extends State<CommentSection> {
                   padding: EdgeInsets.all(10.w),
                   child: GestureDetector(
                     onTap: () {
-                      // print(DateTime.now().toString());
-                      // print(UtilCommon.getDateTimeNow());
                       if (_commentController.text.isNotEmpty && !_isSubmiting) {
                         if (_isComment) {
                           _submitComment();

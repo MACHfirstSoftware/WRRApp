@@ -15,10 +15,29 @@ class PostPage extends StatefulWidget {
   State<PostPage> createState() => _PostPageState();
 }
 
-class _PostPageState extends State<PostPage> {
+class _PostPageState extends State<PostPage> with WidgetsBindingObserver {
+  bool keyboardIsOpen = false;
   @override
   void initState() {
+    WidgetsBinding.instance?.addObserver(this);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance!.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    if (newValue != keyboardIsOpen) {
+      setState(() {
+        keyboardIsOpen = newValue;
+      });
+    }
   }
 
   @override
@@ -26,6 +45,7 @@ class _PostPageState extends State<PostPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,
@@ -47,21 +67,21 @@ class _PostPageState extends State<PostPage> {
         ),
         body: const TabBarView(
             children: [AllPostsPage(), MyWRRPosts(), MyRegionPosts()]),
-        floatingActionButton: FloatingActionButton(
-            heroTag: "1",
-            backgroundColor: AppColors.btnColor,
-            child: Icon(
-              Icons.add,
-              size: 30.h,
-            ),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) => const NewPost(
-                        // isWRRPost: true,
-                        )),
-              );
-            }),
+        floatingActionButton: Visibility(
+          visible: !keyboardIsOpen,
+          child: FloatingActionButton(
+              heroTag: "1",
+              backgroundColor: AppColors.btnColor,
+              child: Icon(
+                Icons.add,
+                size: 30.h,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const NewPost()),
+                );
+              }),
+        ),
       ),
     );
   }

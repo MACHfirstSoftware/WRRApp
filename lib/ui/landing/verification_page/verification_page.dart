@@ -112,85 +112,88 @@ class _VerificationPageState extends State<VerificationPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => Future.value(false),
-      child: Scaffold(
-          backgroundColor: AppColors.backgroundColor,
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            child: Column(children: [
-              SizedBox(
-                height: 56.h,
-              ),
-              const LogoImage(),
-              SizedBox(
-                height: 50.h,
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Text(
-                  "We have sent your phone a verification code, please enter it to complete your account.",
-                  style: TextStyle(
-                      fontSize: 18.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+            backgroundColor: AppColors.backgroundColor,
+            resizeToAvoidBottomInset: false,
+            body: SafeArea(
+              child: Column(children: [
+                SizedBox(
+                  height: 56.h,
                 ),
-              ),
-              SizedBox(
-                height: 45.h,
-              ),
-              InputField(
-                hintText: "WRR Verification Code",
-                controller: _codeController,
-                prefixIconPath: "assets/icons/pin-code.svg",
-                textInputType: TextInputType.number,
-              ),
-              SizedBox(
-                height: 60.h,
-              ),
-              GestureDetector(
-                onTap: () => _verifyCode(),
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 40.h,
-                  width: 130.w,
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(5.w)),
-                  child: SizedBox(
-                      height: 25.h,
-                      width: 100.w,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Next",
-                          style: TextStyle(
-                              fontSize: 20.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.center,
-                        ),
-                      )),
+                const LogoImage(),
+                SizedBox(
+                  height: 30.h,
                 ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              GestureDetector(
-                onTap: () => _reSend(),
-                child: Text(
-                  "Resend",
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontSize: 14.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w400,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Text(
+                    "We have sent your phone a verification code, please enter it to complete your account.",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-            ]),
-          )),
+                SizedBox(
+                  height: 35.h,
+                ),
+                InputField(
+                  hintText: "WRR Verification Code",
+                  controller: _codeController,
+                  prefixIconPath: "assets/icons/pin-code.svg",
+                  textInputType: TextInputType.number,
+                ),
+                SizedBox(
+                  height: 40.h,
+                ),
+                GestureDetector(
+                  onTap: () => _verifyCode(),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 40.h,
+                    width: 130.w,
+                    decoration: BoxDecoration(
+                        color: AppColors.btnColor,
+                        borderRadius: BorderRadius.circular(5.w)),
+                    child: SizedBox(
+                        height: 25.h,
+                        width: 100.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Next",
+                            style: TextStyle(
+                                fontSize: 20.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                GestureDetector(
+                  onTap: () => _reSend(),
+                  child: Text(
+                    "Resend",
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ]),
+            )),
+      ),
     );
   }
 

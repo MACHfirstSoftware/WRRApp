@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 
@@ -39,6 +40,15 @@ class UtilCommon {
     }
   }
 
+  static String toAgoShortForm(String value) {
+    if (value == "Just Now") {
+      return value;
+    } else {
+      List<String> temp = value.split(" ");
+      return temp[0] + " " + temp[1].substring(0, 1);
+    }
+  }
+
   static DateTime getDateTimeNow() {
     // print("Utils ${DateTime.parse(DateTime.now().toUtc()}");
 
@@ -67,6 +77,18 @@ class UtilCommon {
     DateTime date = DateTime.parse(value.substring(0, 10) + " 00:00:00.000");
     return DateFormat("MMM dd, yyyy")
         .format(date.add(Duration(days: forecasrDay)));
+  }
+
+  static void launchAnUrl(String url) async {
+    Uri uri = Uri.parse(url);
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      uri = Uri.parse("https://" + url);
+    }
+    if (!await launchUrl(
+      uri,
+    )) {
+      print("Couldn't launch");
+    }
   }
 }
 

@@ -46,8 +46,7 @@ class _AllPostsPageState extends State<AllPostsPage>
         setState(() {
           onLoading = true;
         });
-        final postResponse = await PostService.getAllPosts(
-            _user.id, postProvider.regionId,
+        final postResponse = await PostService.getAllPosts(_user.id,
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           print(postsList.length);

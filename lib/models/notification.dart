@@ -92,7 +92,7 @@ class PostOwner {
     required this.code,
     // required this.emailAddress,
     // required this.username,
-    // required this.countyId,
+    required this.countyId,
     // required this.regionId,
     // required this.isFollowed,
     this.imageLocation,
@@ -104,7 +104,7 @@ class PostOwner {
   String code;
   // String emailAddress;
   // String username;
-  // int countyId;
+  int countyId;
   // int regionId;
   // bool isFollowed;
   String? imageLocation;
@@ -116,7 +116,7 @@ class PostOwner {
         code: json["code"],
         // emailAddress: json["emailAddress"],
         // username: json["username"],
-        // countyId: json["countyId"],
+        countyId: json["countyId"],
         // regionId: json["regionId"],
         // isFollowed: json["isFollowed"],
         imageLocation: json["imageLocation"],
@@ -129,7 +129,7 @@ class PostOwner {
         "code": code,
         // "emailAddress": emailAddress,
         // "username": username,
-        // "countyId": countyId,
+        "countyId": countyId,
         // "regionId": regionId,
         // "isFollowed": isFollowed,
         "imageLocation": imageLocation,

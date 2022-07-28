@@ -32,10 +32,12 @@ class UpdatePost extends StatefulWidget {
 class _UpdatePostState extends State<UpdatePost> {
   // late TextEditingController _titleController;
   late TextEditingController _bodyController;
+  FocusNode focusNode = FocusNode();
   late List<XFile> _images;
   late List<Media> _medias;
   Media? _mediaForDelete;
   bool _isPostUpdate = false;
+  String hintText = '...';
 
   @override
   void initState() {
@@ -44,6 +46,14 @@ class _UpdatePostState extends State<UpdatePost> {
     // _titleController = TextEditingController(text: widget.post.title);
     _bodyController = TextEditingController(text: widget.post.body);
     _medias.addAll(widget.post.media);
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        hintText = 'Body';
+      } else {
+        hintText = '...';
+      }
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -283,307 +293,316 @@ class _UpdatePostState extends State<UpdatePost> {
                       onTap: _discardPost,
                     )));
       },
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
           backgroundColor: AppColors.backgroundColor,
-          toolbarHeight: 70.h,
-          leading: IconButton(
-            iconSize: 25.h,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  HeroDialogRoute(
-                      builder: (_) => ConfirmationPopup(
-                            title: "Discard",
-                            message:
-                                "If you discard now, you'll lose these changes.",
-                            leftBtnText: "Discard",
-                            rightBtnText: "Keep",
-                            onTap: _discardPost,
-                          )));
-            },
-            icon: const Icon(Icons.close_rounded),
-            splashColor: AppColors.btnColor.withOpacity(0.5),
-          ),
-          title: SizedBox(
-              width: 300.w,
-              child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Update Post",
-                    style: TextStyle(
-                        fontSize: 20.sp,
-                        color: AppColors.btnColor,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ))),
-          elevation: 0,
-          centerTitle: true,
-          actions: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (_isPostUpdate) {
-                      _updateImage();
-                    } else {
-                      _updatePost();
-                    }
-                  },
-                  child: Container(
+          appBar: AppBar(
+            backgroundColor: AppColors.backgroundColor,
+            toolbarHeight: 70.h,
+            leading: IconButton(
+              iconSize: 25.h,
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                Navigator.push(
+                    context,
+                    HeroDialogRoute(
+                        builder: (_) => ConfirmationPopup(
+                              title: "Discard",
+                              message:
+                                  "If you discard now, you'll lose these changes.",
+                              leftBtnText: "Discard",
+                              rightBtnText: "Keep",
+                              onTap: _discardPost,
+                            )));
+              },
+              icon: const Icon(Icons.close_rounded),
+              splashColor: AppColors.btnColor.withOpacity(0.5),
+            ),
+            title: SizedBox(
+                width: 300.w,
+                child: FittedBox(
+                    fit: BoxFit.scaleDown,
                     alignment: Alignment.center,
-                    height: 40.h,
-                    width: 90.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    // padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    decoration: BoxDecoration(
-                        color: AppColors.btnColor,
-                        borderRadius: BorderRadius.circular(7.5.w)),
-                    child: SizedBox(
-                      height: 30.h,
-                      width: 70.w,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Apply",
-                          style: TextStyle(
-                              fontSize: 15.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center,
+                    child: Text(
+                      "Update Post",
+                      style: TextStyle(
+                          fontSize: 20.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ))),
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_isPostUpdate) {
+                        _updateImage();
+                      } else {
+                        _updatePost();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40.h,
+                      width: 90.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(7.5.w)),
+                      child: SizedBox(
+                        height: 30.h,
+                        width: 70.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Apply",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 15.h,
-                ),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 25.w),
-                //   child: CustomInputField(
-                //     controller: _titleController,
-                //     label: "Title",
-                //     hintText: "Title",
-                //   ),
-                // ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: CustomInputField(
-                    controller: _bodyController,
-                    label: "Body",
-                    hintText: "Body",
-                    maxLines: 5,
+                ],
+              )
+            ],
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 15.h,
                   ),
-                ),
-                if (_medias.isNotEmpty)
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Text(
-                        "Current available image(s) in post",
-                        style: TextStyle(
-                            fontSize: 15.sp,
-                            color: AppColors.btnColor,
-                            fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 25.w),
-                        child: Scrollbar(
-                          thickness: 5.w,
-                          showTrackOnHover: true,
-                          isAlwaysShown: false,
-                          child: GridView.count(
-                            physics: const BouncingScrollPhysics(),
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 5.w,
-                            mainAxisSpacing: 5.w,
-                            shrinkWrap: true,
-                            children: [
-                              ..._medias.map((media) => Stack(
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: AppColors.popBGColor
-                                                  .withOpacity(0.5),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  //   child: CustomInputField(
+                  //     controller: _titleController,
+                  //     label: "Title",
+                  //     hintText: "Title",
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: CustomInputField(
+                      controller: _bodyController,
+                      focusNode: focusNode,
+                      label: hintText,
+                      hintText: "...",
+                      maxLines: 5,
+                    ),
+                  ),
+                  if (_medias.isNotEmpty)
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        Text(
+                          "Current available image(s) in post",
+                          style: TextStyle(
+                              fontSize: 15.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 25.w),
+                          child: Scrollbar(
+                            thickness: 5.w,
+                            showTrackOnHover: true,
+                            isAlwaysShown: false,
+                            child: GridView.count(
+                              physics: const BouncingScrollPhysics(),
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 5.w,
+                              mainAxisSpacing: 5.w,
+                              shrinkWrap: true,
+                              children: [
+                                ..._medias.map((media) => Stack(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: AppColors.popBGColor
+                                                    .withOpacity(0.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        7.5.w)),
+                                            child: ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(7.5.w)),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(7.5.w),
-                                            child: CachedNetworkImage(
-                                              imageUrl: media.imageUrl,
-                                              imageBuilder:
-                                                  (context, imageProvider) {
-                                                return Image(
-                                                  image: imageProvider,
-                                                  height: 300.h,
-                                                  width: 360.w,
-                                                  fit: BoxFit.fill,
-                                                );
-                                              },
-                                              progressIndicatorBuilder:
-                                                  (context, url, progress) =>
-                                                      Center(
-                                                child: SizedBox(
-                                                  height: 15.h,
-                                                  width: 15.h,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: progress.progress,
+                                                  BorderRadius.circular(7.5.w),
+                                              child: CachedNetworkImage(
+                                                imageUrl: media.imageUrl,
+                                                imageBuilder:
+                                                    (context, imageProvider) {
+                                                  return Image(
+                                                    image: imageProvider,
+                                                    height: 300.h,
+                                                    width: 360.w,
+                                                    fit: BoxFit.fill,
+                                                  );
+                                                },
+                                                progressIndicatorBuilder:
+                                                    (context, url, progress) =>
+                                                        Center(
+                                                  child: SizedBox(
+                                                    height: 15.h,
+                                                    width: 15.h,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: progress.progress,
+                                                    ),
                                                   ),
                                                 ),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    Icon(Icons.error,
+                                                        color:
+                                                            AppColors.btnColor,
+                                                        size: 15.h),
                                               ),
-                                              errorWidget:
-                                                  (context, url, error) => Icon(
-                                                      Icons.error,
-                                                      color: AppColors.btnColor,
-                                                      size: 15.h),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        right: 0,
-                                        top: 0,
-                                        child: InkWell(
-                                          onTap: () {
-                                            _mediaForDelete = media;
-                                            Navigator.push(
-                                                context,
-                                                HeroDialogRoute(
-                                                    builder: (_) =>
-                                                        ConfirmationPopup(
-                                                          title: "Remove",
-                                                          message:
-                                                              "This image is currently available in the post. If you remove now, no longer available this image.",
-                                                          leftBtnText: "Remove",
-                                                          rightBtnText: "Keep",
-                                                          onTap: _removeImage,
-                                                        )));
-                                            //------------------------------------------------------------
-                                          },
-                                          child: SizedBox(
-                                            height: 50.w,
-                                            width: 50.w,
-                                            child: Icon(
-                                              Icons.cancel_outlined,
-                                              size: 30.w,
-                                              color: AppColors.btnColor,
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: InkWell(
+                                            onTap: () {
+                                              _mediaForDelete = media;
+                                              Navigator.push(
+                                                  context,
+                                                  HeroDialogRoute(
+                                                      builder: (_) =>
+                                                          ConfirmationPopup(
+                                                            title: "Remove",
+                                                            message:
+                                                                "This image is currently available in the post. If you remove now, no longer available this image.",
+                                                            leftBtnText:
+                                                                "Remove",
+                                                            rightBtnText:
+                                                                "Keep",
+                                                            onTap: _removeImage,
+                                                          )));
+                                              //------------------------------------------------------------
+                                            },
+                                            child: SizedBox(
+                                              height: 50.w,
+                                              width: 50.w,
+                                              child: Icon(
+                                                Icons.cancel_outlined,
+                                                size: 30.w,
+                                                color: AppColors.btnColor,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                  "Select image(s) to upload",
-                  style: TextStyle(
-                      fontSize: 15.sp,
-                      color: AppColors.btnColor,
-                      fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Scrollbar(
-                    thickness: 5.w,
-                    showTrackOnHover: true,
-                    isAlwaysShown: false,
-                    child: GridView.count(
-                      physics: const BouncingScrollPhysics(),
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5.w,
-                      mainAxisSpacing: 5.w,
-                      shrinkWrap: true,
-                      children: [
-                        ..._images.map(
-                          (image) => Stack(
-                            children: [
-                              Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(7.5.w),
-                                  child: Image.file(
-                                    File(image.path),
-                                    height: 300.h,
-                                    width: 360.w,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _images.remove(image);
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    height: 50.w,
-                                    width: 50.w,
-                                    child: Icon(
-                                      Icons.cancel_outlined,
-                                      size: 30.w,
-                                      color: AppColors.btnColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            getImage();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.popBGColor,
-                                borderRadius: BorderRadius.circular(7.5.w)),
-                            child: Icon(Icons.camera_alt_rounded,
-                                color: AppColors.btnColor, size: 30.h),
+                                      ],
+                                    )),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  SizedBox(
+                    height: 20.h,
                   ),
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-              ],
+                  Text(
+                    "Select image(s) to upload",
+                    style: TextStyle(
+                        fontSize: 15.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Scrollbar(
+                      thickness: 5.w,
+                      showTrackOnHover: true,
+                      isAlwaysShown: false,
+                      child: GridView.count(
+                        physics: const BouncingScrollPhysics(),
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 5.w,
+                        mainAxisSpacing: 5.w,
+                        shrinkWrap: true,
+                        children: [
+                          ..._images.map(
+                            (image) => Stack(
+                              children: [
+                                Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7.5.w),
+                                    child: Image.file(
+                                      File(image.path),
+                                      height: 300.h,
+                                      width: 360.w,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _images.remove(image);
+                                      });
+                                    },
+                                    child: SizedBox(
+                                      height: 50.w,
+                                      width: 50.w,
+                                      child: Icon(
+                                        Icons.cancel_outlined,
+                                        size: 30.w,
+                                        color: AppColors.btnColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              getImage();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColors.popBGColor,
+                                  borderRadius: BorderRadius.circular(7.5.w)),
+                              child: Icon(Icons.camera_alt_rounded,
+                                  color: AppColors.btnColor, size: 30.h),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

@@ -69,6 +69,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   Widget build(BuildContext context) {
     return Center(
       child: Material(
+        color: Colors.transparent,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(25.w)),
         child: Container(
@@ -101,7 +102,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
             child: Text(
               "Choose your plan".toUpperCase(),
               style: TextStyle(
-                  fontSize: 20.sp,
+                  fontSize: 18.sp,
                   color: AppColors.btnColor,
                   fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
@@ -121,22 +122,36 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               onChanged: (int? ind) => setState(() {
                 radioValue = ind!;
               }),
-              title: Text(
-                "Premium",
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
+              title: SizedBox(
+                height: 25.h,
+                width: 150.w,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Premium",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
               ),
-              subtitle: Text(
-                "\$29.99",
-                style: TextStyle(
-                    fontSize: 18.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
-              ),
+              subtitle: SizedBox(
+                  height: 22.5.h,
+                  width: 150.w,
+                  child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "\$29.99",
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ))),
               activeColor: AppColors.btnColor,
             ),
           ),
@@ -158,22 +173,36 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               onChanged: (int? ind) => setState(() {
                 radioValue = ind!;
               }),
-              title: Text(
-                "Free",
-                style: TextStyle(
-                    fontSize: 20.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
+              title: SizedBox(
+                height: 25.h,
+                width: 150.w,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Free",
+                    style: TextStyle(
+                        fontSize: 18.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
               ),
-              subtitle: Text(
-                "\$00.00",
-                style: TextStyle(
-                    fontSize: 18.sp,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.left,
-              ),
+              subtitle: SizedBox(
+                  height: 22.5.h,
+                  width: 150.w,
+                  child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "\$00.00",
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ))),
               activeColor: AppColors.btnColor,
             ),
           ),

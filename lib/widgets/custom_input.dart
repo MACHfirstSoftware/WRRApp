@@ -5,6 +5,7 @@ import 'package:wisconsin_app/config.dart';
 class CustomInputField extends StatelessWidget {
   final String label;
   final String hintText;
+  final FocusNode? focusNode;
   final int? maxLines;
   final TextEditingController controller;
 
@@ -14,6 +15,7 @@ class CustomInputField extends StatelessWidget {
     required this.hintText,
     this.maxLines,
     required this.controller,
+    this.focusNode,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class CustomInputField extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 5.h),
       child: TextField(
         controller: controller,
+        focusNode: focusNode,
         style: TextStyle(
             color: Colors.white,
             fontSize: 16.sp,
@@ -29,7 +32,8 @@ class CustomInputField extends StatelessWidget {
         textAlignVertical: TextAlignVertical.top,
         // textAlign: TextAlign.end,
         cursorColor: AppColors.btnColor,
-        keyboardType: TextInputType.text,
+        keyboardType:
+            maxLines != null ? TextInputType.multiline : TextInputType.text,
         maxLines: maxLines,
         decoration: InputDecoration(
           label: Text(

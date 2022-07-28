@@ -9,7 +9,7 @@ import 'package:wisconsin_app/models/notification.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
-import 'package:wisconsin_app/services/notification_service.dart';
+import 'package:wisconsin_app/ui/mp/notifications/post_open_page.dart';
 import 'package:wisconsin_app/widgets/default_appbar.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
@@ -114,7 +114,7 @@ class _NotificationPageState extends State<NotificationPage>
 
   _buildNotificationCard(NotificationModel _notification, int index) {
     return GestureDetector(
-      onTap: () => _notificationClick(_notification.id, index),
+      onTap: () => _notificationClick(_notification, index),
       child: Container(
         height: 70.h,
         margin: EdgeInsets.symmetric(horizontal: 7.5.w, vertical: 2.5.h),
@@ -219,10 +219,14 @@ class _NotificationPageState extends State<NotificationPage>
     );
   }
 
-  _notificationClick(int id, int index) async {
+  _notificationClick(NotificationModel notificationModel, int index) async {
     Provider.of<NotificationProvider>(context, listen: false).markAsRead(index);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => PostOpenPage(notification: notificationModel)));
     // final res =
-    await NotificationService.notificationClick(id);
+    // await NotificationService.notificationClick(id);
     // if (res) {
     //   Provider.of<NotificationProvider>(context, listen: false)
     //       .markAsRead(index);

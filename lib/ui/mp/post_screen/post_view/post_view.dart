@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -195,8 +196,10 @@ class _PostViewState extends State<PostView> {
               widget.post.isShare
                   ? widget.post.sharePersonCode
                   : widget.post.personCode,
-              widget.post.postPersonCounty,
-              widget.post.createdOn,
+              widget.post.isShare
+                  ? widget.post.sharePersonCountyName
+                  : widget.post.postPersonCounty,
+              widget.post.timeAgo,
               widget.post.isShare ? _isFollowed : widget.post.isFollowed,
               widget.post.isShare
                   ? widget.post.sharePersonId!
@@ -220,7 +223,7 @@ class _PostViewState extends State<PostView> {
                       widget.post.firstName + " " + widget.post.lastName,
                       widget.post.personCode,
                       widget.post.postPersonCounty,
-                      widget.post.createdOn,
+                      widget.post.timeAgo,
                       widget.post.isFollowed,
                       widget.post.personId,
                       widget.post.isShare),
@@ -250,15 +253,6 @@ class _PostViewState extends State<PostView> {
               alignment: Alignment.bottomLeft,
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
               color: Colors.white,
-              // decoration: BoxDecoration(
-              //   color: Colors.white,
-              //   borderRadius: BorderRadius.circular(5.h),
-              //   border: Border.all(
-              //     color: Colors.grey[400]!,
-              //     width: 1.h
-              //   )
-              // ),
-              // height: 40.h,
               child: Row(
                 children: [
                   Text(
@@ -421,39 +415,6 @@ class _PostViewState extends State<PostView> {
                         ),
                       ),
                     ),
-                    // IconButton(
-                    //     onPressed: () {
-                    // Navigator.of(context).push(
-                    //   HeroDialogRoute(
-                    //       builder: (context) =>
-                    //           PostSharePage(postId: widget.post.id)),
-                    // );
-                    //     },
-                    //     icon: Icon(
-                    //       Icons.redo_rounded,
-                    //       size: 40.h,
-                    //       color: AppColors.iconGrey,
-                    //     )),
-                    // Expanded(
-                    //   child: Align(
-                    //     alignment: Alignment.centerRight,
-                    //     child: IconButton(
-                    //         onPressed: () {
-                    // Navigator.of(context).push(HeroDialogRoute(
-                    //     builder: (context) => ConfirmationPopup(
-                    //         onTap: _postAbuse,
-                    //         title: "Report",
-                    //         message: "Do you want to report post?",
-                    //         leftBtnText: "Report",
-                    //         rightBtnText: "Cancel")));
-                    //         },
-                    //         icon: Icon(
-                    //           Icons.report_gmailerrorred_rounded,
-                    //           size: 40.h,
-                    //           color: AppColors.iconGrey,
-                    //         )),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -475,17 +436,63 @@ class _PostViewState extends State<PostView> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
-        child: Text(
-          text,
-          style: TextStyle(
-              fontSize: isTitle ? 16.sp : 12.sp,
-              color: isTitle ? Colors.black : Colors.grey[600],
-              fontWeight: isTitle ? FontWeight.w500 : FontWeight.w400),
-          textAlign: TextAlign.left,
-        ),
-      ),
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          // child: Text(
+          //   text,
+          //   style: TextStyle(
+          // fontSize: isTitle ? 16.sp : 14.sp,
+          // color: isTitle ? Colors.black : Colors.black87,
+          //       fontWeight: isTitle ? FontWeight.w500 : FontWeight.w500),
+          //   textAlign: TextAlign.left,
+          // ),
+          child: SelectableText.rich(
+            TextSpan(
+                children: extractText(text),
+                style: TextStyle(
+                  fontSize: isTitle ? 16.sp : 14.sp,
+                  color: isTitle ? Colors.black : Colors.black87,
+                )),
+          )),
     );
+  }
+
+  List<TextSpan> extractText(String rawString) {
+    List<TextSpan> textSpan = [];
+
+    final urlRegExp = RegExp(
+        r"((https?:www\.)|(https?:\/\/)|(www\.))[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9]{1,6}(\/[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)?");
+
+    getLink(String linkString) {
+      textSpan.add(
+        TextSpan(
+          text: linkString,
+          style: TextStyle(color: Colors.blue, fontSize: 14.sp),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () {
+              UtilCommon.launchAnUrl(linkString);
+            },
+        ),
+      );
+      return linkString;
+    }
+
+    getNormalText(String normalText) {
+      textSpan.add(
+        TextSpan(
+          text: normalText,
+          style: TextStyle(color: Colors.black87, fontSize: 14.sp),
+        ),
+      );
+      return normalText;
+    }
+
+    rawString.splitMapJoin(
+      urlRegExp,
+      onMatch: (m) => getLink("${m.group(0)}"),
+      onNonMatch: (n) => getNormalText(n.substring(0)),
+    );
+
+    return textSpan;
   }
 
   Container _buildPersonRow(
@@ -493,7 +500,7 @@ class _PostViewState extends State<PostView> {
       String name,
       String personCode,
       String county,
-      DateTime date,
+      String timeAgo,
       bool isFollowed,
       String followerId,
       bool isOwner) {
@@ -617,7 +624,7 @@ class _PostViewState extends State<PostView> {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.topLeft,
                       child: Text(
-                        UtilCommon.convertToAgo(date),
+                        timeAgo,
                         style: TextStyle(
                             fontSize: 11.sp,
                             color: Colors.black87,
@@ -631,24 +638,27 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           ),
-          SizedBox(
-              height: 60.h,
-              width: 40.h,
-              child: IconButton(
-                splashColor: AppColors.btnColor.withOpacity(0.5),
-                iconSize: 25.h,
-                icon: Icon(
-                  Icons.person_add_alt_rounded,
-                  color: isFollowed ? AppColors.btnColor : Colors.black54,
-                ),
-                onPressed: () {
-                  if (isFollowed) {
-                    _personUnfollow(followerId, isOwner);
-                  } else {
-                    _personFollow(followerId, isOwner);
-                  }
-                },
-              )),
+          // if (_user.id != widget.post.personId)
+          if ((isOwner && _user.id != widget.post.personId) ||
+              (!isOwner && _user.id != widget.post.sharePersonId))
+            SizedBox(
+                height: 60.h,
+                width: 40.h,
+                child: IconButton(
+                  splashColor: AppColors.btnColor.withOpacity(0.5),
+                  iconSize: 25.h,
+                  icon: Icon(
+                    Icons.person_add_alt_rounded,
+                    color: isFollowed ? AppColors.btnColor : Colors.black54,
+                  ),
+                  onPressed: () {
+                    if (isFollowed) {
+                      _personUnfollow(followerId, isOwner);
+                    } else {
+                      _personFollow(followerId, isOwner);
+                    }
+                  },
+                )),
           SizedBox(
               height: 60.h,
               width: 50.h,

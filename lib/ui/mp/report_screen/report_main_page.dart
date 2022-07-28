@@ -15,16 +15,35 @@ class ReportPage extends StatefulWidget {
   State<ReportPage> createState() => _ReportPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _ReportPageState extends State<ReportPage> with WidgetsBindingObserver {
   late bool isPremium;
+  bool keyboardIsOpen = false;
   @override
   void initState() {
+    WidgetsBinding.instance?.addObserver(this);
     isPremium = Provider.of<UserProvider>(context, listen: false)
         .user
         .subscriptionPerson![0]
         .subscriptionApiModel
         .isPremium;
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance!.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    if (newValue != keyboardIsOpen) {
+      setState(() {
+        keyboardIsOpen = newValue;
+      });
+    }
   }
 
   @override
@@ -40,19 +59,22 @@ class _ReportPageState extends State<ReportPage> {
       ),
       body: isPremium ? const ReportContents() : ViewModels.freeSubscription(),
       floatingActionButton: isPremium
-          ? FloatingActionButton(
-              heroTag: "2",
-              backgroundColor: AppColors.btnColor,
-              child: Icon(
-                Icons.add,
-                size: 30.h,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => const NewReportPost()),
-                );
-              })
+          ? Visibility(
+              visible: !keyboardIsOpen,
+              child: FloatingActionButton(
+                  heroTag: "2",
+                  backgroundColor: AppColors.btnColor,
+                  child: Icon(
+                    Icons.add,
+                    size: 30.h,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const NewReportPost()),
+                    );
+                  }),
+            )
           : null,
     );
   }

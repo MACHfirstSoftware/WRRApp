@@ -39,6 +39,8 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
   late TextEditingController _deerSeenController;
   late TextEditingController _bucksSeenController;
   late TextEditingController _huntHoursController;
+  FocusNode focusNode = FocusNode();
+  String hintText = '...';
   late List<XFile> _images;
   late List<Media> _medias;
   Media? _mediaForDelete;
@@ -87,6 +89,14 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
           .inHours;
       _huntSuccessHour = diff;
     }
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        hintText = 'Body';
+      } else {
+        hintText = '...';
+      }
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -170,6 +180,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             isShare: _post.isShare,
             createdOn: _post.createdOn,
             modifiedOn: _post.modifiedOn,
+            timeAgo: "Just now",
             likes: _post.likes,
             comments: _post.comments,
             media: [],
@@ -434,270 +445,246 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                       onTap: _discardPost,
                     )));
       },
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
           backgroundColor: AppColors.backgroundColor,
-          toolbarHeight: 70.h,
-          leading: IconButton(
-            iconSize: 25.h,
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  HeroDialogRoute(
-                      builder: (_) => ConfirmationPopup(
-                            title: "Discard",
-                            message:
-                                "If you discard now, you'll lose these changes.",
-                            leftBtnText: "Discard",
-                            rightBtnText: "Keep",
-                            onTap: _discardPost,
-                          )));
-            },
-            icon: const Icon(Icons.close_rounded),
-            splashColor: AppColors.btnColor.withOpacity(0.5),
-          ),
-          title: SizedBox(
-              width: 300.w,
-              child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Update Report",
-                    style: TextStyle(
-                        fontSize: 20.sp,
-                        color: AppColors.btnColor,
-                        fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ))),
-          elevation: 0,
-          centerTitle: true,
-          actions: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (_isPostUpdate) {
-                      _updateImage();
-                    } else {
-                      _updateReportPost();
-                    }
-                  },
-                  child: Container(
+          appBar: AppBar(
+            backgroundColor: AppColors.backgroundColor,
+            toolbarHeight: 70.h,
+            leading: IconButton(
+              iconSize: 25.h,
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                Navigator.push(
+                    context,
+                    HeroDialogRoute(
+                        builder: (_) => ConfirmationPopup(
+                              title: "Discard",
+                              message:
+                                  "If you discard now, you'll lose these changes.",
+                              leftBtnText: "Discard",
+                              rightBtnText: "Keep",
+                              onTap: _discardPost,
+                            )));
+              },
+              icon: const Icon(Icons.close_rounded),
+              splashColor: AppColors.btnColor.withOpacity(0.5),
+            ),
+            title: SizedBox(
+                width: 300.w,
+                child: FittedBox(
+                    fit: BoxFit.scaleDown,
                     alignment: Alignment.center,
-                    height: 40.h,
-                    width: 90.w,
-                    margin: EdgeInsets.only(right: 10.w),
-                    // padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    decoration: BoxDecoration(
-                        color: AppColors.btnColor,
-                        borderRadius: BorderRadius.circular(7.5.w)),
-                    child: SizedBox(
-                      height: 30.h,
-                      width: 70.w,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Apply",
-                          style: TextStyle(
-                              fontSize: 15.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.center,
+                    child: Text(
+                      "Update Report",
+                      style: TextStyle(
+                          fontSize: 20.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ))),
+            elevation: 0,
+            centerTitle: true,
+            actions: [
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      if (_isPostUpdate) {
+                        _updateImage();
+                      } else {
+                        _updateReportPost();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 40.h,
+                      width: 90.w,
+                      margin: EdgeInsets.only(right: 10.w),
+                      // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(7.5.w)),
+                      child: SizedBox(
+                        height: 30.h,
+                        width: 70.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Apply",
+                            style: TextStyle(
+                                fontSize: 15.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 15.h,
-                ),
-                // Padding(
-                //   padding: EdgeInsets.symmetric(horizontal: 25.w),
-                //   child: CustomInputField(
-                //     controller: _titleController,
-                //     label: "Title",
-                //     hintText: "Title",
-                //   ),
-                // ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: CustomInputField(
-                    controller: _bodyController,
-                    label: "Body",
-                    hintText: "Body",
-                    maxLines: 5,
+                ],
+              )
+            ],
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 15.h,
                   ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "County  :  ",
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  //   child: CustomInputField(
+                  //     controller: _titleController,
+                  //     label: "Title",
+                  //     hintText: "Title",
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: CustomInputField(
+                      controller: _bodyController,
+                      focusNode: focusNode,
+                      label: hintText,
+                      hintText: "...",
+                      maxLines: 5,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "County  :  ",
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.left,
+                        ),
+                        Expanded(child: _buildDropMenu())
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Start at  :  ",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => _pickDateTime(),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 40.h,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5.h),
+                                      border: Border.all(
+                                          color: Colors.white, width: 1.h)),
+                                  child: Text(
+                                    UtilCommon.formatDate(startAt),
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        // color: AppColors.btnColor,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                            )
+                          ])),
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Number of deer seen  :  ",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        _buildTextField(_deerSeenController)
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Number of bucks seen  :  ",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        _buildTextField(_bucksSeenController)
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: SizedBox(
+                      width: 428.w,
+                      child: Text(
+                        "Weather Condition : ",
                         style: TextStyle(
                             fontSize: 16.sp,
                             color: AppColors.btnColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
-                      Expanded(child: _buildDropMenu())
-                    ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
+                  _weatherSlider(),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
                     padding: EdgeInsets.symmetric(horizontal: 25.w),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Start at  :  ",
-                            style: TextStyle(
-                                fontSize: 16.sp,
-                                color: AppColors.btnColor,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.left,
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => _pickDateTime(),
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 40.h,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5.h),
-                                    border: Border.all(
-                                        color: Colors.white, width: 1.h)),
-                                child: Text(
-                                  UtilCommon.formatDate(startAt),
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      // color: AppColors.btnColor,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ),
-                            ),
-                          )
-                        ])),
-                SizedBox(
-                  height: 15.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Number of deer seen  :  ",
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.btnColor,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      _buildTextField(_deerSeenController)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Number of bucks seen  :  ",
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.btnColor,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      _buildTextField(_bucksSeenController)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: SizedBox(
-                    width: 428.w,
-                    child: Text(
-                      "Weather Condition : ",
-                      style: TextStyle(
-                          fontSize: 16.sp,
-                          color: AppColors.btnColor,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-                _weatherSlider(),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "How long did you hunt  :  ",
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.btnColor,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      _buildTextField(_huntHoursController,
-                          onChange: _onHuntHourChange, hintText: "Hours")
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Theme(
-                    data: ThemeData(
-                      // unselectedWidgetColor: Colors.grey[300],
-                      unselectedWidgetColor: AppColors.btnColor,
-                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Text(
-                            "How did you hunt  :  ",
+                            "How long did you hunt  :  ",
                             style: TextStyle(
                                 fontSize: 16.sp,
                                 color: AppColors.btnColor,
@@ -705,334 +692,367 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Radio(
-                                value: "G",
-                                groupValue: huntType,
-                                activeColor: AppColors.btnColor,
-                                onChanged: (value) {
-                                  setState(() {
-                                    huntType = value.toString();
-                                  });
-                                }),
-                            Text(
-                              "Gun",
+                        _buildTextField(_huntHoursController,
+                            onChange: _onHuntHourChange, hintText: "Hours")
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Theme(
+                      data: ThemeData(
+                        // unselectedWidgetColor: Colors.grey[300],
+                        unselectedWidgetColor: AppColors.btnColor,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "How did you hunt  :  ",
                               style: TextStyle(
                                   fontSize: 16.sp,
-                                  // color: AppColors.btnColor,
-                                  color: Colors.white,
+                                  color: AppColors.btnColor,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
-                            Radio(
-                                value: "B",
-                                groupValue: huntType,
-                                activeColor: AppColors.btnColor,
-                                onChanged: (value) {
-                                  setState(() {
-                                    huntType = value.toString();
-                                  });
-                                }),
-                            Text(
-                              "Bow",
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  // color: AppColors.btnColor,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.left,
-                            ),
-                          ],
+                          ),
+                          Row(
+                            children: [
+                              Radio(
+                                  value: "G",
+                                  groupValue: huntType,
+                                  activeColor: AppColors.btnColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      huntType = value.toString();
+                                    });
+                                  }),
+                              Text(
+                                "Gun",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    // color: AppColors.btnColor,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                              Radio(
+                                  value: "B",
+                                  groupValue: huntType,
+                                  activeColor: AppColors.btnColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      huntType = value.toString();
+                                    });
+                                  }),
+                              Text(
+                                "Bow",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    // color: AppColors.btnColor,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Was your hunt successful  :  ",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        Theme(
+                          data: ThemeData(
+                            // unselectedWidgetColor: Colors.grey[300],
+                            unselectedWidgetColor: AppColors.btnColor,
+                          ),
+                          child: Row(
+                            children: [
+                              Radio(
+                                  value: true,
+                                  groupValue: _isHuntSuccess,
+                                  activeColor: AppColors.btnColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isHuntSuccess = value as bool;
+                                    });
+                                  }),
+                              Text(
+                                "Yes",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    // color: AppColors.btnColor,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                              Radio(
+                                  value: false,
+                                  groupValue: _isHuntSuccess,
+                                  activeColor: AppColors.btnColor,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isHuntSuccess = value as bool;
+                                    });
+                                  }),
+                              Text(
+                                "No",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    // color: AppColors.btnColor,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
                         )
                       ],
                     ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Was your hunt successful  :  ",
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "What time were you successful (Optional) : ",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        _buildDropButton()
+                      ],
+                    ),
+                  ),
+                  if (_medias.isNotEmpty)
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 20.h,
+                        ),
+                        Text(
+                          "Current available image(s) in post",
                           style: TextStyle(
-                              fontSize: 16.sp,
+                              fontSize: 15.sp,
                               color: AppColors.btnColor,
                               fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      Theme(
-                        data: ThemeData(
-                          // unselectedWidgetColor: Colors.grey[300],
-                          unselectedWidgetColor: AppColors.btnColor,
+                        SizedBox(
+                          height: 10.h,
                         ),
-                        child: Row(
-                          children: [
-                            Radio(
-                                value: true,
-                                groupValue: _isHuntSuccess,
-                                activeColor: AppColors.btnColor,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _isHuntSuccess = value as bool;
-                                  });
-                                }),
-                            Text(
-                              "Yes",
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  // color: AppColors.btnColor,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.left,
-                            ),
-                            Radio(
-                                value: false,
-                                groupValue: _isHuntSuccess,
-                                activeColor: AppColors.btnColor,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _isHuntSuccess = value as bool;
-                                  });
-                                }),
-                            Text(
-                              "No",
-                              style: TextStyle(
-                                  fontSize: 16.sp,
-                                  // color: AppColors.btnColor,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500),
-                              textAlign: TextAlign.left,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "What time were you successful (Optional) : ",
-                          style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.btnColor,
-                              fontWeight: FontWeight.w500),
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                      _buildDropButton()
-                    ],
-                  ),
-                ),
-                if (_medias.isNotEmpty)
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 20.h,
-                      ),
-                      Text(
-                        "Current available image(s) in post",
-                        style: TextStyle(
-                            fontSize: 15.sp,
-                            color: AppColors.btnColor,
-                            fontWeight: FontWeight.w500),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 25.w),
-                        child: Scrollbar(
-                          thickness: 5.w,
-                          showTrackOnHover: true,
-                          isAlwaysShown: false,
-                          child: GridView.count(
-                            physics: const BouncingScrollPhysics(),
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 5.w,
-                            mainAxisSpacing: 5.w,
-                            shrinkWrap: true,
-                            children: [
-                              ..._medias.map((media) => Stack(
-                                    children: [
-                                      Center(
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                              color: AppColors.popBGColor
-                                                  .withOpacity(0.5),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 25.w),
+                          child: Scrollbar(
+                            thickness: 5.w,
+                            showTrackOnHover: true,
+                            isAlwaysShown: false,
+                            child: GridView.count(
+                              physics: const BouncingScrollPhysics(),
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 5.w,
+                              mainAxisSpacing: 5.w,
+                              shrinkWrap: true,
+                              children: [
+                                ..._medias.map((media) => Stack(
+                                      children: [
+                                        Center(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: AppColors.popBGColor
+                                                    .withOpacity(0.5),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        7.5.w)),
+                                            child: ClipRRect(
                                               borderRadius:
-                                                  BorderRadius.circular(7.5.w)),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(7.5.w),
-                                            child: CachedNetworkImage(
-                                              imageUrl: media.imageUrl,
-                                              imageBuilder:
-                                                  (context, imageProvider) {
-                                                return Image(
-                                                  image: imageProvider,
-                                                  height: 300.h,
-                                                  width: 360.w,
-                                                  fit: BoxFit.fill,
-                                                );
-                                              },
-                                              progressIndicatorBuilder:
-                                                  (context, url, progress) =>
-                                                      Center(
-                                                child: SizedBox(
-                                                  height: 15.h,
-                                                  width: 15.h,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    value: progress.progress,
+                                                  BorderRadius.circular(7.5.w),
+                                              child: CachedNetworkImage(
+                                                imageUrl: media.imageUrl,
+                                                imageBuilder:
+                                                    (context, imageProvider) {
+                                                  return Image(
+                                                    image: imageProvider,
+                                                    height: 300.h,
+                                                    width: 360.w,
+                                                    fit: BoxFit.fill,
+                                                  );
+                                                },
+                                                progressIndicatorBuilder:
+                                                    (context, url, progress) =>
+                                                        Center(
+                                                  child: SizedBox(
+                                                    height: 15.h,
+                                                    width: 15.h,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      value: progress.progress,
+                                                    ),
                                                   ),
                                                 ),
+                                                errorWidget: (context, url,
+                                                        error) =>
+                                                    Icon(Icons.error,
+                                                        color:
+                                                            AppColors.btnColor,
+                                                        size: 15.h),
                                               ),
-                                              errorWidget:
-                                                  (context, url, error) => Icon(
-                                                      Icons.error,
-                                                      color: AppColors.btnColor,
-                                                      size: 15.h),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        right: 0,
-                                        top: 0,
-                                        child: InkWell(
-                                          onTap: () {
-                                            _mediaForDelete = media;
-                                            Navigator.push(
-                                                context,
-                                                HeroDialogRoute(
-                                                    builder: (_) =>
-                                                        ConfirmationPopup(
-                                                          title: "Remove",
-                                                          message:
-                                                              "This image is currently available in the post. If you remove now, no longer available this image.",
-                                                          leftBtnText: "Remove",
-                                                          rightBtnText: "Keep",
-                                                          onTap: _removeImage,
-                                                        )));
-                                            //------------------------------------------------------------
-                                          },
-                                          child: SizedBox(
-                                            height: 50.w,
-                                            width: 50.w,
-                                            child: Icon(
-                                              Icons.cancel_outlined,
-                                              size: 30.w,
-                                              color: AppColors.btnColor,
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: InkWell(
+                                            onTap: () {
+                                              _mediaForDelete = media;
+                                              Navigator.push(
+                                                  context,
+                                                  HeroDialogRoute(
+                                                      builder: (_) =>
+                                                          ConfirmationPopup(
+                                                            title: "Remove",
+                                                            message:
+                                                                "This image is currently available in the post. If you remove now, no longer available this image.",
+                                                            leftBtnText:
+                                                                "Remove",
+                                                            rightBtnText:
+                                                                "Keep",
+                                                            onTap: _removeImage,
+                                                          )));
+                                              //------------------------------------------------------------
+                                            },
+                                            child: SizedBox(
+                                              height: 50.w,
+                                              width: 50.w,
+                                              child: Icon(
+                                                Icons.cancel_outlined,
+                                                size: 30.w,
+                                                color: AppColors.btnColor,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                Text(
-                  "Select image(s) to upload",
-                  style: TextStyle(
-                      fontSize: 15.sp,
-                      color: AppColors.btnColor,
-                      fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 25.w),
-                  child: Scrollbar(
-                    thickness: 5.w,
-                    showTrackOnHover: true,
-                    isAlwaysShown: false,
-                    child: GridView.count(
-                      physics: const BouncingScrollPhysics(),
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 5.w,
-                      mainAxisSpacing: 5.w,
-                      shrinkWrap: true,
-                      children: [
-                        ..._images.map(
-                          (image) => Stack(
-                            children: [
-                              Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(7.5.w),
-                                  child: Image.file(
-                                    File(image.path),
-                                    height: 300.h,
-                                    width: 360.w,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 0,
-                                top: 0,
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _images.remove(image);
-                                    });
-                                  },
-                                  child: SizedBox(
-                                    height: 50.w,
-                                    width: 50.w,
-                                    child: Icon(
-                                      Icons.cancel_outlined,
-                                      size: 30.w,
-                                      color: AppColors.btnColor,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            getImage();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.popBGColor,
-                                borderRadius: BorderRadius.circular(7.5.w)),
-                            child: Icon(Icons.camera_alt_rounded,
-                                color: AppColors.btnColor, size: 30.h),
+                                      ],
+                                    )),
+                              ],
+                            ),
                           ),
                         ),
                       ],
                     ),
+                  SizedBox(
+                    height: 20.h,
                   ),
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-              ],
+                  Text(
+                    "Select image(s) to upload",
+                    style: TextStyle(
+                        fontSize: 15.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 25.w),
+                    child: Scrollbar(
+                      thickness: 5.w,
+                      showTrackOnHover: true,
+                      isAlwaysShown: false,
+                      child: GridView.count(
+                        physics: const BouncingScrollPhysics(),
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 5.w,
+                        mainAxisSpacing: 5.w,
+                        shrinkWrap: true,
+                        children: [
+                          ..._images.map(
+                            (image) => Stack(
+                              children: [
+                                Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7.5.w),
+                                    child: Image.file(
+                                      File(image.path),
+                                      height: 300.h,
+                                      width: 360.w,
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _images.remove(image);
+                                      });
+                                    },
+                                    child: SizedBox(
+                                      height: 50.w,
+                                      width: 50.w,
+                                      child: Icon(
+                                        Icons.cancel_outlined,
+                                        size: 30.w,
+                                        color: AppColors.btnColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              getImage();
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColors.popBGColor,
+                                  borderRadius: BorderRadius.circular(7.5.w)),
+                              child: Icon(Icons.camera_alt_rounded,
+                                  color: AppColors.btnColor, size: 30.h),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

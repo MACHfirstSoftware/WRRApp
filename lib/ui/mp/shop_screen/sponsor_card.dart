@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/sponsor.dart';
+import 'package:wisconsin_app/utils/common.dart';
 
 class SponsorCard extends StatelessWidget {
   final Sponsor sponsor;
@@ -11,18 +11,6 @@ class SponsorCard extends StatelessWidget {
     Key? key,
     required this.sponsor,
   }) : super(key: key);
-
-  _launch(String url) async {
-    Uri uri = Uri.parse(url);
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      uri = Uri.parse("https://" + url);
-    }
-    if (!await launchUrl(
-      uri,
-    )) {
-      print("Couldn't launch");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,34 +97,34 @@ class SponsorCard extends StatelessWidget {
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.left,
             ),
-            trailing: GestureDetector(
-              onTap: () {},
-              child: Container(
-                alignment: Alignment.center,
-                height: 30.h,
-                width: 100.w,
-                decoration: BoxDecoration(
-                  color: AppColors.btnColor,
-                  borderRadius: BorderRadius.circular(5.w),
-                ),
-                child: SizedBox(
-                  height: 25.h,
-                  width: 80.w,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Visit",
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // trailing: GestureDetector(
+            //   onTap: () {},
+            //   child: Container(
+            //     alignment: Alignment.center,
+            //     height: 30.h,
+            //     width: 100.w,
+            //     decoration: BoxDecoration(
+            //       color: AppColors.btnColor,
+            //       borderRadius: BorderRadius.circular(5.w),
+            //     ),
+            //     child: SizedBox(
+            //       height: 25.h,
+            //       width: 80.w,
+            //       child: FittedBox(
+            //         fit: BoxFit.scaleDown,
+            //         alignment: Alignment.center,
+            //         child: Text(
+            //           "Visit",
+            //           style: TextStyle(
+            //               fontSize: 14.sp,
+            //               color: Colors.white,
+            //               fontWeight: FontWeight.w500),
+            //           textAlign: TextAlign.left,
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ),
           ...sponsor.discounts
               .map((Discount discount) => _buildDiscountRow(discount: discount))
@@ -147,7 +135,7 @@ class SponsorCard extends StatelessWidget {
 
   _buildDiscountRow({required Discount discount}) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 5.h, left: 70.w),
+      padding: EdgeInsets.only(bottom: 5.h, left: 0.w),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,7 +145,7 @@ class SponsorCard extends StatelessWidget {
               alignment: Alignment.center,
               height: 30.h,
               padding: EdgeInsets.symmetric(vertical: 2.5.h),
-              width: 175.w,
+              width: 160.w,
               decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(5.w),
@@ -182,31 +170,65 @@ class SponsorCard extends StatelessWidget {
           else
             SizedBox(
               height: 30.h,
-              width: 175.w,
+              width: 160.w,
+            ),
+          if (discount.offer != null)
+            Container(
+              alignment: Alignment.center,
+              height: 30.h,
+              width: 115.w,
+              padding: EdgeInsets.symmetric(vertical: 2.5.h),
+              decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(5.w),
+                  border: Border.all(color: AppColors.btnColor, width: 1.h)),
+              child: SizedBox(
+                height: 25.h,
+                width: 100.w,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Offer : " + discount.offer!,
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ),
+            )
+          else
+            SizedBox(
+              height: 30.h,
+              width: 115.w,
             ),
 
-          Container(
-            alignment: Alignment.center,
-            height: 30.h,
-            width: 125.w,
-            padding: EdgeInsets.symmetric(vertical: 2.5.h),
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(5.w),
-                border: Border.all(color: AppColors.btnColor, width: 1.h)),
-            child: SizedBox(
-              height: 25.h,
+          GestureDetector(
+            onTap: () => UtilCommon.launchAnUrl(discount.link),
+            child: Container(
+              alignment: Alignment.center,
+              height: 30.h,
               width: 100.w,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.center,
-                child: Text(
-                  "Offer : " + discount.offer,
-                  style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w400),
-                  textAlign: TextAlign.left,
+              decoration: BoxDecoration(
+                color: AppColors.btnColor,
+                borderRadius: BorderRadius.circular(5.w),
+              ),
+              child: SizedBox(
+                height: 25.h,
+                width: 80.w,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Visit",
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.left,
+                  ),
                 ),
               ),
             ),

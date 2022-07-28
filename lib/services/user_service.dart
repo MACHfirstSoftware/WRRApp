@@ -141,7 +141,7 @@ class UserService {
     }
   }
 
-  static Future<bool> updateUser(
+  static Future<Map<String, dynamic>> updateUser(
       String userId,
       String firstName,
       String lastName,
@@ -150,7 +150,6 @@ class UserService {
       String phone,
       int countyId,
       int regionId) async {
-    print("update call");
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Person/$userId", data: [
@@ -163,14 +162,23 @@ class UserService {
         {"path": "/countyId", "op": "Add", "value": countyId},
         {"path": "/regionId", "op": "Add", "value": regionId},
       ]);
+      print(response.statusCode);
       if (response.statusCode == 200) {
-        return true;
+        return {"success": true, "message": "success"};
       } else {
-        return false;
+        return {"success": false, "message": "Something went wrong"};
       }
     } catch (e) {
-      print(e);
-      return false;
+      print(e.toString());
+      final err = NetworkExceptions.getErrorMessage(
+          NetworkExceptions.getDioException(e));
+      if ("Error due to a conflict" == err) {
+        return {
+          "success": false,
+          "message": "Existing email or handle trying to use"
+        };
+      }
+      return {"success": false, "message": "Something went wrong"};
     }
   }
 
@@ -188,6 +196,7 @@ class UserService {
       }
     } catch (e) {
       print(e);
+
       return false;
     }
   }

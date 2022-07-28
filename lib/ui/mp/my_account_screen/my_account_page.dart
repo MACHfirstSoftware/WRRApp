@@ -18,7 +18,7 @@ import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/change_password.da
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/edit_my_account.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/my_friends.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/privacy_policy.dart';
-import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_of_use.dart';
+import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_and_conditions.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
@@ -159,6 +159,9 @@ class _MyAccountState extends State<MyAccount> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(
+                height: 20.h,
+              ),
               Container(
                 color: Colors.transparent,
                 width: 428.w,
@@ -536,11 +539,11 @@ class _MyAccountState extends State<MyAccount> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const PrivacyPolicy())))),
-                  _buildTile("Terms of Use", Icons.list_alt_rounded,
+                  _buildTile("Terms & Conditions", Icons.list_alt_rounded,
                       onTap: (() => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const TermsOfUse())))),
+                              builder: (_) => const TermsAndConditions())))),
                   _buildLogoutBtn()
                 ],
               )),
