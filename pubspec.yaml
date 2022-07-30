@@ -79,8 +79,11 @@ dependencies:
   flutter_widget_from_html: ^0.8.5
   webview_flutter_plus: ^0.3.0+2
 
+  #RevenueCat subscription package
+  purchases_flutter: ^3.10.0
 
-  freezed_annotation: ^0.14.0
+
+  freezed_annotation: ^1.1.0
 
 dev_dependencies:
   flutter_test:

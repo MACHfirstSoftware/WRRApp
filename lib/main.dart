@@ -17,6 +17,7 @@ import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/services/purchases_service.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
@@ -34,6 +35,7 @@ void main() async {
   ]);
   CustomHttp.setInterceptor();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await PurchasesService.init();
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
   Map<String, dynamic>? userData = await StoreUtils.getUser();
