@@ -1100,7 +1100,7 @@ class ReportView extends StatelessWidget {
                 "Weather Rating", report.weatherRating.toString() + "/5"),
             _buildReportDataRow("Duration", "${report.numHours} hour(s)"),
             _buildReportDataRow(
-                "Type", report.weaponUsed == "A" ? "Bow" : "Gun"),
+                "Type", report.weaponUsed == "G" ? "Gun" : "Bow"),
             _buildReportDataRow("Successful?", report.isSuccess ? "Yes" : "No"),
           ]),
     );
