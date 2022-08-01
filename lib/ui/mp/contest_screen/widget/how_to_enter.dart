@@ -8,6 +8,7 @@ class HowToEnterPage extends StatelessWidget {
   final String kHtml = """
 <p style="text-align: left;"><strong><span style="color: rgb(239, 239, 239);">How To Enter the WI Big Buck Contest:</span></strong></p>
 <p style="text-align: justify;"><span style="color: rgb(239, 239, 239);">Entering the Wisconsin Big Buck Contest is fast and simple. Participation in the contest will provide you the opportunity to win cash and prizes from several of the best brands in the hunting industry. To enter, you must first have downloaded the Premium version of the Wisconsin Rut Report App. This is a cost of \$29.99 and ultimately pays your entry fee into the contest.&nbsp;</span></p>
+<a href="https://wisconsinrutreport.com/contest/">https://wisconsinrutreport.com/contest/</a>
 <p style="text-align: justify;"><span style="color: rgb(239, 239, 239);">Once you&rsquo;re registered for the contest, it&rsquo;s time to hunt! Upon harvesting a buck that you would like to enter into the contest, you will have to visit our website and provide the following information.</span></p>
 <ul>
     <li style="text-align: left; color: rgb(239, 239, 239);">DNR Harvest Authorization</li>

@@ -191,9 +191,9 @@ class _NewReportPostState extends State<NewReportPost> {
         reportResponse.when(success: (Report report) {
           newPost!.report = report;
         }, failure: (NetworkExceptions error) {
-          print("Failed to create report post");
+          // print("Failed to create report post");
         }, responseError: (ResponseError error) {
-          print("Failed to create report post");
+          // print("Failed to create report post");
         });
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];

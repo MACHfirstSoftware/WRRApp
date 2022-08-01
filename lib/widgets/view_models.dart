@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/widgets/subscription_model_sheet.dart';
 
 class ViewModels {
   static buildLoader() {
@@ -111,7 +112,10 @@ class ViewModels {
     );
   }
 
-  static freeSubscription({bool isShopPage = false}) {
+  static freeSubscription(
+      {bool isShopPage = false,
+      required BuildContext context,
+      required String userId}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -145,7 +149,9 @@ class ViewModels {
           width: 428.w,
         ),
         GestureDetector(
-          onTap: () {},
+          onTap: () async {
+            SubscriptionUtil.getPlans(context: context, userId: userId);
+          },
           child: Container(
             alignment: Alignment.center,
             height: 50.h,

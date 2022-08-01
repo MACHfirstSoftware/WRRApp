@@ -71,8 +71,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
         break;
       }
     }
+    // _init(userProvider.user);
     super.initState();
   }
+
+  // _init(User _user) async {
+  //   print("APP USER ID FROM USER : ${_user.appUserId}");
+  //   // if (_user.appUserId != null) {
+  //   //   final res = await PurchasesService.login(appUserId: _user.appUserId!);
+  //   //   if (res) {
+  //   //     Provider.of<RevenueCatProvider>(context, listen: false)
+  //   //         .setSubscriptionStatus(SubscriptionStatus.premium, isInit: true);
+  //   //   }
+  //   // } else {
+  //   //   Provider.of<RevenueCatProvider>(context, listen: false)
+  //   //       .setSubscriptionStatus(SubscriptionStatus.free, isInit: true);
+  //   // }
+  // }
 
   @override
   void dispose() {
@@ -124,12 +139,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           _pageController.jumpToPage(listOfIcons.indexOf(e));
                         })),
                     child: SizedBox(
-                        height: 60.h,
-                        width: 60.h,
+                        height: 70.h,
+                        width: 70.h,
                         child: Center(
                           child: SizedBox(
-                            height: 30.h,
-                            width: 30.h,
+                            height: 35.h,
+                            width: 35.h,
                             child: FittedBox(
                               fit: BoxFit.fill,
                               alignment: Alignment.center,

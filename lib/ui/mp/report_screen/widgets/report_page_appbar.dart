@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/region.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
@@ -10,6 +11,7 @@ import 'package:wisconsin_app/providers/notification_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/contest_main_page.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_free_subs.dart';
@@ -38,132 +40,133 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (_, userProvider, __) {
-      return SizedBox(
-        height: AppBar().preferredSize.height,
-        width: 428.w,
-        child: Stack(
-          children: [
-            Positioned(
-                bottom: 10.h, left: 0.w, child: _buildDropMenu(userProvider)),
-            Positioned(
-                bottom: 10.h,
-                left: 40.w,
-                child: GestureDetector(
-                  onTap: (() {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const SearchHunters()));
-                  }),
-                  child: SvgPicture.asset(
-                    'assets/icons/search.svg',
-                    fit: BoxFit.fill,
-                    alignment: Alignment.center,
-                    height: 30.h,
-                    width: 30.h,
-                    color: Colors.white,
-                  ),
-                )),
-            if (!widget.isReports)
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
+    final userProvider = Provider.of<UserProvider>(context);
+
+    return SizedBox(
+      height: AppBar().preferredSize.height,
+      width: 428.w,
+      child: Stack(
+        children: [
+          Positioned(
+              bottom: 10.h, left: 0.w, child: _buildDropMenu(userProvider)),
+          Positioned(
+              bottom: 10.h,
+              left: 40.w,
+              child: GestureDetector(
+                onTap: (() {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const SearchHunters()));
+                }),
+                child: SvgPicture.asset(
+                  'assets/icons/search.svg',
+                  fit: BoxFit.fill,
+                  alignment: Alignment.center,
+                  height: 30.h,
+                  width: 30.h,
+                  color: Colors.white,
+                ),
+              )),
+          if (!widget.isReports)
+            Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                height: 35.h,
+                child: SvgPicture.asset(
+                  'assets/icons/WRR.svg',
+                  alignment: Alignment.center,
                   height: 35.h,
-                  child: SvgPicture.asset(
-                    'assets/icons/WRR.svg',
-                    alignment: Alignment.center,
-                    height: 35.h,
-                  ),
                 ),
               ),
-            if (widget.isReports)
-              Align(
-                alignment: Alignment.center,
-                child: SizedBox(
-                    width: 250.w,
-                    height: 30.h,
-                    child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Reports",
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
-                        ))),
-              ),
-            Positioned(
-                bottom: 10.h,
-                right: 40.w,
-                child: GestureDetector(
-                  onTap: () {
-                    if (userProvider.user.subscriptionPerson![0]
-                        .subscriptionApiModel.isPremium) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const ContestMainPage()));
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const ContestFreeSubs()));
-                    }
-                  },
-                  child: SvgPicture.asset(
-                    'assets/icons/trophy-bold.svg',
-                    fit: BoxFit.fill,
-                    alignment: Alignment.center,
-                    height: 30.h,
-                    width: 30.h,
-                    color: Colors.white,
-                  ),
-                )),
-            Positioned(
-                bottom: 10.h,
-                right: 0.w,
-                child: GestureDetector(
-                  onTap: () {
+            ),
+          if (widget.isReports)
+            Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                  width: 250.w,
+                  height: 30.h,
+                  child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Reports",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ))),
+            ),
+          Positioned(
+              bottom: 10.h,
+              right: 40.w,
+              child: GestureDetector(
+                onTap: () {
+                  final _subscriptionStatus =
+                      Provider.of<RevenueCatProvider>(context, listen: false)
+                          .subscriptionStatus;
+                  // print(_subscriptionStatus);
+                  if (_subscriptionStatus == SubscriptionStatus.premium) {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const NotificationPage()));
-                  },
-                  child: Consumer<NotificationProvider>(
-                      builder: (context, model, _) {
-                    return Stack(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/notification.svg',
-                          fit: BoxFit.fill,
-                          alignment: Alignment.center,
-                          height: 27.5.h,
-                          width: 27.5.h,
-                          color: Colors.white,
-                        ),
-                        if (!model.isAllViewed)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Container(
-                              height: 12.5.h,
-                              width: 12.5.h,
-                              decoration: BoxDecoration(
-                                  color: Colors.redAccent,
-                                  borderRadius: BorderRadius.circular(6.25.h)),
-                            ),
-                          )
-                      ],
-                    );
-                  }),
-                )),
-          ],
-        ),
-      );
-    });
+                            builder: (_) => const ContestMainPage()));
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ContestFreeSubs()));
+                  }
+                },
+                child: SvgPicture.asset(
+                  'assets/icons/trophy-bold.svg',
+                  fit: BoxFit.fill,
+                  alignment: Alignment.center,
+                  height: 30.h,
+                  width: 30.h,
+                  color: Colors.white,
+                ),
+              )),
+          Positioned(
+              bottom: 10.h,
+              right: 0.w,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const NotificationPage()));
+                },
+                child: Consumer<NotificationProvider>(
+                    builder: (context, model, _) {
+                  return Stack(
+                    children: [
+                      SvgPicture.asset(
+                        'assets/icons/notification.svg',
+                        fit: BoxFit.fill,
+                        alignment: Alignment.center,
+                        height: 27.5.h,
+                        width: 27.5.h,
+                        color: Colors.white,
+                      ),
+                      if (!model.isAllViewed)
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            height: 12.5.h,
+                            width: 12.5.h,
+                            decoration: BoxDecoration(
+                                color: Colors.redAccent,
+                                borderRadius: BorderRadius.circular(6.25.h)),
+                          ),
+                        )
+                    ],
+                  );
+                }),
+              )),
+        ],
+      ),
+    );
   }
 
   _buildDropMenu(UserProvider userProvider) {

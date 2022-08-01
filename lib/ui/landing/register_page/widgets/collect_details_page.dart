@@ -6,7 +6,6 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
-import 'package:wisconsin_app/ui/landing/register_page/widgets/terms_conditions.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_and_conditions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 

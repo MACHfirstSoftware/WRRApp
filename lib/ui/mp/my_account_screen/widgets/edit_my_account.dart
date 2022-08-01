@@ -164,7 +164,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
                   counties: _counties, countyId: _selectedCounty.id),
               isFollowed: _user.isFollowed,
               phoneMobile: _phoneController.text,
-              subscriptionPerson: _user.subscriptionPerson,
+              // subscriptionPerson: _user.subscriptionPerson,
               profileImageUrl: _user.profileImageUrl,
               regionName: CountyUtil.getRegionNameById(
                   regions: _regions, regionId: _selectedCounty.regionId));
@@ -406,9 +406,9 @@ class _EditMyAccountState extends State<EditMyAccount> {
             )))
       ],
       onSelected: (County value) {
-        print(value.id);
-        print(value.name);
-        print(value.regionId);
+        // print(value.id);
+        // print(value.name);
+        // print(value.regionId);
         setState(() {
           _selectedCounty = value;
         });

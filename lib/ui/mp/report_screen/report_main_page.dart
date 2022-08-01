@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/create_report_post.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_content_page.dart';
@@ -16,16 +18,16 @@ class ReportPage extends StatefulWidget {
 }
 
 class _ReportPageState extends State<ReportPage> with WidgetsBindingObserver {
-  late bool isPremium;
+  // late bool isPremium;
   bool keyboardIsOpen = false;
   @override
   void initState() {
     WidgetsBinding.instance?.addObserver(this);
-    isPremium = Provider.of<UserProvider>(context, listen: false)
-        .user
-        .subscriptionPerson![0]
-        .subscriptionApiModel
-        .isPremium;
+    // isPremium = Provider.of<UserProvider>(context, listen: false)
+    //     .user
+    //     .subscriptionPerson![0]
+    //     .subscriptionApiModel
+    //     .isPremium;
     super.initState();
   }
 
@@ -48,6 +50,8 @@ class _ReportPageState extends State<ReportPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final _subscriptionStatus =
+        Provider.of<RevenueCatProvider>(context).subscriptionStatus;
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -57,8 +61,13 @@ class _ReportPageState extends State<ReportPage> with WidgetsBindingObserver {
         toolbarHeight: 70.h,
         automaticallyImplyLeading: false,
       ),
-      body: isPremium ? const ReportContents() : ViewModels.freeSubscription(),
-      floatingActionButton: isPremium
+      body: _subscriptionStatus == SubscriptionStatus.premium
+          ? const ReportContents()
+          : ViewModels.freeSubscription(
+              context: context,
+              userId:
+                  Provider.of<UserProvider>(context, listen: false).user.id),
+      floatingActionButton: _subscriptionStatus == SubscriptionStatus.premium
           ? Visibility(
               visible: !keyboardIsOpen,
               child: FloatingActionButton(

@@ -26,7 +26,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -39,12 +39,12 @@ class UserService {
         data: person,
       );
       if (response.statusCode == 201) {
-        print(response);
+        // print(response);
         return ApiResult.success(
             data: response.data.toString().replaceAll("Id :", ""));
       }
       if (response.statusCode == 409) {
-        print(response);
+        // print(response);
         return ApiResult.responseError(
             responseError: ResponseError(
                 error: response.data, errorCode: response.statusCode ?? 0));
@@ -55,7 +55,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -77,7 +77,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -86,7 +86,7 @@ class UserService {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/ProfileImage", data: data);
-      print(response.statusCode);
+      // print(response.statusCode);
       log(response.data);
       if (response.statusCode == 200) {
         return response.data;
@@ -94,7 +94,7 @@ class UserService {
         return null;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return null;
     }
   }
@@ -115,7 +115,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -136,7 +136,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -162,14 +162,14 @@ class UserService {
         {"path": "/countyId", "op": "Add", "value": countyId},
         {"path": "/regionId", "op": "Add", "value": regionId},
       ]);
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         return {"success": true, "message": "success"};
       } else {
         return {"success": false, "message": "Something went wrong"};
       }
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       final err = NetworkExceptions.getErrorMessage(
           NetworkExceptions.getDioException(e));
       if ("Error due to a conflict" == err) {
@@ -183,7 +183,7 @@ class UserService {
   }
 
   static Future<bool> updateWeapon(String userId, int answerId) async {
-    print("update call");
+    // print("update call");
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Profile?personId=$userId", data: [
@@ -195,7 +195,27 @@ class UserService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
+
+      return false;
+    }
+  }
+
+  static Future<bool> setAppUserId(
+      {required String userId, required String appUserId}) async {
+    // print("set app user id call");
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Person/$userId", data: [
+        {"path": "/appUserId", "op": "Add", "value": appUserId},
+      ]);
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // print(e);
 
       return false;
     }
@@ -203,18 +223,18 @@ class UserService {
 
   static Future<Map<String, dynamic>> changePassword(
       String userName, String currentPassword, String newPassword) async {
-    print("change call");
+    // print("change call");
     try {
       final response = await CustomHttp.getDio().post(Constant.baseUrl +
           "/ChangePassword?userName=$userName&password=$currentPassword&newPassword=$newPassword");
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.statusCode == 204) {
         return {"success": true, "message": "Successfully changed"};
       } else {
         return {"success": false, "message": "Something went wrong"};
       }
     } catch (e) {
-      print(e);
+      // print(e);
       final err = NetworkExceptions.getErrorMessage(
           NetworkExceptions.getDioException(e));
       return {
@@ -226,11 +246,11 @@ class UserService {
   }
 
   static Future<ApiResult<User>> verifyUser(String userName) async {
-    print("verify call");
+    // print("verify call");
     try {
       final response = await CustomHttp.getDio()
           .get(Constant.baseUrl + "/ValidateUserName?userName=$userName");
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         return ApiResult.success(data: User.fromJson(response.data));
       } else {
@@ -240,18 +260,18 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
   static Future<ApiResult<bool>> resetPassword(
       String userId, String password) async {
-    print("reset call");
+    // print("reset call");
     try {
       final response = await CustomHttp.getDio().post(
           Constant.baseUrl + "/ResetPassword?id=$userId&password=$password");
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         return const ApiResult.success(data: true);
       } else {
@@ -261,7 +281,7 @@ class UserService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }

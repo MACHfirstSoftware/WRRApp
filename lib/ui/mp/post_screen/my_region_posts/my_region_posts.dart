@@ -43,7 +43,7 @@ class _MyRegionPostsState extends State<MyRegionPosts>
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !postProvider.allPostLoaded) {
-        print("data loading");
+        // print("data loading");
         setState(() {
           onLoading = true;
         });
@@ -51,7 +51,7 @@ class _MyRegionPostsState extends State<MyRegionPosts>
             _user.id, postProvider.regionId,
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
-          print(postsList.length);
+          // print(postsList.length);
           if (postsList.length < 10) {
             postProvider.allPostLoaded = true;
           } else {
@@ -62,12 +62,12 @@ class _MyRegionPostsState extends State<MyRegionPosts>
             onLoading = false;
           });
         }, failure: (NetworkExceptions error) {
-          print(NetworkExceptions.getErrorMessage(error));
+          // print(NetworkExceptions.getErrorMessage(error));
           setState(() {
             onLoading = false;
           });
         }, responseError: (ResponseError responseError) {
-          print(responseError.error);
+          // print(responseError.error);
           setState(() {
             onLoading = false;
           });

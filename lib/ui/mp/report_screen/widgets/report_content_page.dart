@@ -45,10 +45,10 @@ class _ReportContentsState extends State<ReportContents>
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !postProvider.allPostLoaded) {
-        print("----------DATA LOADING----------------");
+        // print("----------DATA LOADING----------------");
         _lastRecordTime = postProvider.posts.last.createdOn;
-        print("Last Record Time : $_lastRecordTime");
-        print("Total Post : ${postProvider.posts.length}");
+        // print("Last Record Time : $_lastRecordTime");
+        // print("Total Post : ${postProvider.posts.length}");
         setState(() {
           onLoading = true;
         });
@@ -56,7 +56,7 @@ class _ReportContentsState extends State<ReportContents>
             _user.id, postProvider.regionId,
             lastRecordTime: _lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
-          print("Incomming posts : ${postsList.length}");
+          // print("Incomming posts : ${postsList.length}");
           postProvider.posts.addAll(postsList);
           if (postsList.length < 10) {
             postProvider.allPostLoaded = true;
@@ -65,12 +65,12 @@ class _ReportContentsState extends State<ReportContents>
             onLoading = false;
           });
         }, failure: (NetworkExceptions error) {
-          print(NetworkExceptions.getErrorMessage(error));
+          // print(NetworkExceptions.getErrorMessage(error));
           setState(() {
             onLoading = false;
           });
         }, responseError: (ResponseError responseError) {
-          print(responseError.error);
+          // print(responseError.error);
           setState(() {
             onLoading = false;
           });

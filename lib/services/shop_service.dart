@@ -26,7 +26,7 @@ class ShopService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }

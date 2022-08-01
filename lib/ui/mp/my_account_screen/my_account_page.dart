@@ -10,7 +10,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
@@ -24,6 +26,7 @@ import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
+import 'package:wisconsin_app/widgets/subscription_model_sheet.dart';
 
 class MyAccount extends StatefulWidget {
   const MyAccount({Key? key}) : super(key: key);
@@ -44,6 +47,8 @@ class _MyAccountState extends State<MyAccount> {
   }
 
   _doLogout() async {
+    Provider.of<RevenueCatProvider>(context, listen: false)
+        .setSubscriptionStatus(SubscriptionStatus.free);
     await StoreUtils.removeUser();
     Navigator.pushAndRemoveUntil(
         context,
@@ -151,6 +156,8 @@ class _MyAccountState extends State<MyAccount> {
 
   @override
   Widget build(BuildContext context) {
+    final _subscriptionStatus =
+        Provider.of<RevenueCatProvider>(context).subscriptionStatus;
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Consumer<UserProvider>(builder: (_, userModel, __) {
@@ -160,25 +167,31 @@ class _MyAccountState extends State<MyAccount> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 20.h,
+                height: 60.h,
               ),
+
               Container(
                 color: Colors.transparent,
                 width: 428.w,
                 child: Stack(
                   children: [
-                    if (!_user
-                        .subscriptionPerson![0].subscriptionApiModel.isPremium)
+                    if (_subscriptionStatus == SubscriptionStatus.free)
                       Positioned(
                           top: 0.h,
                           right: 75.w,
-                          child: SizedBox(
-                              height: 30.h,
-                              width: 30.h,
-                              child: SvgPicture.asset(
-                                "assets/icons/premium.svg",
-                                color: AppColors.btnColor,
-                              ))),
+                          child: GestureDetector(
+                            onTap: () async {
+                              SubscriptionUtil.getPlans(
+                                  context: context, userId: userModel.user.id);
+                            },
+                            child: SizedBox(
+                                height: 30.h,
+                                width: 30.h,
+                                child: SvgPicture.asset(
+                                  "assets/icons/premium.svg",
+                                  color: AppColors.btnColor,
+                                )),
+                          )),
                     Center(
                       child: SizedBox(
                         height: 100.h,
@@ -532,7 +545,7 @@ class _MyAccountState extends State<MyAccount> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const ChangePassword())))),
-                  _buildTile("Subscription", Icons.price_check_rounded),
+                  // _buildTile("Subscription", Icons.price_check_rounded),
                   // _buildTile("Notification Setting", Icons.notifications_none),
                   _buildTile("Privacy Policy", Icons.verified_user_outlined,
                       onTap: (() => Navigator.push(

@@ -18,7 +18,7 @@ class QuestionnaireService {
         return null;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return null;
     }
   }
@@ -35,7 +35,7 @@ class QuestionnaireService {
         return [];
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return [];
     }
   }
@@ -52,7 +52,7 @@ class QuestionnaireService {
         return [];
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return [];
     }
   }
@@ -69,7 +69,7 @@ class QuestionnaireService {
         return [];
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return [];
     }
   }
@@ -81,7 +81,7 @@ class QuestionnaireService {
       // if (response.statusCode == 200) {
       // } else {}
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 }

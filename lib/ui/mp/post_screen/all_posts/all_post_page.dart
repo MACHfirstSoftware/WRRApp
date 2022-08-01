@@ -42,14 +42,14 @@ class _AllPostsPageState extends State<AllPostsPage>
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !postProvider.allPostLoaded) {
-        print("data loading");
+        // print("data loading");
         setState(() {
           onLoading = true;
         });
         final postResponse = await PostService.getAllPosts(_user.id,
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
-          print(postsList.length);
+          // print(postsList.length);
           if (postsList.length < 10) {
             postProvider.allPostLoaded = true;
           } else {
@@ -60,12 +60,12 @@ class _AllPostsPageState extends State<AllPostsPage>
             onLoading = false;
           });
         }, failure: (NetworkExceptions error) {
-          print(NetworkExceptions.getErrorMessage(error));
+          // print(NetworkExceptions.getErrorMessage(error));
           setState(() {
             onLoading = false;
           });
         }, responseError: (ResponseError responseError) {
-          print(responseError.error);
+          // print(responseError.error);
           setState(() {
             onLoading = false;
           });

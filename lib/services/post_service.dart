@@ -34,7 +34,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -60,7 +60,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -85,7 +85,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -111,7 +111,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -135,7 +135,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -156,30 +156,30 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 
   static Future<ApiResult<Report>> reportPostPublish(
       Map<String, dynamic> postDetails) async {
-    log(postDetails.toString());
+    // log(postDetails.toString());
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/PostReport", data: postDetails);
-      log(response.data.toString());
+      // log(response.data.toString());
       if (response.statusCode == 201) {
-        print(response.data);
+        // print(response.data);
         return ApiResult.success(data: Report.fromJson(response.data));
       } else {
-        print(response.data);
+        // print(response.data);
         return ApiResult.responseError(
             responseError: ResponseError(
                 error: "Something went wrong!",
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -192,9 +192,9 @@ class PostService {
           Constant.baseUrl + "/PostImage",
           data: postImageDetails,
           options: Options(receiveTimeout: 60000, sendTimeout: 60000));
-      print(response);
+      // print(response);
       if (response.statusCode == 200) {
-        print(response.data);
+        // print(response.data);
         List<dynamic> res = response.data;
         List<dynamic> medias = res.last["media"];
         return ApiResult.success(
@@ -202,14 +202,14 @@ class PostService {
                 .map((d) => Media.fromJson(d as Map<String, dynamic>))
                 .toList());
       } else {
-        print(response.data);
+        // print(response.data);
         return ApiResult.responseError(
             responseError: ResponseError(
                 error: "Something went wrong!",
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -243,7 +243,7 @@ class PostService {
   }
 
   static Future<bool> updatePost(int postId, String title, String body) async {
-    print("update call");
+    // print("update call");
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Patch?id=$postId", data: [
@@ -256,14 +256,14 @@ class PostService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
 
   static Future<bool> updateReportPost(
       int postId, String title, String body, int countyId, int regionId) async {
-    print("update call");
+    // print("update call");
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/Patch?id=$postId", data: [
@@ -278,14 +278,14 @@ class PostService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
 
   static Future<bool> updateReport(Report report) async {
     log(report.toJson().toString());
-    print("update call");
+    // print("update call");
     try {
       final response = await CustomHttp.getDio().patch(
           Constant.baseUrl + "/ReportPatch?postId=${report.postId}",
@@ -314,7 +314,7 @@ class PostService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
@@ -325,14 +325,14 @@ class PostService {
           Constant.baseUrl + "/PostLike",
           data: {"personId": like.personId, "postId": like.postId});
       if (response.statusCode == 201) {
-        print(response.data);
+        // print(response.data);
         return response.data["id"];
       } else {
-        print(response.data);
+        // print(response.data);
         return null;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return null;
     }
   }
@@ -342,14 +342,14 @@ class PostService {
       final response = await CustomHttp.getDio()
           .delete(Constant.baseUrl + "/DeleteLike?id=$id");
       if (response.statusCode == 200) {
-        print(response.data);
+        // print(response.data);
         return true;
       } else {
-        print(response.data);
+        // print(response.data);
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
@@ -364,14 +364,14 @@ class PostService {
         "isFlagged": true
       });
       if (response.statusCode == 201) {
-        print(response.data["id"]);
+        // print(response.data["id"]);
         return response.data["id"];
       } else {
-        print(response.data);
+        // print(response.data);
         return null;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return null;
     }
   }
@@ -381,14 +381,14 @@ class PostService {
       final response = await CustomHttp.getDio()
           .delete(Constant.baseUrl + "/DeleteComment?id=$id");
       if (response.statusCode == 200) {
-        print(response.data);
+        // print(response.data);
         return true;
       } else {
-        print(response.data);
+        // print(response.data);
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
@@ -465,7 +465,7 @@ class PostService {
   }
 
   static Future<bool> editComment(int id, String value) async {
-    print("$id : $value");
+    // print("$id : $value");
     try {
       final response = await CustomHttp.getDio()
           .patch(Constant.baseUrl + "/PatchComment?id=$id", data: [
@@ -477,7 +477,7 @@ class PostService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }

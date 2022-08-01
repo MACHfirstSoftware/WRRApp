@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
@@ -13,6 +15,7 @@ import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
@@ -38,28 +41,52 @@ void main() async {
   await PurchasesService.init();
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
+  SubscriptionStatus _subscriptionStatus = SubscriptionStatus.free;
   Map<String, dynamic>? userData = await StoreUtils.getUser();
   if (userData != null) {
     final res =
         await UserService.signIn(userData["email"], userData["password"]);
-    res.when(success: (User user) {
+    res.when(success: (User user) async {
       _user = user;
     }, failure: (NetworkExceptions err) {
-      print("failed to get user");
+      if (kDebugMode) {
+        print("failed to get user");
+      }
     }, responseError: (ResponseError err) {
-      print("failed to get user");
+      if (kDebugMode) {
+        print("failed to get user");
+      }
     });
   }
+
+  if (_user?.appUserId != null) {
+    final res = await PurchasesService.login(appUserId: _user!.appUserId!);
+    // print("RES : $res");
+    if (res) {
+      // print("LOGIN MAIN");
+      _subscriptionStatus = SubscriptionStatus.premium;
+    }
+  }
+
   if (_counties.isNotEmpty) {
     FlutterNativeSplash.remove();
   }
-  runApp(MyApp(counties: _counties, user: _user));
+  runApp(MyApp(
+      counties: _counties,
+      user: _user,
+      subscriptionStatus: _subscriptionStatus));
 }
 
 class MyApp extends StatefulWidget {
   final List<County> counties;
   final User? user;
-  const MyApp({Key? key, required this.counties, this.user}) : super(key: key);
+  final SubscriptionStatus subscriptionStatus;
+  const MyApp(
+      {Key? key,
+      required this.counties,
+      this.user,
+      required this.subscriptionStatus})
+      : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -68,6 +95,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
+    // print("${widget.subscriptionStatus}  ${widget.user?.appUserId}");
     super.initState();
   }
 
@@ -97,6 +125,8 @@ class _MyAppState extends State<MyApp> {
             create: (_) => ContestProvider()),
         ChangeNotifierProvider<NotificationProvider>(
             create: (_) => NotificationProvider()),
+        ChangeNotifierProvider<RevenueCatProvider>(
+            create: (_) => RevenueCatProvider(widget.subscriptionStatus)),
       ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),

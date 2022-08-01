@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/sponsor.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/services/shop_service.dart';
 import 'package:wisconsin_app/ui/mp/shop_screen/sponsor_card.dart';
@@ -21,20 +23,23 @@ class ShopPage extends StatefulWidget {
 }
 
 class _ShopPageState extends State<ShopPage> {
-  late bool isPremium;
+  // late bool isPremium;
 
   @override
   void initState() {
-    isPremium = Provider.of<UserProvider>(context, listen: false)
-        .user
-        .subscriptionPerson![0]
-        .subscriptionApiModel
-        .isPremium;
+    // isPremium = Provider.of<UserProvider>(context, listen: false)
+    //     .user
+    //     .subscriptionPerson![0]
+    //     .subscriptionApiModel
+    //     .isPremium;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final _subscriptionStatus =
+        Provider.of<RevenueCatProvider>(context).subscriptionStatus;
+    // print("IN SHOP PAGE : $_subscriptionStatus");
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
@@ -45,7 +50,7 @@ class _ShopPageState extends State<ShopPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const DefaultAppbar(title: "Shop"),
-            if (isPremium)
+            if (_subscriptionStatus == SubscriptionStatus.premium)
               Text(
                 "Enjoy the great deals from our sponsors. Also, don't forget to check out our new store for WRR merch.",
                 style: TextStyle(
@@ -60,9 +65,13 @@ class _ShopPageState extends State<ShopPage> {
         centerTitle: true,
         elevation: 0,
       ),
-      body: isPremium
+      body: _subscriptionStatus == SubscriptionStatus.premium
           ? const ShopContent()
-          : ViewModels.freeSubscription(isShopPage: true),
+          : ViewModels.freeSubscription(
+              isShopPage: true,
+              context: context,
+              userId:
+                  Provider.of<UserProvider>(context, listen: false).user.id),
     );
   }
 }

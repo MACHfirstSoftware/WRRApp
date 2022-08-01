@@ -44,17 +44,17 @@ class _MyWRRPostsState extends State<MyWRRPosts>
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
           !allLoaded) {
-        print("----------DATA LOADING----------------");
+        // print("----------DATA LOADING----------------");
         _lastRecordTime = postProvider.postsOfWRR.last.createdOn;
-        print("Last Record Time : $_lastRecordTime");
-        print("Total Post : ${postProvider.postsOfWRR.length}");
+        // print("Last Record Time : $_lastRecordTime");
+        // print("Total Post : ${postProvider.postsOfWRR.length}");
         setState(() {
           onLoading = true;
         });
         final postResponse = await PostService.getMyWRRPosts(_user.id,
             lastRecordTime: _lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
-          print("Incomming posts : ${postsList.length}");
+          // print("Incomming posts : ${postsList.length}");
           postProvider.postsOfWRR.addAll(postsList);
           if (postsList.length < 10) {
             allLoaded = true;
@@ -63,12 +63,12 @@ class _MyWRRPostsState extends State<MyWRRPosts>
             onLoading = false;
           });
         }, failure: (NetworkExceptions error) {
-          print(NetworkExceptions.getErrorMessage(error));
+          // print(NetworkExceptions.getErrorMessage(error));
           setState(() {
             onLoading = false;
           });
         }, responseError: (ResponseError responseError) {
-          print(responseError.error);
+          // print(responseError.error);
           setState(() {
             onLoading = false;
           });

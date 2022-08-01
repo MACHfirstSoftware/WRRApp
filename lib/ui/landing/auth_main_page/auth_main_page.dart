@@ -62,6 +62,19 @@ class _AuthMainPageState extends State<AuthMainPage> {
             width: 428.w,
           ),
           _buildSubmitBtn(() => _goRegister(), "Register"),
+          // SizedBox(
+          //   height: 20.h,
+          //   width: 428.w,
+          // ),
+          // _buildSubmitBtn(() => _getPlans(), "Plans"),
+
+          // SizedBox(
+          //   height: 20.h,
+          //   width: 428.w,
+          // ),
+          // _buildSubmitBtn(() => PurchasesService.login(), "Login plans"),
+
+          //$RCAnonymousID:a1776857aca6464c8b4fb10c9abd7ef6
         ],
       ),
     );
@@ -96,4 +109,51 @@ class _AuthMainPageState extends State<AuthMainPage> {
       ),
     );
   }
+
+  // _getPlans() async {
+  //   PageLoader.showLoader(context);
+  //   final offerings = await PurchasesService.fetchOffers();
+  //   Navigator.pop(context);
+
+  //   if (offerings.isEmpty) {
+  //     ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+  //         context: context,
+  //         type: SnackBarType.error,
+  //         messageText: "No Plans Found"));
+  //   } else {
+  //     final _packages = offerings
+  //         .map((offer) => offer.availablePackages)
+  //         .expand((pair) => pair)
+  //         .toList();
+  //     _showSheet(_packages);
+  //   }
+  // }
+
+  // _showSheet(List<Package> _packages) {
+  //   return showModalBottomSheet(
+  //       backgroundColor: Colors.transparent,
+  //       isDismissible: false,
+  //       context: context,
+  //       builder: (context) => PaywalWidget(
+  //             packages: _packages,
+  //             onClickedPackage: (package) async {
+  //               PageLoader.showLoader(context);
+  //               final res = await PurchasesService.purchasePackage(package);
+  //               Navigator.pop(context);
+  //               Navigator.pop(context);
+  //               res.when(
+  //                   success: (PurchaserInfo info) {
+
+  //                   },
+  //                   failure: (NetworkExceptions err) {},
+  //                   responseError: (ResponseError responseError) {
+  //                     ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+  //         context: context,
+  //         type: SnackBarType.error,
+  //         messageText: responseError.error));
+  //                   });
+
+  //             },
+  //           ));
+  // }
 }

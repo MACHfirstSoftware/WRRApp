@@ -14,8 +14,8 @@ class SearchService {
           (skipCount != null ? "&skipCount=$skipCount" : ""));
       if (response.statusCode == 200) {
         inspect(response.data);
-        final list = response.data as List<dynamic>;
-        print(list.length);
+        // final list = response.data as List<dynamic>;
+        // print(list.length);
         return (response.data as List<dynamic>)
             .map((d) => User.fromJson(d as Map<String, dynamic>))
             .toList();
@@ -23,7 +23,7 @@ class SearchService {
         return [];
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return [];
     }
   }
@@ -34,14 +34,14 @@ class SearchService {
           Constant.baseUrl + "/PersonFollow",
           data: {"personId": personId, "followPersonId": followerId});
       if (response.statusCode == 201) {
-        print(response.data);
+        // print(response.data);
         return true;
       } else {
-        print(response.data);
+        // print(response.data);
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }
@@ -53,14 +53,14 @@ class SearchService {
           "/PersonUnFollow?personId=$personId&unFollowPersonId=$unFollowerId");
 
       if (response.statusCode == 201) {
-        print(response.data);
+        // print(response.data);
         return true;
       } else {
-        print(response.data);
+        // print(response.data);
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }

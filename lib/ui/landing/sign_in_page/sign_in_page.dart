@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
+import 'package:wisconsin_app/services/purchases_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
@@ -100,6 +103,16 @@ class _SignInPageState extends State<SignInPage> {
           });
         }
         Provider.of<UserProvider>(context, listen: false).setUser(user);
+        if (user.appUserId != null) {
+          final res = await PurchasesService.login(appUserId: user.appUserId!);
+          if (res) {
+            Provider.of<RevenueCatProvider>(context, listen: false)
+                .setSubscriptionStatus(SubscriptionStatus.premium);
+          }
+        } else {
+          Provider.of<RevenueCatProvider>(context, listen: false)
+              .setSubscriptionStatus(SubscriptionStatus.free);
+        }
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,

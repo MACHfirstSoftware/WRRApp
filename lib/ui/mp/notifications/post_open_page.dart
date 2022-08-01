@@ -37,11 +37,11 @@ class _PostOpenPageState extends State<PostOpenPage> {
     setState(() {
       _apiStatus = ApiStatus.isBusy;
     });
-    print("Notification Id : ${widget.notification.id}");
+    // print("Notification Id : ${widget.notification.id}");
     final res =
         await NotificationService.notificationClick(widget.notification.id);
     res.when(success: (Post _post) {
-      print("Post Id : ${_post.id}");
+      // print("Post Id : ${_post.id}");
       setState(() {
         _apiStatus = ApiStatus.isIdle;
         errorMessage = '';

@@ -17,11 +17,11 @@ class WeatherService {
         final details = response.data;
         log(details.toString());
       } else {
-        print("ERROR");
-        print(response.statusCode);
+        // print("ERROR");
+        // print(response.statusCode);
       }
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
@@ -43,7 +43,7 @@ class WeatherService {
         // print(response.statusCode);
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -52,21 +52,21 @@ class WeatherService {
       String countyName) async {
     try {
       final response = await _dio.get(
-          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countyName&days=10");
+          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countyName,WI&days=10");
       if (response.statusCode == 200) {
         // final details = response.data;
         // log(details.toString());
         return ApiResult.success(data: Weather.fromJson(response.data));
       } else {
-        print("ERROR");
-        print(response.statusCode);
+        // print("ERROR");
+        // print(response.statusCode);
         return ApiResult.responseError(
             responseError: ResponseError(
                 error: "Something went wrong!",
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -79,11 +79,11 @@ class WeatherService {
         final details = response.data;
         log(details.toString());
       } else {
-        print("ERROR");
-        print(response.statusCode);
+        // print("ERROR");
+        // print(response.statusCode);
       }
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
@@ -101,7 +101,7 @@ class WeatherService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }

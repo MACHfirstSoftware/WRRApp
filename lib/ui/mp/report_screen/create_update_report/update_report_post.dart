@@ -73,7 +73,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
         TextEditingController(text: _post.report!.numBucks.toString());
     _huntHoursController =
         TextEditingController(text: _post.report!.numHours.toString());
-    weatherRate = _post.report!.weatherRating.toDouble();
+    weatherRate = _post.report!.weatherRating.toDouble() - 1;
     startAt = UtilCommon.getDatefromString(_post.report!.startDateTime);
     huntType = _post.report!.weaponUsed;
     _isHuntSuccess = _post.report!.isSuccess;
@@ -399,10 +399,10 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
     final res = await PostService.imageDelete(_mediaForDelete!.id);
     Navigator.pop(context);
     if (res) {
-      print(_medias.length);
+      // print(_medias.length);
       setState(() {
         _medias.remove(_mediaForDelete);
-        print(_medias.length);
+        // print(_medias.length);
         _mediaForDelete = null;
       });
     } else {

@@ -87,7 +87,7 @@ class UtilCommon {
     if (!await launchUrl(
       uri,
     )) {
-      print("Couldn't launch");
+      // print("Couldn't launch");
     }
   }
 }
@@ -146,12 +146,12 @@ class ImageUtil {
 class CountyUtil {
   static String getCountyNameById(
       {required List<County> counties, required int countyId}) {
-    print(countyId);
+    // print(countyId);
     String countyName = '';
     for (final county in counties) {
       if (county.id == countyId) {
-        print(county.id);
-        print(county.name);
+        // print(county.id);
+        // print(county.name);
         countyName = county.name;
         break;
       }
@@ -164,8 +164,8 @@ class CountyUtil {
     String regionName = '';
     for (final region in regions) {
       if (region.id == regionId) {
-        print(region.id);
-        print(region.name);
+        // print(region.id);
+        // print(region.name);
         regionName = region.name;
         break;
       }
