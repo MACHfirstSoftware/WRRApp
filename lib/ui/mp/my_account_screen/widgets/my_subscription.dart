@@ -89,7 +89,7 @@ class _MySubscriptionState extends State<MySubscription> {
           // height: 20.h,
           width: 400.w,
           child: Text(
-            "You subscribed premium membership. Enjoy all the benefits of the WRR",
+            "You are subscribed to the premium membership. Enjoy all the benefits of the WRR.",
             style: TextStyle(
                 fontSize: 20.sp,
                 color: Colors.white,
@@ -136,17 +136,6 @@ class _MySubscriptionState extends State<MySubscription> {
     );
   }
 
-  // DateFormat('yyyy-MM-dd HH:mm')
-  //                     .parse(purchaserInfo
-  //                             .entitlements.all["premium"]!.expirationDate!
-  //                             .split("T")[0] +
-  //                         " " +
-  //                         purchaserInfo
-  //                             .entitlements.all["premium"]!.expirationDate!
-  //                             .split("T")[1]
-  //                             .substring(0, 5))
-  //                     .toString()
-
   _buildFree(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -167,7 +156,7 @@ class _MySubscriptionState extends State<MySubscription> {
           // height: 20.h,
           width: 400.w,
           child: Text(
-            "You subscribed free membership. Get more benefits upgrade your membership",
+            "You are subscribed to the free membership. Get more benefits by upgrading to premium.",
             style: TextStyle(
                 fontSize: 20.sp,
                 color: Colors.white,
