@@ -208,145 +208,148 @@ class _EditMyAccountState extends State<EditMyAccount> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
-        toolbarHeight: 70.h,
-        title: const DefaultAppbar(title: "Edit My Account"),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 35.h,
-                width: 428.w,
-              ),
-              const LogoImage(),
-              SizedBox(
-                height: 35.h,
-              ),
-              InputField(
-                hintText: "First Name",
-                prefixIcon: Icons.person_outline_rounded,
-                controller: _firstNameController,
-                textInputType: TextInputType.text,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              InputField(
-                hintText: "Last Name",
-                prefixIcon: Icons.person_outline_rounded,
-                controller: _lastNameController,
-                textInputType: TextInputType.text,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              InputField(
-                hintText: "Email/Login",
-                prefixIcon: Icons.mail_outline_rounded,
-                controller: _emailController,
-                textInputType: TextInputType.emailAddress,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              InputField(
-                hintText: "Handle Name",
-                prefixIcon: Icons.person_outline_rounded,
-                controller: _personCodeController,
-                textInputType: TextInputType.text,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              InputField(
-                hintText: "Phone Number",
-                prefixIcon: Icons.phone_outlined,
-                controller: _phoneController,
-                textInputType: TextInputType.number,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              SizedBox(
-                width: 310.w,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "County  :",
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColors.btnColor,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                    ),
-                    Expanded(child: _buildCountyDropMenu())
-                  ],
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          title: const DefaultAppbar(title: "Edit My Account"),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 35.h,
+                  width: 428.w,
                 ),
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
-              SizedBox(
-                width: 310.w,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Weapon  :",
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: AppColors.btnColor,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                    ),
-                    Expanded(child: _buildWeaponDropMenu())
-                  ],
+                const LogoImage(),
+                SizedBox(
+                  height: 35.h,
                 ),
-              ),
-              SizedBox(
-                height: 55.h,
-                width: 428.w,
-              ),
-              GestureDetector(
-                  onTap: _doUpdate,
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 50.h,
-                    width: 150.w,
-                    decoration: BoxDecoration(
-                        color: AppColors.btnColor,
-                        borderRadius: BorderRadius.circular(7.5.w)),
-                    child: SizedBox(
-                      height: 25.h,
-                      width: 100.w,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Update",
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.center,
+                InputField(
+                  hintText: "First Name",
+                  prefixIcon: Icons.person_outline_rounded,
+                  controller: _firstNameController,
+                  textInputType: TextInputType.text,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                InputField(
+                  hintText: "Last Name",
+                  prefixIcon: Icons.person_outline_rounded,
+                  controller: _lastNameController,
+                  textInputType: TextInputType.text,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                InputField(
+                  hintText: "Email/Login",
+                  prefixIcon: Icons.mail_outline_rounded,
+                  controller: _emailController,
+                  textInputType: TextInputType.emailAddress,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                InputField(
+                  hintText: "Handle Name",
+                  prefixIcon: Icons.person_outline_rounded,
+                  controller: _personCodeController,
+                  textInputType: TextInputType.text,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                InputField(
+                  hintText: "Phone Number",
+                  prefixIcon: Icons.phone_outlined,
+                  controller: _phoneController,
+                  textInputType: TextInputType.number,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                SizedBox(
+                  width: 310.w,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "County  :",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: AppColors.btnColor,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ),
+                      Expanded(child: _buildCountyDropMenu())
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                SizedBox(
+                  width: 310.w,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Weapon  :",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: AppColors.btnColor,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ),
+                      Expanded(child: _buildWeaponDropMenu())
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 55.h,
+                  width: 428.w,
+                ),
+                GestureDetector(
+                    onTap: _doUpdate,
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 50.h,
+                      width: 150.w,
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(7.5.w)),
+                      child: SizedBox(
+                        height: 25.h,
+                        width: 100.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Update",
+                            style: TextStyle(
+                                fontSize: 18.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
-                    ),
-                  )),
-              SizedBox(
-                height: 35.h,
-              ),
-            ],
+                    )),
+                SizedBox(
+                  height: 35.h,
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -83,33 +83,36 @@ class _SearchHuntersState extends State<SearchHunters> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-            backgroundColor: AppColors.backgroundColor,
-            toolbarHeight: 70.h,
-            elevation: 0,
-            title: _buildSearchField(),
-            actions: [
-              IconButton(
-                  iconSize: 25.h,
-                  onPressed: () {
-                    _searchController.clear();
-                    users = [];
-                    setState(() {});
-                  },
-                  icon: const Icon(
-                    Icons.clear_rounded,
-                    color: Colors.white,
-                  ))
-            ]),
-        body: isSearching
-            ? ViewModels.postLoader()
-            : _searchController.text.length < 3
-                ? _buildMessage("Search for Hunters")
-                : users.isEmpty
-                    ? _buildMessage('Nothing Found')
-                    : _buildSearchSuccess());
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+          backgroundColor: AppColors.backgroundColor,
+          appBar: AppBar(
+              backgroundColor: AppColors.backgroundColor,
+              toolbarHeight: 70.h,
+              elevation: 0,
+              title: _buildSearchField(),
+              actions: [
+                IconButton(
+                    iconSize: 25.h,
+                    onPressed: () {
+                      _searchController.clear();
+                      users = [];
+                      setState(() {});
+                    },
+                    icon: const Icon(
+                      Icons.clear_rounded,
+                      color: Colors.white,
+                    ))
+              ]),
+          body: isSearching
+              ? ViewModels.postLoader()
+              : _searchController.text.length < 3
+                  ? _buildMessage("Search for Hunters")
+                  : users.isEmpty
+                      ? _buildMessage('Nothing Found')
+                      : _buildSearchSuccess()),
+    );
   }
 
   _buildSearchField() {

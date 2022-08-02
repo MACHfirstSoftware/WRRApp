@@ -137,178 +137,181 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 30.h,
-                ),
-                const LogoImage(),
-                const Spacer(),
-                Text(
-                  "SIGN IN",
-                  style: TextStyle(
-                      fontSize: 20.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 45.h,
-                ),
-                InputField(
-                  hintText: "Email",
-                  prefixIcon: Icons.person_outline_rounded,
-                  controller: _emailController,
-                  textInputType: TextInputType.emailAddress,
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                InputField(
-                    hintText: "Password",
-                    prefixIcon: Icons.lock_outline_rounded,
-                    controller: _passwordController,
-                    textInputType: TextInputType.visiblePassword,
-                    obscureText: true),
-                SizedBox(
-                  height: 25.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => _saveAccountInfoFunc(),
-                      child: SizedBox(
-                          height: 25.h,
-                          width: 25.h,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.btnColor,
-                                  style: BorderStyle.solid,
-                                  width: 2.h,
-                                ),
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(5.h)),
-                            child: _saveAccountInfo
-                                ? Icon(
-                                    Icons.check,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 30.h,
+                  ),
+                  const LogoImage(),
+                  const Spacer(),
+                  Text(
+                    "SIGN IN",
+                    style: TextStyle(
+                        fontSize: 20.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(
+                    height: 45.h,
+                  ),
+                  InputField(
+                    hintText: "Email",
+                    prefixIcon: Icons.person_outline_rounded,
+                    controller: _emailController,
+                    textInputType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  InputField(
+                      hintText: "Password",
+                      prefixIcon: Icons.lock_outline_rounded,
+                      controller: _passwordController,
+                      textInputType: TextInputType.visiblePassword,
+                      obscureText: true),
+                  SizedBox(
+                    height: 25.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => _saveAccountInfoFunc(),
+                        child: SizedBox(
+                            height: 25.h,
+                            width: 25.h,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
                                     color: AppColors.btnColor,
-                                    size: 20.h,
-                                  )
-                                : null,
-                          )),
-                    ),
-                    SizedBox(
-                      width: 15.w,
-                    ),
-                    Text(
-                      "Remember me",
-                      style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w400),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 25.h,
-                ),
-                GestureDetector(
-                  onTap: () => _doSignIn(),
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 50.h,
-                    width: 150.w,
-                    decoration: BoxDecoration(
-                        color: AppColors.btnColor,
-                        borderRadius: BorderRadius.circular(10.w)),
-                    child: SizedBox(
-                      height: 25.h,
-                      width: 100.w,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.center,
-                        child: Text(
-                          "SIGN IN",
-                          style: TextStyle(
-                              fontSize: 20.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600),
-                          textAlign: TextAlign.center,
+                                    style: BorderStyle.solid,
+                                    width: 2.h,
+                                  ),
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(5.h)),
+                              child: _saveAccountInfo
+                                  ? Icon(
+                                      Icons.check,
+                                      color: AppColors.btnColor,
+                                      size: 20.h,
+                                    )
+                                  : null,
+                            )),
+                      ),
+                      SizedBox(
+                        width: 15.w,
+                      ),
+                      Text(
+                        "Remember me",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 25.h,
+                  ),
+                  GestureDetector(
+                    onTap: () => _doSignIn(),
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 50.h,
+                      width: 150.w,
+                      decoration: BoxDecoration(
+                          color: AppColors.btnColor,
+                          borderRadius: BorderRadius.circular(10.w)),
+                      child: SizedBox(
+                        height: 25.h,
+                        width: 100.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "SIGN IN",
+                            style: TextStyle(
+                                fontSize: 20.sp,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 20.h,
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const UserVerify())),
-                  child: Text(
-                    "Forgot your password?",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
+                  SizedBox(
+                    height: 20.h,
                   ),
-                ),
-                const Spacer(),
+                  GestureDetector(
+                    onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => const UserVerify())),
+                    child: Text(
+                      "Forgot your password?",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Spacer(),
 
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterPage()));
-                  },
-                  child: Text(
-                    "Register a New Account",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: AppColors.btnColor,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.center,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegisterPage()));
+                    },
+                    child: Text(
+                      "Register a New Account",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 40.h,
-                ),
-                // RichText(
-                //     text: TextSpan(
-                //         text: "Don't Have an Account?",
-                //         style: TextStyle(
-                //             fontSize: 16.sp,
-                //             color: Colors.white,
-                //             fontWeight: FontWeight.w400),
-                //         children: <TextSpan>[
-                //       TextSpan(
-                //         text: "  SIGN UP",
-                //         recognizer: TapGestureRecognizer()
-                //           ..onTap = (() => Navigator.push(
-                //               context,
-                //               MaterialPageRoute(
-                //                   builder: (_) => const QuestionnairePage()))),
-                //         style: TextStyle(
-                //             fontSize: 16.sp,
-                //             color: AppColors.btnColor,
-                //             fontWeight: FontWeight.w400),
-                //       )
-                //     ]))
-              ],
+                  SizedBox(
+                    height: 40.h,
+                  ),
+                  // RichText(
+                  //     text: TextSpan(
+                  //         text: "Don't Have an Account?",
+                  //         style: TextStyle(
+                  //             fontSize: 16.sp,
+                  //             color: Colors.white,
+                  //             fontWeight: FontWeight.w400),
+                  //         children: <TextSpan>[
+                  //       TextSpan(
+                  //         text: "  SIGN UP",
+                  //         recognizer: TapGestureRecognizer()
+                  //           ..onTap = (() => Navigator.push(
+                  //               context,
+                  //               MaterialPageRoute(
+                  //                   builder: (_) => const QuestionnairePage()))),
+                  //         style: TextStyle(
+                  //             fontSize: 16.sp,
+                  //             color: AppColors.btnColor,
+                  //             fontWeight: FontWeight.w400),
+                  //       )
+                  //     ]))
+                ],
+              ),
             ),
           ),
         ),

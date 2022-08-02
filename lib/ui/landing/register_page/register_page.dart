@@ -235,7 +235,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 .selectedAnswers);
 
         // _userId = userId;
-        await VerficationService.sendCode(userId, _phoneController.text.trim());
+        await VerficationService.sendCode(userId, _phoneController.text.trim(),
+            isReset: false);
         Provider.of<RegisterProvider>(context, listen: false).clearData();
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(

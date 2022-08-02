@@ -60,8 +60,9 @@ class _UserVerifyState extends State<UserVerify> {
       PageLoader.showLoader(context);
       final res = await UserService.verifyUser(_emailController.text.trim());
       res.when(success: (User user) async {
-        final otpSend =
-            await VerficationService.sendCode(user.id, user.phoneMobile);
+        final otpSend = await VerficationService.sendCode(
+            user.id, user.phoneMobile,
+            isReset: true);
         Navigator.pop(context);
         if (otpSend) {
           PageLoader.showTransparentLoader(context);
@@ -100,71 +101,74 @@ class _UserVerifyState extends State<UserVerify> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
-        toolbarHeight: 70.h,
-        title: const DefaultAppbar(title: "Reset Password"),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 50.h,
-              width: 428.w,
-            ),
-            const LogoImage(),
-            SizedBox(
-              height: 75.h,
-            ),
-            InputField(
-              hintText: "Email",
-              prefixIcon: Icons.person_outline_rounded,
-              controller: _emailController,
-              textInputType: TextInputType.emailAddress,
-            ),
-            SizedBox(
-              height: 35.h,
-              width: 428.w,
-            ),
-            GestureDetector(
-                onTap: () {
-                  _doVerify();
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50.h,
-                  width: 150.w,
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(7.5.w)),
-                  child: SizedBox(
-                    height: 25.h,
-                    width: 100.w,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Next",
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600),
-                        textAlign: TextAlign.center,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          title: const DefaultAppbar(title: "Reset Password"),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SafeArea(
+            child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 50.h,
+                width: 428.w,
+              ),
+              const LogoImage(),
+              SizedBox(
+                height: 75.h,
+              ),
+              InputField(
+                hintText: "Email",
+                prefixIcon: Icons.person_outline_rounded,
+                controller: _emailController,
+                textInputType: TextInputType.emailAddress,
+              ),
+              SizedBox(
+                height: 35.h,
+                width: 428.w,
+              ),
+              GestureDetector(
+                  onTap: () {
+                    _doVerify();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 50.h,
+                    width: 150.w,
+                    decoration: BoxDecoration(
+                        color: AppColors.btnColor,
+                        borderRadius: BorderRadius.circular(7.5.w)),
+                    child: SizedBox(
+                      height: 25.h,
+                      width: 100.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Next",
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-                )),
-            SizedBox(
-              height: 35.h,
-            ),
-          ],
-        ),
-      )),
+                  )),
+              SizedBox(
+                height: 35.h,
+              ),
+            ],
+          ),
+        )),
+      ),
     );
   }
 }

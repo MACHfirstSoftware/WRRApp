@@ -108,87 +108,90 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
-        toolbarHeight: 70.h,
-        title: const DefaultAppbar(title: "Change Password"),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 35.h,
-              width: 428.w,
-            ),
-            const LogoImage(),
-            SizedBox(
-              height: 35.h,
-            ),
-            InputField(
-                hintText: "Current Password",
-                prefixIcon: Icons.lock_outline_rounded,
-                controller: _oldPassController,
-                textInputType: TextInputType.text,
-                obscureText: true),
-            SizedBox(
-              height: 20.h,
-            ),
-            InputField(
-                hintText: "New Password",
-                prefixIcon: Icons.lock_outline_rounded,
-                controller: _newPassController,
-                textInputType: TextInputType.visiblePassword,
-                obscureText: true),
-            SizedBox(
-              height: 20.h,
-            ),
-            InputField(
-                hintText: "Confirm Password",
-                prefixIcon: Icons.lock_outline_rounded,
-                controller: _conPassController,
-                textInputType: TextInputType.visiblePassword,
-                obscureText: true),
-            SizedBox(
-              height: 55.h,
-              width: 428.w,
-            ),
-            GestureDetector(
-                onTap: _doUpdate,
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50.h,
-                  width: 150.w,
-                  decoration: BoxDecoration(
-                      color: AppColors.btnColor,
-                      borderRadius: BorderRadius.circular(7.5.w)),
-                  child: SizedBox(
-                    height: 25.h,
-                    width: 100.w,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Update",
-                        style: TextStyle(
-                            fontSize: 18.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600),
-                        textAlign: TextAlign.center,
+        appBar: AppBar(
+          backgroundColor: AppColors.backgroundColor,
+          toolbarHeight: 70.h,
+          title: const DefaultAppbar(title: "Change Password"),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: SafeArea(
+            child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 35.h,
+                width: 428.w,
+              ),
+              const LogoImage(),
+              SizedBox(
+                height: 35.h,
+              ),
+              InputField(
+                  hintText: "Current Password",
+                  prefixIcon: Icons.lock_outline_rounded,
+                  controller: _oldPassController,
+                  textInputType: TextInputType.text,
+                  obscureText: true),
+              SizedBox(
+                height: 20.h,
+              ),
+              InputField(
+                  hintText: "New Password",
+                  prefixIcon: Icons.lock_outline_rounded,
+                  controller: _newPassController,
+                  textInputType: TextInputType.visiblePassword,
+                  obscureText: true),
+              SizedBox(
+                height: 20.h,
+              ),
+              InputField(
+                  hintText: "Confirm Password",
+                  prefixIcon: Icons.lock_outline_rounded,
+                  controller: _conPassController,
+                  textInputType: TextInputType.visiblePassword,
+                  obscureText: true),
+              SizedBox(
+                height: 55.h,
+                width: 428.w,
+              ),
+              GestureDetector(
+                  onTap: _doUpdate,
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 50.h,
+                    width: 150.w,
+                    decoration: BoxDecoration(
+                        color: AppColors.btnColor,
+                        borderRadius: BorderRadius.circular(7.5.w)),
+                    child: SizedBox(
+                      height: 25.h,
+                      width: 100.w,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Update",
+                          style: TextStyle(
+                              fontSize: 18.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-                )),
-            SizedBox(
-              height: 35.h,
-            ),
-          ],
-        ),
-      )),
+                  )),
+              SizedBox(
+                height: 35.h,
+              ),
+            ],
+          ),
+        )),
+      ),
     );
   }
 }

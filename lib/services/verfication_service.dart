@@ -1,17 +1,22 @@
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
 class VerficationService {
-  static Future<bool> sendCode(String id, String phoneNumber) async {
+  static Future<bool> sendCode(String id, String phoneNumber,
+      {required bool isReset}) async {
+    print(id);
+    print(phoneNumber);
     try {
-      // final response =
-      await CustomHttp.getDio().post(
-        Constant.baseUrl + "/Send/$id?phoneNumber=$phoneNumber",
+      final response = await CustomHttp.getDio().post(
+        Constant.baseUrl + "/Send/$id?phoneNumber=$phoneNumber&reset=$isReset",
       );
-      // print(response);
+      print(response);
       return true;
     } catch (e) {
-      // print(e);
+      print(e);
+      print(NetworkExceptions.getErrorMessage(
+          NetworkExceptions.getDioException(e)));
       return false;
     }
   }
@@ -25,7 +30,9 @@ class VerficationService {
       // print(response);
       return true;
     } catch (e) {
-      // print(e);
+      print(e);
+      print(NetworkExceptions.getErrorMessage(
+          NetworkExceptions.getDioException(e)));
       return false;
     }
   }
