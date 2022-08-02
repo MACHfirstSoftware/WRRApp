@@ -52,7 +52,10 @@ class _MyAccountState extends State<MyAccount> {
     Provider.of<RevenueCatProvider>(context, listen: false)
         .setSubscriptionStatus(SubscriptionStatus.free);
     await StoreUtils.removeUser();
-    await Purchases.logOut();
+    final appUserID = await Purchases.appUserID;
+    if (!appUserID.contains("RCAnonymousID:")) {
+      await Purchases.logOut();
+    }
     Navigator.pop(context);
     Navigator.pushAndRemoveUntil(
         context,
