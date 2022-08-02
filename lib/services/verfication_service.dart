@@ -32,12 +32,16 @@ class VerficationService {
 
   static Future<bool> verifyCode(String id, String code) async {
     try {
-      // final response =
-      await CustomHttp.getDio().post(
+      final response = await CustomHttp.getDio().post(
         Constant.baseUrl + "/VerifyCode/$id/$code",
       );
+      if (response.data == "validation Successful") {
+        return true;
+      } else {
+        return false;
+      }
       // print(response);
-      return true;
+
     } catch (e) {
       // print(e);
       return false;
