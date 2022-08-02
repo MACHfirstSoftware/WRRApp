@@ -222,7 +222,7 @@ class _CommentSectionState extends State<CommentSection> {
           children: [
             Material(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(15.w),
+              borderRadius: BorderRadius.circular(10.h),
               child: FocusedMenuHolder(
                 onPressed: () {},
                 menuWidth: 200.w,
@@ -286,7 +286,7 @@ class _CommentSectionState extends State<CommentSection> {
                         }),
                 ],
                 child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10.h),
                   title: Text(_comment.code,
                       style: TextStyle(
                           color: Colors.black,
@@ -350,7 +350,7 @@ class _CommentSectionState extends State<CommentSection> {
           children: [
             Material(
               color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(15.w),
+              borderRadius: BorderRadius.circular(10.h),
               child: _user.id == replyComment.personId
                   ? FocusedMenuHolder(
                       onPressed: () {},
@@ -399,7 +399,7 @@ class _CommentSectionState extends State<CommentSection> {
                       ],
                       child: ListTile(
                           contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10.w),
+                              EdgeInsets.symmetric(horizontal: 10.h),
                           title: Text(replyComment.code,
                               style: TextStyle(
                                   color: Colors.black,
@@ -412,7 +412,7 @@ class _CommentSectionState extends State<CommentSection> {
                                   fontWeight: FontWeight.w400))),
                     )
                   : ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.h),
                       title: Text(replyComment.code,
                           style: TextStyle(
                               color: Colors.black,
@@ -504,7 +504,7 @@ class _CommentSectionState extends State<CommentSection> {
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                 suffixIcon: Padding(
-                  padding: EdgeInsets.all(10.w),
+                  padding: EdgeInsets.all(10.h),
                   child: GestureDetector(
                     onTap: () {
                       if (_commentController.text.isNotEmpty && !_isSubmiting) {
@@ -515,9 +515,10 @@ class _CommentSectionState extends State<CommentSection> {
                         }
                       }
                     },
-                    child: const Icon(
+                    child: Icon(
                       Icons.send_rounded,
                       color: AppColors.btnColor,
+                      size: 25.h,
                     ),
                   ),
                 ),

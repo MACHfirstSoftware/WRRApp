@@ -65,16 +65,16 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  height: 50.w,
-                  width: 50.w,
-                  padding: EdgeInsets.all(5.w),
+                  height: 50.h,
+                  width: 50.h,
+                  padding: EdgeInsets.all(5.h),
                   decoration: BoxDecoration(
                       color: AppColors.popBGColor,
-                      borderRadius: BorderRadius.circular(10.w)),
+                      borderRadius: BorderRadius.circular(10.h)),
                   child: Image.network(
                     "https:${widget.currentWeather.condition.icon}",
-                    height: 45.w,
-                    width: 45.w,
+                    height: 45.h,
+                    width: 45.h,
                     fit: BoxFit.fill,
                     color: Colors.white,
                   ),
@@ -172,16 +172,16 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
         Expanded(
           child: Center(
             child: Container(
-              height: 40.w,
-              width: 40.w,
-              padding: EdgeInsets.all(10.w),
+              height: 40.h,
+              width: 40.h,
+              padding: EdgeInsets.all(10.h),
               decoration: BoxDecoration(
                   color: AppColors.popBGColor,
-                  borderRadius: BorderRadius.circular(10.w)),
+                  borderRadius: BorderRadius.circular(10.h)),
               child: SvgPicture.asset(
                 iconPath,
-                height: 15.w,
-                width: 15.w,
+                height: 15.h,
+                width: 15.h,
                 color: Colors.white,
               ),
             ),

@@ -26,8 +26,8 @@ class SponsorCard extends StatelessWidget {
             horizontalTitleGap: 10.w,
             leading: Container(
               alignment: Alignment.center,
-              height: 60.w,
-              width: 60.w,
+              height: 60.h,
+              width: 60.h,
               decoration: BoxDecoration(
                 color: AppColors.popBGColor,
                 borderRadius: BorderRadius.circular(10.w),
@@ -36,8 +36,8 @@ class SponsorCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.w),
                 child: sponsor.logoUrl != null
                     ? SizedBox(
-                        height: 60.w,
-                        width: 60.w,
+                        height: 60.h,
+                        width: 60.h,
                         child: CachedNetworkImage(
                           imageUrl: sponsor.logoUrl!,
                           imageBuilder: (context, imageProvider) {

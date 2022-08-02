@@ -87,6 +87,7 @@ class _SearchHuntersState extends State<SearchHunters> {
         backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
             backgroundColor: AppColors.backgroundColor,
+            toolbarHeight: 70.h,
             elevation: 0,
             title: _buildSearchField(),
             actions: [
@@ -114,41 +115,44 @@ class _SearchHuntersState extends State<SearchHunters> {
   _buildSearchField() {
     return SizedBox(
       height: 40.h,
-      child: TextField(
-        controller: _searchController,
-        autofocus: true,
-        style: TextStyle(
-            color: Colors.white,
-            fontSize: 16.sp,
-            decoration: TextDecoration.none),
-        textAlignVertical: TextAlignVertical.center,
-        cursorColor: AppColors.btnColor,
-        keyboardType: TextInputType.text,
-        onChanged: (String value) {
-          if (value.length > 2) {
-            _searching();
-          }
-        },
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-          fillColor: Colors.transparent,
-          filled: true,
-          hintText: "Name or Handle",
-          alignLabelWithHint: true,
-          hintStyle: TextStyle(
-            color: Colors.grey[200],
-            fontSize: 16.sp,
-            decoration: TextDecoration.none,
+      child: Center(
+        child: TextField(
+          controller: _searchController,
+          autofocus: true,
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 16.sp,
+              decoration: TextDecoration.none),
+          textAlignVertical: TextAlignVertical.center,
+          cursorColor: AppColors.btnColor,
+          keyboardType: TextInputType.text,
+          onChanged: (String value) {
+            if (value.length > 2) {
+              _searching();
+            }
+          },
+          decoration: InputDecoration(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+            fillColor: Colors.transparent,
+            filled: true,
+            hintText: "Name or Handle",
+            alignLabelWithHint: true,
+            hintStyle: TextStyle(
+              color: Colors.grey[200],
+              fontSize: 16.sp,
+              decoration: TextDecoration.none,
+            ),
+            border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(5.w)),
+            focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: AppColors.btnColor),
+                borderRadius: BorderRadius.circular(5.w)),
+            enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white),
+                borderRadius: BorderRadius.circular(5.w)),
           ),
-          border: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(5.w)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: AppColors.btnColor),
-              borderRadius: BorderRadius.circular(5.w)),
-          enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Colors.white),
-              borderRadius: BorderRadius.circular(5.w)),
         ),
       ),
     );

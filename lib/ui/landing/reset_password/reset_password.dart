@@ -138,7 +138,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             InputField(
               hintText: "OTP Code",
               controller: _otpController,
-              prefixIconPath: "assets/icons/pin-code.svg",
+              prefixIcon: Icons.pin_outlined,
               textInputType: TextInputType.number,
             ),
             SizedBox(
@@ -146,7 +146,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             ),
             InputField(
                 hintText: "New Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _newPassController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),
@@ -155,7 +155,7 @@ class _ResetPasswordState extends State<ResetPassword> {
             ),
             InputField(
                 hintText: "Confirm Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _conPassController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),

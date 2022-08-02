@@ -21,11 +21,11 @@ class RevenueCatProvider with ChangeNotifier {
   Future updatePurchaseStatus() async {
     // print("updatePurchaseStatus call in revenue");
     final purchaserInfo = await Purchases.getPurchaserInfo();
-    final entitlements = purchaserInfo.entitlements.active.values.toList();
+    bool entitlements =
+        purchaserInfo.entitlements.all["premium"]?.isActive ?? false;
     // print(entitlements.isNotEmpty);
-    _subscriptionStatus = entitlements.isEmpty
-        ? SubscriptionStatus.free
-        : SubscriptionStatus.premium;
+    _subscriptionStatus =
+        entitlements ? SubscriptionStatus.premium : SubscriptionStatus.free;
 
     notifyListeners();
   }

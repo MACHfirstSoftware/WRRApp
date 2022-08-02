@@ -58,6 +58,7 @@ class _CountySelectPageState extends State<CountySelectPage> {
                               ? Icons.keyboard_arrow_up_rounded
                               : Icons.keyboard_arrow_down_rounded,
                           color: AppColors.btnColor,
+                          size: 25.h,
                         ),
                       ]),
                 ),

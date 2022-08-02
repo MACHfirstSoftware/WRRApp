@@ -348,10 +348,10 @@ class _PostSharePageState extends State<PostSharePage> {
             border: Border.all(
               color: Colors.white,
               style: BorderStyle.solid,
-              width: 2.5.w,
+              width: 2.h,
             ),
             color: Colors.transparent,
-            borderRadius: BorderRadius.circular(5.w)),
+            borderRadius: BorderRadius.circular(5.h)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -359,7 +359,7 @@ class _PostSharePageState extends State<PostSharePage> {
             Icon(
               Icons.close_rounded,
               color: Colors.white,
-              size: 24.w,
+              size: 25.h,
             ),
             SizedBox(
               width: 10.w,
@@ -394,7 +394,7 @@ class _PostSharePageState extends State<PostSharePage> {
         width: 130.w,
         decoration: BoxDecoration(
             color: AppColors.btnColor,
-            borderRadius: BorderRadius.circular(5.w)),
+            borderRadius: BorderRadius.circular(5.h)),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -402,7 +402,7 @@ class _PostSharePageState extends State<PostSharePage> {
             Icon(
               Icons.check,
               color: Colors.white,
-              size: 24.w,
+              size: 25.h,
             ),
             SizedBox(
               width: 10.w,

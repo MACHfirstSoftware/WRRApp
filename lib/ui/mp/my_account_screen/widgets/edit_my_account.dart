@@ -233,7 +233,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               ),
               InputField(
                 hintText: "First Name",
-                prefixIconPath: "assets/icons/user.svg",
+                prefixIcon: Icons.person_outline_rounded,
                 controller: _firstNameController,
                 textInputType: TextInputType.text,
               ),
@@ -242,7 +242,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               ),
               InputField(
                 hintText: "Last Name",
-                prefixIconPath: "assets/icons/user.svg",
+                prefixIcon: Icons.person_outline_rounded,
                 controller: _lastNameController,
                 textInputType: TextInputType.text,
               ),
@@ -251,7 +251,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               ),
               InputField(
                 hintText: "Email/Login",
-                prefixIconPath: "assets/icons/mail.svg",
+                prefixIcon: Icons.mail_outline_rounded,
                 controller: _emailController,
                 textInputType: TextInputType.emailAddress,
               ),
@@ -260,7 +260,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               ),
               InputField(
                 hintText: "Handle Name",
-                prefixIconPath: "assets/icons/user.svg",
+                prefixIcon: Icons.person_outline_rounded,
                 controller: _personCodeController,
                 textInputType: TextInputType.text,
               ),
@@ -269,7 +269,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               ),
               InputField(
                 hintText: "Phone Number",
-                prefixIconPath: "assets/icons/phone.svg",
+                prefixIcon: Icons.phone_outlined,
                 controller: _phoneController,
                 textInputType: TextInputType.number,
               ),

@@ -6,9 +6,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/models/user.dart';
@@ -19,6 +19,7 @@ import 'package:wisconsin_app/ui/landing/auth_main_page/auth_main_page.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/change_password.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/edit_my_account.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/my_friends.dart';
+import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/my_subscription.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/privacy_policy.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_and_conditions.dart';
 import 'package:wisconsin_app/utils/common.dart';
@@ -47,9 +48,12 @@ class _MyAccountState extends State<MyAccount> {
   }
 
   _doLogout() async {
+    PageLoader.showLoader(context);
     Provider.of<RevenueCatProvider>(context, listen: false)
         .setSubscriptionStatus(SubscriptionStatus.free);
     await StoreUtils.removeUser();
+    await Purchases.logOut();
+    Navigator.pop(context);
     Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const AuthMainPage()),
@@ -167,7 +171,7 @@ class _MyAccountState extends State<MyAccount> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                height: 60.h,
+                height: 40.h,
               ),
 
               Container(
@@ -178,19 +182,44 @@ class _MyAccountState extends State<MyAccount> {
                     if (_subscriptionStatus == SubscriptionStatus.free)
                       Positioned(
                           top: 0.h,
-                          right: 75.w,
+                          right: 25.w,
                           child: GestureDetector(
                             onTap: () async {
                               SubscriptionUtil.getPlans(
                                   context: context, userId: userModel.user.id);
                             },
-                            child: SizedBox(
-                                height: 30.h,
-                                width: 30.h,
-                                child: SvgPicture.asset(
-                                  "assets/icons/premium.svg",
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 45.h,
+                              width: 100.w,
+                              decoration: BoxDecoration(
                                   color: AppColors.btnColor,
-                                )),
+                                  borderRadius: BorderRadius.circular(5.w)),
+                              child: SizedBox(
+                                height: 25.h,
+                                width: 80.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Upgrade",
+                                    style: TextStyle(
+                                        fontSize: 18.sp,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            // SizedBox(
+                            //     height: 30.h,
+                            //     width: 30.h,
+                            //     child: SvgPicture.asset(
+                            //       "assets/icons/premium.svg",
+                            //       color: AppColors.btnColor,
+                            //     )),
                           )),
                     Center(
                       child: SizedBox(
@@ -545,7 +574,11 @@ class _MyAccountState extends State<MyAccount> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const ChangePassword())))),
-                  // _buildTile("Subscription", Icons.price_check_rounded),
+                  _buildTile("My Subscription", Icons.price_check_rounded,
+                      onTap: (() => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const MySubscription())))),
                   // _buildTile("Notification Setting", Icons.notifications_none),
                   _buildTile("Privacy Policy", Icons.verified_user_outlined,
                       onTap: (() => Navigator.push(

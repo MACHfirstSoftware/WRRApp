@@ -201,25 +201,25 @@ class UserService {
     }
   }
 
-  static Future<bool> setAppUserId(
-      {required String userId, required String appUserId}) async {
-    // print("set app user id call");
-    try {
-      final response = await CustomHttp.getDio()
-          .patch(Constant.baseUrl + "/Person/$userId", data: [
-        {"path": "/appUserId", "op": "Add", "value": appUserId},
-      ]);
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      // print(e);
+  // static Future<bool> setAppUserId(
+  //     {required String userId, required String appUserId}) async {
+  //   // print("set app user id call");
+  //   try {
+  //     final response = await CustomHttp.getDio()
+  //         .patch(Constant.baseUrl + "/Person/$userId", data: [
+  //       {"path": "/appUserId", "op": "Add", "value": appUserId},
+  //     ]);
+  //     if (response.statusCode == 200) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } catch (e) {
+  //     // print(e);
 
-      return false;
-    }
-  }
+  //     return false;
+  //   }
+  // }
 
   static Future<Map<String, dynamic>> changePassword(
       String userName, String currentPassword, String newPassword) async {

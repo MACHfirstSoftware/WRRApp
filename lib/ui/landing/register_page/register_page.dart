@@ -378,7 +378,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Icon(
               Icons.arrow_forward_rounded,
               color: Colors.white,
-              size: 24.w,
+              size: 25.h,
             )
           ],
         ),
@@ -408,7 +408,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Icon(
               Icons.arrow_back_rounded,
               color: Colors.white,
-              size: 24.w,
+              size: 25.h,
             ),
             SizedBox(
               width: 10.w,

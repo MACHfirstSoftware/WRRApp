@@ -123,7 +123,7 @@ class _UserVerifyState extends State<UserVerify> {
             ),
             InputField(
               hintText: "Email",
-              prefixIconPath: "assets/icons/user.svg",
+              prefixIcon: Icons.person_outline_rounded,
               controller: _emailController,
               textInputType: TextInputType.emailAddress,
             ),

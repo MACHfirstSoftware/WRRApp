@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wisconsin_app/config.dart';
 
 class InputField extends StatefulWidget {
   final String hintText;
-  final String prefixIconPath;
+  final IconData prefixIcon;
   final TextEditingController controller;
   final TextInputType textInputType;
   final bool obscureText;
   const InputField({
     Key? key,
     required this.hintText,
-    required this.prefixIconPath,
+    required this.prefixIcon,
     required this.controller,
     required this.textInputType,
     this.obscureText = false,
@@ -60,12 +59,17 @@ class _InputFieldState extends State<InputField> {
         obscureText: widget.obscureText ? isHide : widget.obscureText,
         decoration: InputDecoration(
           prefixIcon: Padding(
-            padding: EdgeInsets.all(12.5.h),
-            child: SvgPicture.asset(
-              widget.prefixIconPath,
+            padding: EdgeInsets.all(10.h),
+            // child: SvgPicture.asset(
+            //   widget.prefixIconPath,
+            //   color: Colors.white,
+            //   width: 20.w,
+            //   height: 20.w,
+            // ),
+            child: Icon(
+              widget.prefixIcon,
               color: Colors.white,
-              width: 10.h,
-              height: 10.h,
+              size: 25.h,
             ),
           ),
           suffixIcon: widget.obscureText
@@ -74,16 +78,24 @@ class _InputFieldState extends State<InputField> {
                         isHide = !isHide;
                       })),
                   child: Padding(
-                    padding: EdgeInsets.all(10.w),
+                    padding: EdgeInsets.all(10.h),
                     child: Icon(
                       isHide
                           ? Icons.visibility_off_outlined
                           : Icons.visibility_outlined,
                       color: Colors.white,
+                      size: 25.h,
                     ),
                   ),
                 )
-              : null,
+              : Padding(
+                  padding: EdgeInsets.all(10.h),
+                  child: Icon(
+                    Icons.backspace_outlined,
+                    color: AppColors.backgroundColor,
+                    size: 20.h,
+                  ),
+                ),
           contentPadding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
           fillColor: Colors.transparent,
           filled: false,

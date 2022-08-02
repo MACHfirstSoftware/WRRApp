@@ -131,16 +131,16 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
             InputField(
                 hintText: "Current Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _oldPassController,
-                textInputType: TextInputType.visiblePassword,
+                textInputType: TextInputType.text,
                 obscureText: true),
             SizedBox(
               height: 20.h,
             ),
             InputField(
                 hintText: "New Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _newPassController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),
@@ -149,7 +149,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
             InputField(
                 hintText: "Confirm Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _conPassController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),

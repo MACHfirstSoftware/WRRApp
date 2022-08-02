@@ -113,29 +113,33 @@ class _LetsGoPageState extends State<LetsGoPage> {
                 PageLoader.showLoader(context);
                 final res = await PurchasesService.purchasePackage(package);
 
-                res.when(
-                    success: (PurchaserInfo info) async {
-                      await UserService.setAppUserId(
-                          userId: widget.userId,
-                          appUserId: info.originalAppUserId);
-                      await SubscriptionService.addSubscription(
-                          personId: widget.userId, isPremium: true);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
-                          context: context,
-                          type: SnackBarType.success,
-                          messageText: "Successfully subscribed"));
-                    },
-                    failure: (NetworkExceptions err) {},
-                    responseError: (ResponseError responseError) {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
-                          context: context,
-                          type: SnackBarType.error,
-                          messageText: responseError.error));
-                    });
+                res.when(success: (PurchaserInfo info) async {
+                  // await UserService.setAppUserId(
+                  //     userId: widget.userId,
+                  //     appUserId: info.originalAppUserId);
+                  await SubscriptionService.addSubscription(
+                      personId: widget.userId, isPremium: true);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.success,
+                      messageText: "Successfully subscribed"));
+                }, failure: (NetworkExceptions err) {
+                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.error,
+                      messageText: NetworkExceptions.getErrorMessage(err)));
+                }, responseError: (ResponseError responseError) {
+                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.error,
+                      messageText: responseError.error));
+                });
               },
             ));
   }
@@ -148,12 +152,11 @@ class _LetsGoPageState extends State<LetsGoPage> {
       await StoreUtils.saveUser(
           {"email": widget.email, "password": widget.password});
       Provider.of<UserProvider>(context, listen: false).setUser(user);
-      if (user.appUserId != null) {
-        final res = await PurchasesService.login(appUserId: user.appUserId!);
-        if (res) {
-          Provider.of<RevenueCatProvider>(context, listen: false)
-              .setSubscriptionStatus(SubscriptionStatus.premium);
-        }
+
+      final res = await PurchasesService.login(userId: user.id);
+      if (res) {
+        Provider.of<RevenueCatProvider>(context, listen: false)
+            .setSubscriptionStatus(SubscriptionStatus.premium);
       } else {
         Provider.of<RevenueCatProvider>(context, listen: false)
             .setSubscriptionStatus(SubscriptionStatus.free);

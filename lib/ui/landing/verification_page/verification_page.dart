@@ -143,7 +143,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 InputField(
                   hintText: "WRR Verification Code",
                   controller: _codeController,
-                  prefixIconPath: "assets/icons/pin-code.svg",
+                  prefixIcon: Icons.pin_outlined,
                   textInputType: TextInputType.number,
                 ),
                 SizedBox(

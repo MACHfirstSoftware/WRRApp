@@ -3,7 +3,6 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/services/purchases_service.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
-import 'package:wisconsin_app/services/user_service.dart';
 import 'package:wisconsin_app/ui/landing/subscription_page/paywall_widget.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
@@ -42,28 +41,32 @@ class SubscriptionUtil {
                 PageLoader.showLoader(context);
                 final res = await PurchasesService.purchasePackage(package);
 
-                res.when(
-                    success: (PurchaserInfo info) async {
-                      await UserService.setAppUserId(
-                          userId: userId, appUserId: info.originalAppUserId);
-                      await SubscriptionService.addSubscription(
-                          personId: userId, isPremium: true);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
-                          context: context,
-                          type: SnackBarType.success,
-                          messageText: "Successfully subscribed"));
-                    },
-                    failure: (NetworkExceptions err) {},
-                    responseError: (ResponseError responseError) {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
-                          context: context,
-                          type: SnackBarType.error,
-                          messageText: responseError.error));
-                    });
+                res.when(success: (PurchaserInfo info) async {
+                  // await UserService.setAppUserId(
+                  //     userId: userId, appUserId: info.originalAppUserId);
+                  await SubscriptionService.addSubscription(
+                      personId: userId, isPremium: true);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.success,
+                      messageText: "Successfully subscribed"));
+                }, failure: (NetworkExceptions err) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.error,
+                      messageText: NetworkExceptions.getErrorMessage(err)));
+                }, responseError: (ResponseError responseError) {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
+                      context: context,
+                      type: SnackBarType.error,
+                      messageText: responseError.error));
+                });
               },
             ));
   }

@@ -23,7 +23,7 @@ class User {
       this.isFollowed = false,
       this.phoneMobile = "",
       // this.subscriptionPerson,
-      this.appUserId,
+      // this.appUserId,
       this.answerId});
 
   String id;
@@ -42,7 +42,7 @@ class User {
   bool isOptIn;
   bool isFollowed;
   String phoneMobile;
-  String? appUserId;
+  // String? appUserId;
   // List<SubscriptionPerson>? subscriptionPerson;
   int? answerId;
 
@@ -67,7 +67,7 @@ class User {
         //             SubscriptionPerson.fromJson(e as Map<String, dynamic>))
         //         .toList()
         //     : null,
-        appUserId: json["appUserId"],
+        // appUserId: json["appUserId"],
         answerId: json["answer"] != null ? json["answer"]["id"] : null,
       );
 

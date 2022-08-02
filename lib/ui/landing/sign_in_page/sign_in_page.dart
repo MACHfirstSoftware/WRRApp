@@ -103,12 +103,11 @@ class _SignInPageState extends State<SignInPage> {
           });
         }
         Provider.of<UserProvider>(context, listen: false).setUser(user);
-        if (user.appUserId != null) {
-          final res = await PurchasesService.login(appUserId: user.appUserId!);
-          if (res) {
-            Provider.of<RevenueCatProvider>(context, listen: false)
-                .setSubscriptionStatus(SubscriptionStatus.premium);
-          }
+
+        final res = await PurchasesService.login(userId: user.id);
+        if (res) {
+          Provider.of<RevenueCatProvider>(context, listen: false)
+              .setSubscriptionStatus(SubscriptionStatus.premium);
         } else {
           Provider.of<RevenueCatProvider>(context, listen: false)
               .setSubscriptionStatus(SubscriptionStatus.free);
@@ -166,7 +165,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 InputField(
                   hintText: "Email",
-                  prefixIconPath: "assets/icons/user.svg",
+                  prefixIcon: Icons.person_outline_rounded,
                   controller: _emailController,
                   textInputType: TextInputType.emailAddress,
                 ),
@@ -175,7 +174,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 InputField(
                     hintText: "Password",
-                    prefixIconPath: "assets/icons/lock.svg",
+                    prefixIcon: Icons.lock_outline_rounded,
                     controller: _passwordController,
                     textInputType: TextInputType.visiblePassword,
                     obscureText: true),
@@ -189,22 +188,22 @@ class _SignInPageState extends State<SignInPage> {
                     GestureDetector(
                       onTap: () => _saveAccountInfoFunc(),
                       child: SizedBox(
-                          height: 25.w,
-                          width: 25.w,
+                          height: 25.h,
+                          width: 25.h,
                           child: Container(
                             decoration: BoxDecoration(
                                 border: Border.all(
                                   color: AppColors.btnColor,
                                   style: BorderStyle.solid,
-                                  width: 2.5.w,
+                                  width: 2.h,
                                 ),
                                 color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(5.w)),
+                                borderRadius: BorderRadius.circular(5.h)),
                             child: _saveAccountInfo
                                 ? Icon(
                                     Icons.check,
                                     color: AppColors.btnColor,
-                                    size: 20.w,
+                                    size: 20.h,
                                   )
                                 : null,
                           )),

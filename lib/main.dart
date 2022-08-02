@@ -59,8 +59,8 @@ void main() async {
     });
   }
 
-  if (_user?.appUserId != null) {
-    final res = await PurchasesService.login(appUserId: _user!.appUserId!);
+  if (_user != null) {
+    final res = await PurchasesService.login(userId: _user!.id);
     // print("RES : $res");
     if (res) {
       // print("LOGIN MAIN");

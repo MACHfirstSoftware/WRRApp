@@ -64,7 +64,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
               hintText: "First Name",
-              prefixIconPath: "assets/icons/user.svg",
+              prefixIcon: Icons.person_outline_rounded,
               controller: _firstNameController,
               textInputType: TextInputType.text,
             ),
@@ -73,7 +73,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
               hintText: "Last Name",
-              prefixIconPath: "assets/icons/user.svg",
+              prefixIcon: Icons.person_outline_rounded,
               controller: _lastNameController,
               textInputType: TextInputType.text,
             ),
@@ -82,7 +82,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
               hintText: "Email",
-              prefixIconPath: "assets/icons/mail.svg",
+              prefixIcon: Icons.mail_outline_rounded,
               controller: _emailController,
               textInputType: TextInputType.emailAddress,
             ),
@@ -91,7 +91,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
               hintText: "Phone Number",
-              prefixIconPath: "assets/icons/phone.svg",
+              prefixIcon: Icons.phone_outlined,
               controller: _phoneController,
               textInputType: TextInputType.number,
             ),
@@ -100,7 +100,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
                 hintText: "Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _passwordController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),
@@ -109,7 +109,7 @@ class CollectDetailsPage extends StatelessWidget {
             ),
             InputField(
                 hintText: "Confirm Password",
-                prefixIconPath: "assets/icons/lock.svg",
+                prefixIcon: Icons.lock_outline_rounded,
                 controller: _confirmPasswordController,
                 textInputType: TextInputType.visiblePassword,
                 obscureText: true),
@@ -128,22 +128,22 @@ class CollectDetailsPage extends StatelessWidget {
                       registerProvider.sendMeUpdatesFunc();
                     },
                     child: SizedBox(
-                        height: 25.w,
-                        width: 25.w,
+                        height: 25.h,
+                        width: 25.h,
                         child: Container(
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: AppColors.btnColor,
                                 style: BorderStyle.solid,
-                                width: 2.5.w,
+                                width: 2.h,
                               ),
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(5.w)),
+                              borderRadius: BorderRadius.circular(5.h)),
                           child: registerProvider.sendMeUpdates
                               ? Icon(
                                   Icons.check,
                                   color: AppColors.btnColor,
-                                  size: 20.w,
+                                  size: 20.h,
                                 )
                               : null,
                         )),
@@ -181,22 +181,22 @@ class CollectDetailsPage extends StatelessWidget {
                       registerProvider.acceptTermsFunc();
                     },
                     child: SizedBox(
-                        height: 25.w,
-                        width: 25.w,
+                        height: 25.h,
+                        width: 25.h,
                         child: Container(
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: AppColors.btnColor,
                                 style: BorderStyle.solid,
-                                width: 2.5.w,
+                                width: 2.h,
                               ),
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(5.w)),
+                              borderRadius: BorderRadius.circular(5.h)),
                           child: registerProvider.acceptTermsCondition
                               ? Icon(
                                   Icons.check,
                                   color: AppColors.btnColor,
-                                  size: 20.w,
+                                  size: 20.h,
                                 )
                               : null,
                         )),

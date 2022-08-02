@@ -362,17 +362,15 @@ class _PostViewState extends State<PostView> {
                             SizedBox(
                               width: 5.w,
                             ),
-                            Expanded(
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  "Comments",
-                                  style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: AppColors.iconGrey,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.center,
-                                ),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                "Comments",
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    color: AppColors.iconGrey,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],
