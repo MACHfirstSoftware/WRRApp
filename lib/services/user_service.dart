@@ -147,7 +147,7 @@ class UserService {
       String lastName,
       String email,
       String code,
-      String phone,
+      // String phone,
       int countyId,
       int regionId) async {
     try {
@@ -158,7 +158,7 @@ class UserService {
         {"path": "/emailAddress", "op": "Add", "value": email},
         {"path": "/username", "op": "Add", "value": email},
         {"path": "/code", "op": "Add", "value": code},
-        {"path": "/phoneMobile", "op": "Add", "value": phone},
+        // {"path": "/phoneMobile", "op": "Add", "value": phone},
         {"path": "/countyId", "op": "Add", "value": countyId},
         {"path": "/regionId", "op": "Add", "value": regionId},
       ]);

@@ -1,8 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:purchases_flutter/object_wrappers.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/services/subscription_service.dart';
+import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 
 class PaywalWidget extends StatefulWidget {
@@ -69,34 +71,6 @@ class _PaywalWidgetState extends State<PaywalWidget> {
           SizedBox(
             height: 10.h,
           ),
-          // GestureDetector(
-          //   onTap: () async {
-          //     PageLoader.showLoader(context);
-          //     await SubscriptionService.addSubscription(
-          //         personId: widget.personId, isPremium: false);
-          //     Navigator.pop(context);
-          //     Navigator.pop(context);
-          //   },
-          //   child: SizedBox(
-          //     width: 300.w,
-          //     height: 25.h,
-          //     child: FittedBox(
-          //       fit: BoxFit.scaleDown,
-          //       alignment: Alignment.center,
-          //       child: Text(
-          //         // "product.description",
-          //         "Continue as a free membership",
-          //         style: TextStyle(
-          //           fontSize: 14.sp,
-          //           color: AppColors.btnColor,
-          //           fontWeight: FontWeight.w500,
-          //           decoration: TextDecoration.underline,
-          //         ),
-          //         textAlign: TextAlign.center,
-          //       ),
-          //     ),
-          //   ),
-          // ),
           Card(
             color: Colors.white10,
             shape: RoundedRectangleBorder(
@@ -118,26 +92,83 @@ class _PaywalWidgetState extends State<PaywalWidget> {
                     textAlign: TextAlign.left,
                   ),
                 ),
-                subtitle: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    // product.description,
-                    "Limited: Forum Access Only.",
-                    style: TextStyle(
-                        fontSize: 14.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.left,
-                  ),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Limited: Forum Access Only.",
+                        // "Unlimited Access. Enjoy all the benefits of the WRR including entry into the Big Buck contest, access to exclusive sponsor discounts, real time weather, and up to date county by county reports from fellow hunters.",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w400),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: RichText(
+                        text: TextSpan(
+                            text: "Terms of Service ",
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => UtilCommon.launchAnUrl(
+                                  "https://www.iubenda.com/terms-and-conditions/31336910"),
+                            style: TextStyle(
+                                fontSize: 12.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w400),
+                            children: [
+                              TextSpan(
+                                text: " and ",
+                                style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              TextSpan(
+                                text: " Privacy Policy",
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => UtilCommon.launchAnUrl(
+                                      "https://wisconsinrutreport.com/privacy-policy/"),
+                                style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: AppColors.btnColor,
+                                    fontWeight: FontWeight.w400),
+                              )
+                            ]),
+                      ),
+                    ),
+                  ],
                 ),
+                isThreeLine: true,
+                // subtitle: FittedBox(
+                //   fit: BoxFit.scaleDown,
+                //   alignment: Alignment.centerLeft,
+                //   child: Text(
+                //     // product.description,
+                //     "Limited: Forum Access Only.",
+                //     style: TextStyle(
+                //         fontSize: 14.sp,
+                //         color: Colors.white,
+                //         fontWeight: FontWeight.w400),
+                //     textAlign: TextAlign.left,
+                //   ),
+                // ),
                 trailing: FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerRight,
                   child: Text(
-                    "\$00.00",
+                    "\$00.00 / Lifetime",
                     style: TextStyle(
-                        fontSize: 14.sp,
+                        fontSize: 12.sp,
                         color: Colors.white,
                         fontWeight: FontWeight.w400),
                     textAlign: TextAlign.right,
@@ -194,27 +225,70 @@ class _PaywalWidgetState extends State<PaywalWidget> {
               textAlign: TextAlign.left,
             ),
           ),
-          subtitle: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              product.description,
-              // "Unlimited Access. Enjoy all the benefits of the WRR including entry into the Big Buck contest, access to exclusive sponsor discounts, real time weather, and up to date county by county reports from fellow hunters.",
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400),
-              textAlign: TextAlign.left,
-              maxLines: 3,
-            ),
+          subtitle: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  product.description,
+                  // "Unlimited Access. Enjoy all the benefits of the WRR including entry into the Big Buck contest, access to exclusive sponsor discounts, real time weather, and up to date county by county reports from fellow hunters.",
+                  style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w400),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.center,
+                child: RichText(
+                  text: TextSpan(
+                      text: "Terms of Service ",
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () => UtilCommon.launchAnUrl(
+                            "https://www.iubenda.com/terms-and-conditions/31336910"),
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w400),
+                      children: [
+                        TextSpan(
+                          text: " and ",
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        TextSpan(
+                          text: " Privacy Policy",
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () => UtilCommon.launchAnUrl(
+                                "https://wisconsinrutreport.com/privacy-policy/"),
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w400),
+                        )
+                      ]),
+                ),
+              ),
+            ],
           ),
+          isThreeLine: true,
           trailing: FittedBox(
             fit: BoxFit.scaleDown,
             alignment: Alignment.centerRight,
             child: Text(
-              product.priceString,
+              product.priceString + " / Year",
               style: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: 12.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w400),
               textAlign: TextAlign.right,

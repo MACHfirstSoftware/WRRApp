@@ -85,6 +85,7 @@ class _LetsGoPageState extends State<LetsGoPage> {
 
   _getPlans() async {
     PageLoader.showLoader(context);
+    await PurchasesService.login(userId: widget.userId);
     final offerings = await PurchasesService.fetchOffers();
     Navigator.pop(context);
     if (offerings.isEmpty) {
@@ -127,14 +128,12 @@ class _LetsGoPageState extends State<LetsGoPage> {
                       messageText: "Successfully subscribed"));
                 }, failure: (NetworkExceptions err) {
                   Navigator.pop(context);
-                  // Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
                       context: context,
                       type: SnackBarType.error,
                       messageText: NetworkExceptions.getErrorMessage(err)));
                 }, responseError: (ResponseError responseError) {
                   Navigator.pop(context);
-                  // Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(customSnackBar(
                       context: context,
                       type: SnackBarType.error,

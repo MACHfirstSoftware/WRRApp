@@ -126,6 +126,23 @@ class _PostViewState extends State<PostView> {
     }
   }
 
+  _blockUser() async {
+    PageLoader.showLoader(context);
+    final res = await PostService.blockUser(_user.id, widget.post.personId);
+    Navigator.pop(context);
+    if (res) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Successfully blocked",
+          type: SnackBarType.success));
+    } else {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Blocking unsuccessful",
+          type: SnackBarType.error));
+    }
+  }
+
   _deletePost() async {
     PageLoader.showLoader(context);
     final res = await PostService.postDelete(widget.post.id);
@@ -668,7 +685,7 @@ class _PostViewState extends State<PostView> {
                   if (isOwner && _user.id != widget.post.personId)
                     PopupMenuItem<String>(
                       value: "Report",
-                      height: 20.h,
+                      height: 30.h,
                       padding: EdgeInsets.zero,
                       child: Center(
                         child: SizedBox(
@@ -700,6 +717,50 @@ class _PostViewState extends State<PostView> {
                                   child: Icon(
                                     Icons.error_rounded,
                                     color: Colors.white,
+                                    size: 20.w,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (isOwner && _user.id != widget.post.personId)
+                    PopupMenuItem<String>(
+                      value: "Block",
+                      height: 30.h,
+                      padding: EdgeInsets.zero,
+                      child: Center(
+                        child: SizedBox(
+                          width: 100.w,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 80.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Block",
+                                    style: TextStyle(
+                                        fontSize: 15.sp,
+                                        color: Colors.redAccent,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Icon(
+                                    Icons.person_off_rounded,
+                                    color: Colors.redAccent,
                                     size: 20.w,
                                   ),
                                 ),
@@ -806,6 +867,15 @@ class _PostViewState extends State<PostView> {
                             title: "Report",
                             message: "Do you want to report post?",
                             leftBtnText: "Report",
+                            rightBtnText: "Cancel")));
+                  }
+                  if (value == "Block") {
+                    Navigator.of(context).push(HeroDialogRoute(
+                        builder: (context) => ConfirmationPopup(
+                            onTap: _blockUser,
+                            title: "Block User",
+                            message: "Do you want to block this user?",
+                            leftBtnText: "Block",
                             rightBtnText: "Cancel")));
                   }
                   if (value == "Edit") {

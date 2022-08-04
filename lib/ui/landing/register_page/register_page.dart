@@ -9,12 +9,11 @@ import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/register_provider.dart';
 import 'package:wisconsin_app/services/questionnaire_service.dart';
 import 'package:wisconsin_app/services/user_service.dart';
-import 'package:wisconsin_app/services/verfication_service.dart';
+import 'package:wisconsin_app/ui/landing/register_page/lets_go_page.dart';
 import 'package:wisconsin_app/ui/landing/register_page/widgets/collect_details_page.dart';
 import 'package:wisconsin_app/ui/landing/register_page/widgets/county_select_page.dart';
 import 'package:wisconsin_app/ui/landing/register_page/widgets/page_stepper.dart';
 import 'package:wisconsin_app/ui/landing/register_page/widgets/question_page.dart';
-import 'package:wisconsin_app/ui/landing/verification_page/verification_page.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
@@ -36,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  late TextEditingController _phoneController;
+  // late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   // bool _sendMeUpdates = false;
@@ -47,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    _phoneController = TextEditingController();
+    // _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _init();
@@ -69,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
           firstNameController: _firstNameController,
           lastNameController: _lastNameController,
           emailController: _emailController,
-          phoneController: _phoneController,
+          // phoneController: _phoneController,
           passwordController: _passwordController,
           confirmPasswordController: _confirmPasswordController,
           // sendMeUpdates: _sendMeUpdates,
@@ -86,6 +85,11 @@ class _RegisterPageState extends State<RegisterPage> {
   void dispose() {
     super.dispose();
     _pageController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
   }
 
   // _sendMeUpdatesFunc() {
@@ -150,22 +154,22 @@ class _RegisterPageState extends State<RegisterPage> {
           type: SnackBarType.error));
       return false;
     }
-    if (_phoneController.text.trim().isEmpty) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    // if (!RegExp(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
-    //     .hasMatch(_phoneController.text.trim())) {
-    if (_phoneController.text.trim().length != 12) {
-      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Phone number is invalid",
-          type: SnackBarType.error));
-      return false;
-    }
+    // if (_phoneController.text.trim().isEmpty) {
+    //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Phone number is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    // // if (!RegExp(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
+    // //     .hasMatch(_phoneController.text.trim())) {
+    // if (_phoneController.text.trim().length != 12) {
+    //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Phone number is invalid",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
     if (_passwordController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -235,16 +239,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 .selectedAnswers);
 
         // _userId = userId;
-        await VerficationService.sendCode(userId, _phoneController.text.trim(),
-            isReset: false);
+        // await VerficationService.sendCode(userId, _phoneController.text.trim(),
+        //     isReset: false);
         Provider.of<RegisterProvider>(context, listen: false).clearData();
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
-                builder: (context) => VerificationPage(
+                builder: (context) => LetsGoPage(
                       userId: userId,
-                      phoneNumber: _phoneController.text,
                       email: _emailController.text,
                       password: _passwordController.text,
                     )),

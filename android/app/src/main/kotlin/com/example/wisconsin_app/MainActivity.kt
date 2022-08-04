@@ -1,4 +1,4 @@
-package com.example.wisconsin_app
+package com.wisconsinrutreport.wrrapp
 
 import io.flutter.embedding.android.FlutterActivity
 

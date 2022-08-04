@@ -15,7 +15,7 @@ class CollectDetailsPage extends StatelessWidget {
     required TextEditingController firstNameController,
     required TextEditingController lastNameController,
     required TextEditingController emailController,
-    required TextEditingController phoneController,
+    // required TextEditingController phoneController,
     required TextEditingController passwordController,
     required TextEditingController confirmPasswordController,
     // required bool sendMeUpdates,
@@ -23,7 +23,7 @@ class CollectDetailsPage extends StatelessWidget {
   })  : _firstNameController = firstNameController,
         _lastNameController = lastNameController,
         _emailController = emailController,
-        _phoneController = phoneController,
+        // _phoneController = phoneController,
         _passwordController = passwordController,
         _confirmPasswordController = confirmPasswordController,
         // _sendMeUpdates = sendMeUpdates,
@@ -33,7 +33,7 @@ class CollectDetailsPage extends StatelessWidget {
   final TextEditingController _firstNameController;
   final TextEditingController _lastNameController;
   final TextEditingController _emailController;
-  final TextEditingController _phoneController;
+  // final TextEditingController _phoneController;
   final TextEditingController _passwordController;
   final TextEditingController _confirmPasswordController;
   // final bool _sendMeUpdates;
@@ -92,15 +92,15 @@ class CollectDetailsPage extends StatelessWidget {
               SizedBox(
                 height: 20.h,
               ),
-              InputField(
-                hintText: "Phone Number",
-                prefixIcon: Icons.phone_outlined,
-                controller: _phoneController,
-                textInputType: TextInputType.number,
-              ),
-              SizedBox(
-                height: 20.h,
-              ),
+              // InputField(
+              //   hintText: "Phone Number",
+              //   prefixIcon: Icons.phone_outlined,
+              //   controller: _phoneController,
+              //   textInputType: TextInputType.number,
+              // ),
+              // SizedBox(
+              //   height: 20.h,
+              // ),
               InputField(
                   hintText: "Password",
                   prefixIcon: Icons.lock_outline_rounded,

@@ -464,6 +464,23 @@ class PostService {
     }
   }
 
+  static Future<bool> blockUser(String personId, String blockPersonId) async {
+    try {
+      final response = await CustomHttp.getDio().post(Constant.baseUrl +
+          "/PersonBlock?personId=$personId&blockPersonId=$blockPersonId");
+
+      // print(response.statusCode);
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      // print(e);
+      return false;
+    }
+  }
+
   static Future<bool> editComment(int id, String value) async {
     // print("$id : $value");
     try {

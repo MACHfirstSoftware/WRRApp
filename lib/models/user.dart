@@ -21,7 +21,7 @@ class User {
       this.regionName,
       required this.isOptIn,
       this.isFollowed = false,
-      this.phoneMobile = "",
+      // this.phoneMobile = "",
       // this.subscriptionPerson,
       // this.appUserId,
       this.answerId});
@@ -41,7 +41,7 @@ class User {
   String? regionName;
   bool isOptIn;
   bool isFollowed;
-  String phoneMobile;
+  // String phoneMobile;
   // String? appUserId;
   // List<SubscriptionPerson>? subscriptionPerson;
   int? answerId;
@@ -60,7 +60,7 @@ class User {
         regionId: json["regionId"],
         isOptIn: json["isOptIn"],
         isFollowed: json["isFollowed"] ?? false,
-        phoneMobile: json["phoneMobile"] ?? "",
+        // phoneMobile: json["phoneMobile"] ?? "",
         // subscriptionPerson: json["subscriptionPerson"] != null
         //     ? (json["subscriptionPerson"] as List<dynamic>)
         //         .map((e) =>
@@ -85,6 +85,6 @@ class User {
         "regionId": regionId,
         "isOptIn": isOptIn,
         "isFollowed": isFollowed,
-        "phoneMobile": phoneMobile
+        // "phoneMobile": phoneMobile
       };
 }

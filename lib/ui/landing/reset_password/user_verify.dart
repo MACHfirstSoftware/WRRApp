@@ -4,7 +4,6 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/services/user_service.dart';
-import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/reset_password/reset_password.dart';
@@ -60,26 +59,28 @@ class _UserVerifyState extends State<UserVerify> {
       PageLoader.showLoader(context);
       final res = await UserService.verifyUser(_emailController.text.trim());
       res.when(success: (User user) async {
-        final otpSend = await VerficationService.sendCode(
-            user.id, user.phoneMobile,
-            isReset: true);
+        // final otpSend = await VerficationService.sendCode(
+        //     user.id, user.phoneMobile,
+        //     isReset: true);
         Navigator.pop(context);
-        if (otpSend) {
-          PageLoader.showTransparentLoader(context);
-          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-              context: context,
-              messageText: "OTP has been send to your mobile",
-              type: SnackBarType.success));
-          await Future.delayed(const Duration(seconds: 2));
-          Navigator.pop(context);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
-        } else {
-          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-              context: context,
-              messageText: "Couldn't send OTP",
-              type: SnackBarType.error));
-        }
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
+        // if (otpSend) {
+        //   PageLoader.showTransparentLoader(context);
+        //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+        //       context: context,
+        //       messageText: "OTP has been send to your mobile",
+        //       type: SnackBarType.success));
+        //   await Future.delayed(const Duration(seconds: 2));
+        //   Navigator.pop(context);
+        //   Navigator.pushReplacement(context,
+        //       MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
+        // } else {
+        //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+        //       context: context,
+        //       messageText: "Couldn't send OTP",
+        //       type: SnackBarType.error));
+        // }
       }, failure: (NetworkExceptions error) {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(

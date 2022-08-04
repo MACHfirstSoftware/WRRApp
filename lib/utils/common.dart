@@ -87,7 +87,7 @@ class UtilCommon {
     if (!await launchUrl(
       uri,
     )) {
-      // print("Couldn't launch");
+      print("Couldn't launch");
     }
   }
 }
