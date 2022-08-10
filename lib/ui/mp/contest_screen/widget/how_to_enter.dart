@@ -32,7 +32,7 @@ class HowToEnterPage extends StatelessWidget {
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">&nbsp;</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);"><u>Zone 1 Firearm</u></span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">1st &nbsp; &nbsp; &nbsp; \$2,500.00</span></p>
-<p style="text-align: left;"><span style="color: rgb(239, 239, 239);">2nd &nbsp; &nbsp; &nbsp;Jon Boat (Brand/Model)?</span></p>
+<p style="text-align: left;"><span style="color: rgb(239, 239, 239);">2nd &nbsp; &nbsp; &nbsp;Jon Boat (PolarKraft 1448 Jon Boat)</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">3rd &nbsp; &nbsp; &nbsp; Vortex Viper HS 2.5- 10x44 Scope</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">4th &nbsp; &nbsp; &nbsp; Seven Oakes Taxidermy Shoulder Mount</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">5th &nbsp; &nbsp; &nbsp; Ozonics HR500&nbsp;</span></p>
@@ -48,7 +48,7 @@ class HowToEnterPage extends StatelessWidget {
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">&nbsp;</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);"><u>Zone 2 Firearm</u></span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">1st &nbsp; &nbsp; &nbsp; Redneck 6x7 Big Country Platinum Blind&nbsp;</span></p>
-<p style="text-align: left;"><span style="color: rgb(239, 239, 239);">2nd &nbsp; &nbsp; &nbsp;Jon Boat (Brand/Model?)</span></p>
+<p style="text-align: left;"><span style="color: rgb(239, 239, 239);">2nd &nbsp; &nbsp; &nbsp;Jon Boat (PolarKraft 1448 Jon Boat)</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">3rd &nbsp; &nbsp; &nbsp; Seven Oakes Taxidermy Shoulder Mount</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">5</span><span style="color: rgb(239, 239, 239);">th &nbsp; &nbsp; &nbsp; Ozonics HR500 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</span></p>
 <p style="text-align: left;"><span style="color: rgb(239, 239, 239);">5th &nbsp; &nbsp; &nbsp; Vortex Viper Binoculars 10x42&nbsp;</span></p>

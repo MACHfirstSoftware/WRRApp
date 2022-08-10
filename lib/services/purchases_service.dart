@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -10,7 +11,9 @@ import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 class PurchasesService {
   static Future init() async {
     await Purchases.setDebugLogsEnabled(true);
-    await Purchases.setup(Constant.revenueCatApiKey);
+    await Purchases.setup(Platform.isAndroid
+        ? Constant.revenueCatApiKeyPlayStore
+        : Constant.revenueCatApiKeyAppStore);
   }
 
   static Future<List<Offering>> fetchOffers() async {

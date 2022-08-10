@@ -74,6 +74,7 @@ class PostService {
               ? "?lastRecordTime=$lastRecordTime&regionId=0"
               : "?regionId=0"));
       if (response.statusCode == 200) {
+        // print(response.data);
         return ApiResult.success(
             data: (response.data as List<dynamic>)
                 .map((d) => Post.fromJson(d as Map<String, dynamic>))

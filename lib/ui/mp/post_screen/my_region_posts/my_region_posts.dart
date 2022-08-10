@@ -42,6 +42,7 @@ class _MyRegionPostsState extends State<MyRegionPosts>
           Provider.of<RegionPostProvider>(context, listen: false);
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
+          // scrollController.position.outOfRange &&
           !postProvider.allPostLoaded) {
         // print("data loading");
         setState(() {
@@ -52,11 +53,13 @@ class _MyRegionPostsState extends State<MyRegionPosts>
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           // print(postsList.length);
+          postProvider.postsOfRegion.addAll(postsList);
+          if (postsList.isNotEmpty) {
+            postProvider.lastRecordTime = postsList.last.createdOn;
+          }
+
           if (postsList.length < 10) {
             postProvider.allPostLoaded = true;
-          } else {
-            postProvider.postsOfRegion.addAll(postsList);
-            postProvider.lastRecordTime = postsList.last.createdOn;
           }
           setState(() {
             onLoading = false;

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -87,7 +88,9 @@ class UtilCommon {
     if (!await launchUrl(
       uri,
     )) {
-      print("Couldn't launch");
+      if (kDebugMode) {
+        print("Couldn't launch");
+      }
     }
   }
 }

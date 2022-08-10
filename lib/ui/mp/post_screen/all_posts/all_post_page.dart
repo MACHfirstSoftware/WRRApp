@@ -41,8 +41,9 @@ class _AllPostsPageState extends State<AllPostsPage>
       final postProvider = Provider.of<AllPostProvider>(context, listen: false);
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
+          // scrollController.position.outOfRange &&
           !postProvider.allPostLoaded) {
-        // print("data loading");
+        // print(scrollController.position.outOfRange);
         setState(() {
           onLoading = true;
         });
@@ -50,11 +51,13 @@ class _AllPostsPageState extends State<AllPostsPage>
             lastRecordTime: postProvider.lastRecordTime);
         postResponse.when(success: (List<Post> postsList) async {
           // print(postsList.length);
+          postProvider.allPosts.addAll(postsList);
+          if (postsList.isNotEmpty) {
+            postProvider.lastRecordTime = postsList.last.createdOn;
+          }
+
           if (postsList.length < 10) {
             postProvider.allPostLoaded = true;
-          } else {
-            postProvider.allPosts.addAll(postsList);
-            postProvider.lastRecordTime = postsList.last.createdOn;
           }
           setState(() {
             onLoading = false;
