@@ -43,14 +43,14 @@ class VerficationService {
       final response = await CustomHttp.getDio().post(
         Constant.baseUrl + "/VerifyCode/$id/$code",
       );
-      print(response.statusCode);
+      // print(response.statusCode);
       if (response.data == "validation Successful") {
         return true;
       } else {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return false;
     }
   }

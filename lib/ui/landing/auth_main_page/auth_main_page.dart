@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
-import 'package:wisconsin_app/widgets/video_test.dart';
 
 class AuthMainPage extends StatefulWidget {
   const AuthMainPage({Key? key}) : super(key: key);

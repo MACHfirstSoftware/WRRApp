@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
-import 'package:wisconsin_app/models/user.dart';
+// import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/contest_provider.dart';
-import 'package:wisconsin_app/providers/user_provider.dart';
+// import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/ui/mp/contest_screen/widget/contest_post_view.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
 
@@ -22,11 +22,11 @@ class _LeaderboardState extends State<Leaderboard>
   bool keepAlive = true;
   late RefreshController _refreshController;
   late RefreshController _refreshController2;
-  late User _user;
+  // late User _user; //Un comment when deer season is available.
 
   @override
   void initState() {
-    _user = Provider.of<UserProvider>(context, listen: false).user;
+    // _user = Provider.of<UserProvider>(context, listen: false).user; //Un comment when deer season is available.
     _refreshController = RefreshController(initialRefresh: false);
     _refreshController2 = RefreshController(initialRefresh: false);
     _init(isInit: true);

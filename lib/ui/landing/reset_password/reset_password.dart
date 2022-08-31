@@ -45,7 +45,7 @@ class _ResetPasswordState extends State<ResetPassword> {
     if (_otpController.text.trim().isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
-          messageText: "OTP code required",
+          messageText: "Verification Code required",
           type: SnackBarType.error));
       return false;
     }
@@ -138,7 +138,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                 height: 55.h,
               ),
               InputField(
-                hintText: "OTP Code",
+                hintText: "Verification Code",
                 controller: _otpController,
                 prefixIcon: Icons.pin_outlined,
                 textInputType: TextInputType.number,

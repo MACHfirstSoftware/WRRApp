@@ -195,7 +195,7 @@ class UserService {
         return false;
       }
     } catch (e) {
-      print(e);
+      // print(e);
 
       return false;
     }
@@ -291,15 +291,15 @@ class UserService {
       final response = await CustomHttp.getDio()
           .get(Constant.baseUrl + "/GetVerificationOptions/$userId");
       if (response.statusCode == 200) {
-        // return ((response.data) as List<dynamic>)
-        //     .map((e) => e.toString())
-        //     .toList();
-        return ["Email"];
+        return ((response.data) as List<dynamic>)
+            .map((e) => e.toString())
+            .toList();
+        // return ["Email"];
       } else {
         return [];
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return [];
     }
   }

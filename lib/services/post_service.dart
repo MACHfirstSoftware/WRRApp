@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
@@ -218,7 +217,7 @@ class PostService {
   }
 
   static Future<void> addPostVideo(String path) async {
-    print(path);
+    // print(path);
     FormData formData = FormData.fromMap({
       "file": MultipartFile.fromFileSync(path, filename: "abc.mp4"),
     });
@@ -232,12 +231,12 @@ class PostService {
         //     contentType: "multipart/form-data")
       );
       if (response.statusCode == 200) {
-        print(response.data);
+        // print(response.data);
       } else {
-        print(response.data);
+        // print(response.data);
       }
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 

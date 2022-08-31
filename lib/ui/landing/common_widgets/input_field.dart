@@ -40,7 +40,11 @@ class _InputFieldState extends State<InputField> {
                   separator: separator,
                 )
               ]
-            : null,
+            : widget.hintText == "Verification Code"
+                ? <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly,
+                  ]
+                : null,
         toolbarOptions: widget.hintText == "Phone Number"
             ? const ToolbarOptions(
                 copy: true,

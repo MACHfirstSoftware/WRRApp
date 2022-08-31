@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  late TextEditingController _phoneController;
+  // late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   // bool _sendMeUpdates = false;
@@ -46,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    _phoneController = TextEditingController();
+    // _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _init();

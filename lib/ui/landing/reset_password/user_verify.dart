@@ -266,7 +266,7 @@ class _UserVerifyState extends State<UserVerify> {
         PageLoader.showTransparentLoader(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "OTP has been send to your email",
+            messageText: "Verification code has been send to your email",
             type: SnackBarType.success));
         await Future.delayed(const Duration(seconds: 2));
         Navigator.pop(context);
@@ -275,7 +275,7 @@ class _UserVerifyState extends State<UserVerify> {
       } else {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Couldn't send OTP",
+            messageText: "Couldn't send verification code",
             type: SnackBarType.error));
       }
     }
@@ -289,7 +289,7 @@ class _UserVerifyState extends State<UserVerify> {
         PageLoader.showTransparentLoader(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "OTP has been send to your phone",
+            messageText: "Verification code has been send to your phone",
             type: SnackBarType.success));
         await Future.delayed(const Duration(seconds: 2));
         Navigator.pop(context);
@@ -298,7 +298,7 @@ class _UserVerifyState extends State<UserVerify> {
       } else {
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Couldn't send OTP",
+            messageText: "Couldn't send verification code",
             type: SnackBarType.error));
       }
     }
