@@ -32,7 +32,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _personCodeController;
-  // late TextEditingController _phoneController;
+  late TextEditingController _phoneController;
   late User _user;
   late List<County> _counties;
   late List<Region> _regions;
@@ -51,7 +51,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
     _firstNameController = TextEditingController(text: _user.firstName);
     _lastNameController = TextEditingController(text: _user.lastName);
     _personCodeController = TextEditingController(text: _user.code);
-    // _phoneController = TextEditingController(text: _user.phoneMobile);
+    _phoneController = TextEditingController(text: _user.phoneMobile);
     _selectedWeaponId = _user.answerId ?? 1;
 
     super.initState();
@@ -63,7 +63,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _personCodeController.dispose();
-    // _phoneController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -113,6 +113,14 @@ class _EditMyAccountState extends State<EditMyAccount> {
           type: SnackBarType.error));
       return false;
     }
+    if (_phoneController.text.trim().isNotEmpty &&
+        _phoneController.text.trim().replaceAll("-", "").length != 10) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Phone number is invalid",
+          type: SnackBarType.error));
+      return false;
+    }
     // if (_phoneController.text.trim().isEmpty) {
     //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
     //       context: context,
@@ -139,7 +147,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
           _lastNameController.text,
           _emailController.text,
           _personCodeController.text,
-          // _phoneController.text,
+          _phoneController.text,
           _selectedCounty.id,
           _selectedCounty.regionId);
 
@@ -163,7 +171,7 @@ class _EditMyAccountState extends State<EditMyAccount> {
               countyName: CountyUtil.getCountyNameById(
                   counties: _counties, countyId: _selectedCounty.id),
               isFollowed: _user.isFollowed,
-              // phoneMobile: _phoneController.text,
+              phoneMobile: _phoneController.text,
               // subscriptionPerson: _user.subscriptionPerson,
               profileImageUrl: _user.profileImageUrl,
               regionName: CountyUtil.getRegionNameById(
@@ -269,15 +277,15 @@ class _EditMyAccountState extends State<EditMyAccount> {
                 SizedBox(
                   height: 20.h,
                 ),
-                // InputField(
-                //   hintText: "Phone Number",
-                //   prefixIcon: Icons.phone_outlined,
-                //   controller: _phoneController,
-                //   textInputType: TextInputType.number,
-                // ),
-                // SizedBox(
-                //   height: 20.h,
-                // ),
+                InputField(
+                  hintText: "Phone Number (Optional)",
+                  prefixIcon: Icons.phone_outlined,
+                  controller: _phoneController,
+                  textInputType: TextInputType.number,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
                 SizedBox(
                   width: 310.w,
                   child: Row(

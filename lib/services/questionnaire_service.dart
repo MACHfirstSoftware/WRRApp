@@ -59,8 +59,9 @@ class QuestionnaireService {
 
   static Future<List<County>> getCounties(int regionId) async {
     try {
-      final response = await CustomHttp.getDio()
-          .get(Constant.baseUrl + "/Counties/WI/$regionId");
+      final response =
+          await CustomHttp.getDio().get(Constant.baseUrl + "/Counties/WI/-1");
+      // print(response.statusCode);
       if (response.statusCode == 200) {
         return (response.data as List<dynamic>)
             .map((d) => County.fromJson(d as Map<String, dynamic>))

@@ -35,7 +35,7 @@ class _RegisterPageState extends State<RegisterPage> {
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
-  // late TextEditingController _phoneController;
+  late TextEditingController _phoneController;
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   // bool _sendMeUpdates = false;
@@ -46,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
     _emailController = TextEditingController();
-    // _phoneController = TextEditingController();
+    _phoneController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _init();
@@ -161,9 +161,10 @@ class _RegisterPageState extends State<RegisterPage> {
     //       type: SnackBarType.error));
     //   return false;
     // }
-    // // if (!RegExp(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
-    // //     .hasMatch(_phoneController.text.trim())) {
-    // if (_phoneController.text.trim().length != 12) {
+    // if (!RegExp(r"^[0-9]{3}-[0-9]{3}-[0-9]{4}$")
+    //     .hasMatch(_phoneController.text.trim())) {
+    // if (_phoneController.text.trim().isNotEmpty &&
+    //     _phoneController.text.trim().replaceAll("-", "").length != 10) {
     //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
     //       context: context,
     //       messageText: "Phone number is invalid",
@@ -218,6 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
         "lastName": _lastNameController.text.trim(),
         "emailAddress": _emailController.text.trim(),
         "username": _emailController.text.trim(),
+        // "phoneMobile": _phoneController.text.trim(),
         "password": _passwordController.text,
         "country": "US",
         "countyId": Provider.of<RegisterProvider>(context, listen: false)

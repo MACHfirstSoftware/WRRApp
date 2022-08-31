@@ -93,7 +93,7 @@ class CollectDetailsPage extends StatelessWidget {
                 height: 20.h,
               ),
               // InputField(
-              //   hintText: "Phone Number",
+              //   hintText: "Phone Number (Optional)",
               //   prefixIcon: Icons.phone_outlined,
               //   controller: _phoneController,
               //   textInputType: TextInputType.number,

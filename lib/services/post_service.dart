@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:wisconsin_app/config.dart';
@@ -48,6 +49,7 @@ class PostService {
           (lastRecordTime != null
               ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
               : "?regionId=$regionId"));
+      inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -212,6 +214,30 @@ class PostService {
     } catch (e) {
       // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
+
+  static Future<void> addPostVideo(String path) async {
+    print(path);
+    FormData formData = FormData.fromMap({
+      "file": MultipartFile.fromFileSync(path, filename: "abc.mp4"),
+    });
+    try {
+      final response = await CustomHttp.getDio().post(
+        Constant.baseUrl + "/PostVideo",
+        data: formData,
+        // options: Options(
+        //     receiveTimeout: 60000,
+        //     sendTimeout: 60000,
+        //     contentType: "multipart/form-data")
+      );
+      if (response.statusCode == 200) {
+        print(response.data);
+      } else {
+        print(response.data);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 

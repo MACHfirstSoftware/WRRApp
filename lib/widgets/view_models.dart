@@ -79,7 +79,7 @@ class ViewModels {
     );
   }
 
-  static postEmply() {
+  static postEmply({String? text}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -99,7 +99,7 @@ class ViewModels {
             fit: BoxFit.scaleDown,
             alignment: Alignment.center,
             child: Text(
-              "Sorry, no content to show",
+              text ?? "Sorry, no content to show",
               style: TextStyle(
                   fontSize: 20.sp,
                   color: Colors.white,

@@ -4,6 +4,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/services/user_service.dart';
+import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/ui/landing/reset_password/reset_password.dart';
@@ -62,9 +63,9 @@ class _UserVerifyState extends State<UserVerify> {
         // final otpSend = await VerficationService.sendCode(
         //     user.id, user.phoneMobile,
         //     isReset: true);
-        Navigator.pop(context);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
+        // Navigator.pop(context);
+        // Navigator.pushReplacement(context,
+        //     MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
         // if (otpSend) {
         //   PageLoader.showTransparentLoader(context);
         //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -81,6 +82,13 @@ class _UserVerifyState extends State<UserVerify> {
         //       messageText: "Couldn't send OTP",
         //       type: SnackBarType.error));
         // }
+        final options = await UserService.getVerificationOptions(user.id);
+        Navigator.pop(context);
+        if (options.length == 1 && options.first == "Email") {
+          _sendCode(user, options.first);
+        } else {
+          showSheet(options, user);
+        }
       }, failure: (NetworkExceptions error) {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
@@ -171,5 +179,128 @@ class _UserVerifyState extends State<UserVerify> {
         )),
       ),
     );
+  }
+
+  Future showSheet(List<String> _options, User user) {
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isDismissible: true,
+        context: context,
+        builder: (context) => Container(
+              constraints: BoxConstraints(maxHeight: 700.h),
+              decoration: BoxDecoration(
+                  color: AppColors.popBGColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(30.w),
+                    topRight: Radius.circular(30.w),
+                  )),
+              child: SingleChildScrollView(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 35.h,
+                        width: 300.w,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Choose Verification Option",
+                            style: TextStyle(
+                                fontSize: 20.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w600),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15.h,
+                        width: 428.w,
+                      ),
+                      ..._options.map(
+                        (e) => Card(
+                          color: Colors.white10,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.w)),
+                          child: Theme(
+                            data: ThemeData.light(),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10.w, vertical: 0),
+                              title: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  e,
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _sendCode(user, e);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 25.h,
+                      )
+                    ],
+                  )),
+            ));
+  }
+
+  _sendCode(User user, String option) async {
+    if (option == "Email") {
+      PageLoader.showLoader(context);
+      final res = await VerficationService.sendCodeMail(user.id);
+      Navigator.pop(context);
+      if (res) {
+        PageLoader.showTransparentLoader(context);
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "OTP has been send to your email",
+            type: SnackBarType.success));
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.pop(context);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
+      } else {
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "Couldn't send OTP",
+            type: SnackBarType.error));
+      }
+    }
+    if (option == "Phone") {
+      PageLoader.showLoader(context);
+      final res = await VerficationService.sendCodeMobile(
+          user.id, user.phoneMobile,
+          isReset: true);
+      Navigator.pop(context);
+      if (res) {
+        PageLoader.showTransparentLoader(context);
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "OTP has been send to your phone",
+            type: SnackBarType.success));
+        await Future.delayed(const Duration(seconds: 2));
+        Navigator.pop(context);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (_) => ResetPassword(user: user)));
+      } else {
+        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+            context: context,
+            messageText: "Couldn't send OTP",
+            type: SnackBarType.error));
+      }
+    }
   }
 }

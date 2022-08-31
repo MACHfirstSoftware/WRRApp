@@ -41,8 +41,8 @@ class _LeaderboardState extends State<Leaderboard>
   }
 
   _init({bool isInit = false}) async {
-    await Provider.of<ContestProvider>(context, listen: false)
-        .getContestPosts(_user.id, isInit: isInit);
+    // await Provider.of<ContestProvider>(context, listen: false).  //Un comment when deer season is available.
+    //     .getContestPosts(_user.id, isInit: isInit);
   }
 
   Future<void> _onRefresh() async {
@@ -86,7 +86,9 @@ class _LeaderboardState extends State<Leaderboard>
               color: AppColors.btnColor,
             ),
             child: model.contestPosts.isEmpty
-                ? ViewModels.postEmply()
+                ? ViewModels.postEmply(
+                    text:
+                        "Leaderboard will be open at the start of deer season.")
                 : ListView.builder(
                     padding: EdgeInsets.symmetric(vertical: 5.h),
                     itemCount: model.contestPosts.length,

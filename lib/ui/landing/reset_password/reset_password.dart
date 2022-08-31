@@ -4,6 +4,7 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/services/user_service.dart';
+import 'package:wisconsin_app/services/verfication_service.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 import 'package:wisconsin_app/ui/landing/common_widgets/logo_image.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
@@ -22,12 +23,12 @@ class ResetPassword extends StatefulWidget {
 class _ResetPasswordState extends State<ResetPassword> {
   late TextEditingController _newPassController;
   late TextEditingController _conPassController;
-  // late TextEditingController _otpController;
+  late TextEditingController _otpController;
   @override
   void initState() {
     _newPassController = TextEditingController();
     _conPassController = TextEditingController();
-    // _otpController = TextEditingController();
+    _otpController = TextEditingController();
     super.initState();
   }
 
@@ -35,19 +36,19 @@ class _ResetPasswordState extends State<ResetPassword> {
   void dispose() {
     _newPassController.dispose();
     _conPassController.dispose();
-    // _otpController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
   _validate() {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    // if (_otpController.text.trim().isEmpty) {
-    //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-    //       context: context,
-    //       messageText: "OTP code required",
-    //       type: SnackBarType.error));
-    //   return false;
-    // }
+    if (_otpController.text.trim().isEmpty) {
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "OTP code required",
+          type: SnackBarType.error));
+      return false;
+    }
     if (_newPassController.text.isEmpty) {
       ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
           context: context,
@@ -77,37 +78,37 @@ class _ResetPasswordState extends State<ResetPassword> {
   _doReset() async {
     if (_validate()) {
       PageLoader.showLoader(context);
-      // final otpVerify = await VerficationService.verifyCode(
-      //     widget.user.id, _otpController.text);
+      final otpVerify = await VerficationService.verifyCode(
+          widget.user.id, _otpController.text);
 
-      // if (otpVerify) {
-      final reset = await UserService.resetPassword(
-          widget.user.id, _newPassController.text);
-      Navigator.pop(context);
-      reset.when(success: (bool success) {
-        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-            context: context,
-            messageText: "Successfully reset your password",
-            type: SnackBarType.success));
+      if (otpVerify) {
+        final reset = await UserService.resetPassword(
+            widget.user.id, _newPassController.text);
         Navigator.pop(context);
-      }, failure: (NetworkExceptions error) {
+        reset.when(success: (bool success) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Successfully reset your password",
+              type: SnackBarType.success));
+          Navigator.pop(context);
+        }, failure: (NetworkExceptions error) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: NetworkExceptions.getErrorMessage(error),
+              type: SnackBarType.error));
+        }, responseError: (ResponseError responseError) {
+          ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+              context: context,
+              messageText: responseError.error,
+              type: SnackBarType.error));
+        });
+      } else {
+        Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
             context: context,
-            messageText: NetworkExceptions.getErrorMessage(error),
+            messageText: "Something went wrong",
             type: SnackBarType.error));
-      }, responseError: (ResponseError responseError) {
-        ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-            context: context,
-            messageText: responseError.error,
-            type: SnackBarType.error));
-      });
-      // } else {
-      //   Navigator.pop(context);
-      //   ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
-      //       context: context,
-      //       messageText: "Something went wrong",
-      //       type: SnackBarType.error));
-      // }
+      }
     }
   }
 
@@ -136,15 +137,15 @@ class _ResetPasswordState extends State<ResetPassword> {
               SizedBox(
                 height: 55.h,
               ),
-              // InputField(
-              //   hintText: "OTP Code",
-              //   controller: _otpController,
-              //   prefixIcon: Icons.pin_outlined,
-              //   textInputType: TextInputType.number,
-              // ),
-              // SizedBox(
-              //   height: 20.h,
-              // ),
+              InputField(
+                hintText: "OTP Code",
+                controller: _otpController,
+                prefixIcon: Icons.pin_outlined,
+                textInputType: TextInputType.number,
+              ),
+              SizedBox(
+                height: 20.h,
+              ),
               InputField(
                   hintText: "New Password",
                   prefixIcon: Icons.lock_outline_rounded,

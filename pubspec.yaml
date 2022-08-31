@@ -82,6 +82,9 @@ dependencies:
   #RevenueCat subscription package
   purchases_flutter: ^3.10.0
 
+  #video content handling
+  video_player: ^2.4.6
+
 
   freezed_annotation: ^1.1.0
 

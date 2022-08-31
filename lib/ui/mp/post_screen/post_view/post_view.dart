@@ -928,7 +928,7 @@ class MediaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         color: Colors.white,
-        height: 350.h,
+        height: media.length == 1 ? 400.h : 350.h,
         width: 428.w,
         margin: EdgeInsets.symmetric(horizontal: 4.w),
         child: _mediaViewSelector(context));
@@ -1125,7 +1125,8 @@ class MediaView extends StatelessWidget {
           return Image(
             image: imageProvider,
             fit: BoxFit.cover,
-            alignment: Alignment.topCenter,
+            alignment:
+                media.length == 1 ? Alignment.center : Alignment.topCenter,
           );
         },
         progressIndicatorBuilder: (context, url, progress) => Center(

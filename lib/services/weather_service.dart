@@ -49,10 +49,11 @@ class WeatherService {
   }
 
   static Future<ApiResult<Weather>> getForecastWeather(
-      String countyName) async {
+      {required String countySeat}) async {
+    // print(countySeat);
     try {
       final response = await _dio.get(
-          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countyName,WI&days=10");
+          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countySeat,WI&days=10");
       if (response.statusCode == 200) {
         // final details = response.data;
         // log(details.toString());

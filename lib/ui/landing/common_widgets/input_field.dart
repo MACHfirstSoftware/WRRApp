@@ -32,7 +32,7 @@ class _InputFieldState extends State<InputField> {
       width: 320.w,
       child: TextField(
         controller: widget.controller,
-        inputFormatters: widget.hintText == "Phone Number"
+        inputFormatters: widget.hintText == "Phone Number (Optional)"
             ? <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp("[0-9$separator]")),
                 MaskedTextInputFormatter(

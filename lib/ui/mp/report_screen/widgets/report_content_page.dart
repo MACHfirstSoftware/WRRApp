@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -22,7 +23,7 @@ class ReportContents extends StatefulWidget {
 }
 
 class _ReportContentsState extends State<ReportContents>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   bool keepAlive = true;
   late ScrollController scrollController;
   late RefreshController _refreshController;
@@ -31,9 +32,12 @@ class _ReportContentsState extends State<ReportContents>
   // bool allLoaded = false;
   bool onLoading = false;
   late User _user;
+  bool keyboardIsOpen = false;
+  bool showHideAnchor = false;
 
   @override
   void initState() {
+    WidgetsBinding.instance?.addObserver(this);
     _user = Provider.of<UserProvider>(context, listen: false).user;
     scrollController = ScrollController();
     _refreshController = RefreshController(initialRefresh: false);
@@ -42,8 +46,21 @@ class _ReportContentsState extends State<ReportContents>
     scrollController.addListener(() async {
       final postProvider =
           Provider.of<ReportPostProvider>(context, listen: false);
+      if (scrollController.offset !=
+              scrollController.position.minScrollExtent &&
+          !keyboardIsOpen) {
+        // print("show Anchor");
+        setState(() {
+          showHideAnchor = true;
+        });
+      } else {
+        setState(() {
+          showHideAnchor = false;
+        });
+      }
       if (scrollController.offset ==
               scrollController.position.maxScrollExtent &&
+          scrollController.position.atEdge &&
           !postProvider.allPostLoaded) {
         // print("----------DATA LOADING----------------");
         _lastRecordTime = postProvider.posts.last.createdOn;
@@ -82,10 +99,23 @@ class _ReportContentsState extends State<ReportContents>
 
   @override
   void dispose() {
+    WidgetsBinding.instance?.removeObserver(this);
     scrollController.dispose();
     _refreshController.dispose();
     _refreshController2.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    final bottomInset = WidgetsBinding.instance!.window.viewInsets.bottom;
+    final newValue = bottomInset > 0.0;
+    if (newValue != keyboardIsOpen) {
+      setState(() {
+        keyboardIsOpen = newValue;
+        showHideAnchor = !newValue;
+      });
+    }
   }
 
   _init({bool isInit = false}) async {
@@ -158,11 +188,11 @@ class _ReportContentsState extends State<ReportContents>
                       ),
                       if (model.allPostLoaded)
                         Padding(
-                          padding: EdgeInsets.symmetric(vertical: 5.h),
+                          padding: EdgeInsets.only(top: 15.h, bottom: 5.h),
                           child: Text(
                             "No more data",
                             style: TextStyle(
-                                fontSize: 18.sp,
+                                fontSize: 16.sp,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w400),
                             textAlign: TextAlign.center,
@@ -171,6 +201,25 @@ class _ReportContentsState extends State<ReportContents>
                     ],
                   ));
       }),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: showHideAnchor
+          ? FloatingActionButton(
+              mini: true,
+              heroTag: "anchor4",
+              backgroundColor: AppColors.btnColor,
+              child: Icon(
+                Icons.keyboard_arrow_up_rounded,
+                size: 30.h,
+              ),
+              onPressed: () {
+                SchedulerBinding.instance?.addPostFrameCallback((_) {
+                  scrollController.animateTo(
+                      scrollController.position.minScrollExtent,
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.fastOutSlowIn);
+                });
+              })
+          : null,
     );
   }
 
