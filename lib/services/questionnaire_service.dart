@@ -70,7 +70,7 @@ class QuestionnaireService {
         return [];
       }
     } catch (e) {
-      // print(e);
+      print(e);
       return [];
     }
   }

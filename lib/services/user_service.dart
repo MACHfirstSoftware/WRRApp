@@ -121,6 +121,7 @@ class UserService {
   }
 
   static Future<ApiResult<List<User>>> getFollowers(String personId) async {
+    print(Constant.baseUrl);
     try {
       final response = await CustomHttp.getDio()
           .get(Constant.baseUrl + "/Followers?id=$personId");

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>138319845640-1h4afg4rgmlr9cnbq9o7jh8rgq4b3k4o.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.138319845640-1h4afg4rgmlr9cnbq9o7jh8rgq4b3k4o</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDzHj0D4dOf1asdsdvq2uhPR7IHPRXwpbU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>138319845640</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.wisconsinApp</string>
+	<key>PROJECT_ID</key>
+	<string>wisconsin-rut-report</string>
+	<key>STORAGE_BUCKET</key>
+	<string>wisconsin-rut-report.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:138319845640:ios:81603d860087793dbbf4bd</string>
+</dict>
+</plist>

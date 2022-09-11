@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "138319845640",
+    "project_id": "wisconsin-rut-report",
+    "storage_bucket": "wisconsin-rut-report.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138319845640:android:e06a226908098dbebbf4bd",
+        "android_client_info": {
+          "package_name": "com.wisconsinrutreport.wrrapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "138319845640-hfvrvldun7dfe5gjdnbtkq8nl1i3gluq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUaHCsniol3w_Bdrp9vbIuO_jXFmSeuJg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "138319845640-hfvrvldun7dfe5gjdnbtkq8nl1i3gluq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "138319845640-1h4afg4rgmlr9cnbq9o7jh8rgq4b3k4o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wisconsinApp",
+                "app_store_id": "1632962793"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

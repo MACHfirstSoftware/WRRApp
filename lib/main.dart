@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,6 +41,7 @@ void main() async {
   CustomHttp.setInterceptor();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await PurchasesService.init();
+  await Firebase.initializeApp();
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
   SubscriptionStatus _subscriptionStatus = SubscriptionStatus.free;
@@ -93,9 +96,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   void initState() {
     // print("${widget.subscriptionStatus}  ${widget.user?.appUserId}");
+    // FirebaseMessaging. ((RemoteMessage message) {});
     super.initState();
   }
 

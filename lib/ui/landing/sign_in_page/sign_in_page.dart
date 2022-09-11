@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  late FirebaseMessaging _firebaseMessaging;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   bool _saveAccountInfo = true;
@@ -34,6 +36,7 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
+    _firebaseMessaging = FirebaseMessaging.instance;
     super.initState();
   }
 
@@ -112,6 +115,11 @@ class _SignInPageState extends State<SignInPage> {
           Provider.of<RevenueCatProvider>(context, listen: false)
               .setSubscriptionStatus(SubscriptionStatus.free);
         }
+        _firebaseMessaging.getToken().then((value) {
+          print("--------------- FCM TOKEN --------------");
+          print(value);
+          print("----------------------------------------");
+        });
         Navigator.pop(context);
         Navigator.pushAndRemoveUntil(
             context,
