@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -32,8 +34,14 @@ import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
+Future<void> _firebaseMessagingBackgroundHandler(message) async {
+  await Firebase.initializeApp();
+  print('Handling a background message ${message.messageId}');
+}
+
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -42,6 +50,26 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await PurchasesService.init();
   await Firebase.initializeApp();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('User granted permission');
+  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    print('User granted provisional permission');
+  } else {
+    print('User declined or has not accepted permission');
+  }
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
   SubscriptionStatus _subscriptionStatus = SubscriptionStatus.free;
@@ -102,6 +130,20 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // print("${widget.subscriptionStatus}  ${widget.user?.appUserId}");
     // FirebaseMessaging. ((RemoteMessage message) {});
+    _firebaseMessaging.getToken().then((value) {
+      print("--------------- FCM TOKEN --------------");
+      print(value);
+      print("----------------------------------------");
+    });
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        debugPrint("onMessage:");
+        log("onMessage: ${message.data}");
+        // final snackBar =
+        //     SnackBar(content: Text(message.notification?.title ?? ""));
+        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      },
+    );
     super.initState();
   }
 
