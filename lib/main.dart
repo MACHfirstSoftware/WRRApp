@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -34,11 +32,6 @@ import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/custom_http.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(message) async {
-  await Firebase.initializeApp();
-  print('Handling a background message ${message.messageId}');
-}
-
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
@@ -51,7 +44,6 @@ void main() async {
   await PurchasesService.init();
   await Firebase.initializeApp();
   FirebaseMessaging messaging = FirebaseMessaging.instance;
-
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
     announcement: false,
@@ -63,13 +55,12 @@ void main() async {
   );
 
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    print('User granted permission');
+    debugPrint('User granted permission');
   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    print('User granted provisional permission');
+    debugPrint('User granted provisional permission');
   } else {
-    print('User declined or has not accepted permission');
+    debugPrint('User declined or has not accepted permission');
   }
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
   SubscriptionStatus _subscriptionStatus = SubscriptionStatus.free;
@@ -124,26 +115,24 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-
   @override
   void initState() {
     // print("${widget.subscriptionStatus}  ${widget.user?.appUserId}");
     // FirebaseMessaging. ((RemoteMessage message) {});
-    _firebaseMessaging.getToken().then((value) {
-      print("--------------- FCM TOKEN --------------");
-      print(value);
-      print("----------------------------------------");
-    });
-    FirebaseMessaging.onMessage.listen(
-      (RemoteMessage message) {
-        debugPrint("onMessage:");
-        log("onMessage: ${message.data}");
-        // final snackBar =
-        //     SnackBar(content: Text(message.notification?.title ?? ""));
-        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      },
-    );
+    // _firebaseMessaging.getToken().then((value) {
+    //   print("--------------- FCM TOKEN --------------");
+    //   print(value);
+    //   print("----------------------------------------");
+    // });
+    // FirebaseMessaging.onMessage.listen(
+    //   (RemoteMessage message) {
+    //     debugPrint("onMessage:");
+    //     log("notification id : ${message.data["Id"]}");
+    //     log(message.notification != null ? "" : "NUll Noti");
+    //     log(message.notification?.body ?? "Null Body");
+    //     log(message.notification?.title ?? "Null Title");
+    //   },
+    // );
     super.initState();
   }
 

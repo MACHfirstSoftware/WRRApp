@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
@@ -121,7 +122,6 @@ class UserService {
   }
 
   static Future<ApiResult<List<User>>> getFollowers(String personId) async {
-    print(Constant.baseUrl);
     try {
       final response = await CustomHttp.getDio()
           .get(Constant.baseUrl + "/Followers?id=$personId");
@@ -180,6 +180,21 @@ class UserService {
         };
       }
       return {"success": false, "message": "Something went wrong"};
+    }
+  }
+
+  static Future<void> updateUserFcmToken(
+    String userId,
+    String? fcmToken,
+  ) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .patch(Constant.baseUrl + "/Person/$userId", data: [
+        {"path": "/FcmToken", "op": "Add", "value": fcmToken}
+      ]);
+      debugPrint(response.statusCode.toString());
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 

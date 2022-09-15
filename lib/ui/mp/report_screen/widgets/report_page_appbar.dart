@@ -153,11 +153,24 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                           right: 0,
                           top: 0,
                           child: Container(
-                            height: 12.5.h,
-                            width: 12.5.h,
+                            height: 15.5.h,
+                            width: 15.5.h,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 color: Colors.redAccent,
-                                borderRadius: BorderRadius.circular(6.25.h)),
+                                borderRadius: BorderRadius.circular(7.25.h)),
+                            child: FittedBox(
+                              alignment: Alignment.center,
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                model.unReadCount.toString(),
+                                style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
                           ),
                         )
                     ],

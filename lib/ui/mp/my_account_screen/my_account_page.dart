@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,9 @@ class _MyAccountState extends State<MyAccount> {
     Provider.of<RevenueCatProvider>(context, listen: false)
         .setSubscriptionStatus(SubscriptionStatus.free);
     await StoreUtils.removeUser();
+    await UserService.updateUserFcmToken(
+        Provider.of<UserProvider>(context, listen: false).user.id, null);
+    FirebaseMessaging.instance.deleteToken();
     final appUserID = await Purchases.appUserID;
     if (!appUserID.contains("RCAnonymousID:")) {
       await Purchases.logOut();

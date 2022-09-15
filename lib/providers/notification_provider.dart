@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
-import 'package:wisconsin_app/models/notification.dart';
+import 'package:wisconsin_app/models/notification_model.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/services/notification_service.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
@@ -9,12 +9,15 @@ class NotificationProvider with ChangeNotifier {
   ApiStatus _apiStatus = ApiStatus.isInitial;
   String errorMessage = '';
   bool _isAllViewed = true;
-  List<NotificationModel>? _notifications;
+  bool allLoaded = false;
+  int unReadCount = 0;
+  List<NotificationModelNew> _notifications = [];
 
   ApiStatus get apiStatus => _apiStatus;
   bool get isAllViewed => _isAllViewed;
-  List<NotificationModel> get notifications => _notifications!;
-  List<NotificationModel>? get notificationsList => _notifications;
+  List<NotificationModelNew> get notifications => _notifications;
+  List<NotificationModelNew>? get notificationsList =>
+      _notifications.isEmpty ? null : _notifications;
 
   void setBusy() {
     _apiStatus = ApiStatus.isBusy;
@@ -38,31 +41,54 @@ class NotificationProvider with ChangeNotifier {
   }
 
   void checkUnread() {
-    if (_notifications!.isEmpty) {
+    unReadCount = 0;
+    if (_notifications.isEmpty) {
       _isAllViewed = true;
     } else {
       _isAllViewed = true;
-      for (final noti in _notifications!) {
+      for (final noti in _notifications) {
         if (!noti.viewed) {
           _isAllViewed = false;
-          break;
+          unReadCount++;
         }
       }
     }
   }
 
-  void markAsRead(int index) {
-    _notifications![index].viewed = true;
+  void markAsRead(NotificationModelNew noti) {
+    for (var element in _notifications) {
+      if (element.id == noti.id) {
+        element.viewed = true;
+      }
+    }
+    // _notifications[index].viewed = true;
     checkUnread();
     notifyListeners();
   }
 
-  Future<void> getMyNotifications(String userId, {bool isInit = false}) async {
+  void setNotification(NotificationModelNew data) {
+    _notifications.insert(0, data);
+    checkUnread();
+    notifyListeners();
+  }
+
+  void addMoreNotification(List<NotificationModelNew> data) {
+    _notifications.addAll(data);
+    checkUnread();
+    notifyListeners();
+  }
+
+  Future<void> getMyNotifications(String userId,
+      {bool isInit = false,
+      String? lastRecordTime,
+      int? notificationId}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
-    final notificationResponse =
-        await NotificationService.getNotifications(userId);
+    final notificationResponse = await NotificationService.getAllNotifications(
+        userId: userId,
+        lastRecordTime: lastRecordTime,
+        notificationId: notificationId);
     notificationResponse.when(
-        success: (List<NotificationModel> notificationList) async {
+        success: (List<NotificationModelNew> notificationList) async {
       _notifications = notificationList;
       checkUnread();
       errorMessage = '';
