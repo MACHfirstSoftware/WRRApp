@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/subscription_status.dart';
+import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
@@ -24,8 +25,10 @@ import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/my_subscription.da
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/privacy_policy.dart';
 import 'package:wisconsin_app/ui/mp/my_account_screen/widgets/terms_and_conditions.dart';
 import 'package:wisconsin_app/utils/common.dart';
+import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
+import 'package:wisconsin_app/widgets/delete_account_password_popup.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 import 'package:wisconsin_app/widgets/subscription_model_sheet.dart';
@@ -597,6 +600,7 @@ class _MyAccountState extends State<MyAccount> {
                           context,
                           MaterialPageRoute(
                               builder: (_) => const TermsAndConditions())))),
+                  _buildDeleteAccountBtn(),
                   _buildLogoutBtn()
                 ],
               )),
@@ -631,6 +635,88 @@ class _MyAccountState extends State<MyAccount> {
         ),
       ),
     );
+  }
+
+  _buildDeleteAccountBtn() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            HeroDialogRoute(
+                builder: (_) => ConfirmationPopup(
+                      title: "Delete Account",
+                      message:
+                          "Deleting your account is permanent. When you delete your WRR account, you won't be able to retrive the content or information that you've shared on WRR.",
+                      leftBtnText: "Continue",
+                      rightBtnText: "Keep",
+                      onTap: _passwordConfirmForDeleteAccount,
+                    )));
+      },
+      child: Container(
+        alignment: Alignment.center,
+        height: 50.h,
+        margin: EdgeInsets.fromLTRB(0.w, 15.h, 0.w, 0),
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          border: Border.all(color: AppColors.popBGColor, width: 1.5.w),
+          borderRadius: BorderRadius.circular(7.5.w),
+        ),
+        child: Text(
+          "Delete Account",
+          style: TextStyle(
+              fontSize: 18.sp,
+              color: Colors.redAccent[400],
+              fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  _doAccountDelete(String password) async {
+    // print(password);
+    // print(_user.id);
+    PageLoader.showLoader(context);
+    final res = await UserService.accountDeletion(_user.id, password);
+    res.when(success: (String msg) async {
+      Provider.of<RevenueCatProvider>(context, listen: false)
+          .setSubscriptionStatus(SubscriptionStatus.free);
+      await StoreUtils.removeUser();
+      FirebaseMessaging.instance.deleteToken();
+      final appUserID = await Purchases.appUserID;
+      if (!appUserID.contains("RCAnonymousID:")) {
+        await Purchases.logOut();
+      }
+      Navigator.pop(context);
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const AuthMainPage()),
+          (route) => false);
+    }, failure: (NetworkExceptions err) {
+      Navigator.pop(context);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context,
+          messageText: NetworkExceptions.getErrorMessage(err) ==
+                  "Error due to a conflict"
+              ? "Incorrect password."
+              : NetworkExceptions.getErrorMessage(err),
+          type: SnackBarType.error));
+    }, responseError: (ResponseError err) {
+      Navigator.pop(context);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(customSnackBar(
+          context: context, messageText: err.error, type: SnackBarType.error));
+    });
+  }
+
+  _passwordConfirmForDeleteAccount() {
+    Navigator.push(
+        context,
+        HeroDialogRoute(
+            builder: (_) => DeleteConfirmationPopup(
+                  onTap: (String value) {
+                    _doAccountDelete(value);
+                  },
+                )));
   }
 
   _buildTile(String title, IconData icon, {VoidCallback? onTap}) {

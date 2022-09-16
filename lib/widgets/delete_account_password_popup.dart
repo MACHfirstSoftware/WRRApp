@@ -1,23 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/ui/landing/common_widgets/input_field.dart';
 
-class ConfirmationPopup extends StatelessWidget {
-  final String title;
-  final String message;
-  final String leftBtnText;
-  final String rightBtnText;
-  final VoidCallback onTap;
-  final VoidCallback? onRightTap;
-  const ConfirmationPopup(
-      {Key? key,
-      required this.onTap,
-      this.onRightTap,
-      required this.title,
-      required this.message,
-      required this.leftBtnText,
-      required this.rightBtnText})
-      : super(key: key);
+class DeleteConfirmationPopup extends StatefulWidget {
+  // final String title;
+  // // final String message;
+  // final String leftBtnText;
+  // final String rightBtnText;
+  final ValueChanged<String> onTap;
+  // final VoidCallback? onRightTap;
+  const DeleteConfirmationPopup({
+    Key? key,
+    required this.onTap,
+    // this.onRightTap,
+    // required this.title,
+    // // required this.message,
+    // required this.leftBtnText,
+    // required this.rightBtnText
+  }) : super(key: key);
+
+  @override
+  State<DeleteConfirmationPopup> createState() =>
+      _DeleteConfirmationPopupState();
+}
+
+class _DeleteConfirmationPopupState extends State<DeleteConfirmationPopup> {
+  late TextEditingController _textEditingController;
+  @override
+  void initState() {
+    _textEditingController = TextEditingController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +53,7 @@ class ConfirmationPopup extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    title,
+                    "Confirm Deletion",
                     style: TextStyle(
                         fontSize: 20.sp,
                         color: AppColors.btnColor,
@@ -47,14 +61,36 @@ class ConfirmationPopup extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
+                    height: 15.h,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text("Confirm that this is your Account",
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.left),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
                     height: 10.h,
                   ),
-                  Text(message,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: InputField(
+                        hintText: "Enter Password",
+                        prefixIcon: Icons.lock_outline_rounded,
+                        controller: _textEditingController,
+                        textInputType: TextInputType.visiblePassword,
+                        obscureText: true),
+                  ),
                   SizedBox(
                     height: 20.h,
                   ),
@@ -67,8 +103,10 @@ class ConfirmationPopup extends StatelessWidget {
                             splashColor: AppColors.btnColor.withOpacity(0.4),
                             customBorder: const StadiumBorder(),
                             onTap: () {
-                              Navigator.pop(context);
-                              onTap();
+                              if (_textEditingController.text.isNotEmpty) {
+                                Navigator.pop(context);
+                                widget.onTap(_textEditingController.text);
+                              }
                             },
                             child: Container(
                                 alignment: Alignment.center,
@@ -76,9 +114,7 @@ class ConfirmationPopup extends StatelessWidget {
                                 //     horizontal: 27.w, vertical: 8.h),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(5.w),
-                                  color: leftBtnText == "DELETE"
-                                      ? Colors.redAccent[400]
-                                      : AppColors.btnColor,
+                                  color: Colors.redAccent[400],
                                 ),
                                 width: 110.w,
                                 height: 45.h,
@@ -89,7 +125,7 @@ class ConfirmationPopup extends StatelessWidget {
                                     fit: BoxFit.scaleDown,
                                     alignment: Alignment.center,
                                     child: Text(
-                                      leftBtnText,
+                                      "DELETE",
                                       style: TextStyle(
                                           fontSize: 15.sp,
                                           color: Colors.white,
@@ -105,9 +141,6 @@ class ConfirmationPopup extends StatelessWidget {
                             splashColor: AppColors.btnColor.withOpacity(0.4),
                             customBorder: const StadiumBorder(),
                             onTap: () {
-                              if (onRightTap != null) {
-                                onRightTap!();
-                              }
                               Navigator.pop(context);
                             },
                             child: Container(
@@ -127,7 +160,7 @@ class ConfirmationPopup extends StatelessWidget {
                                     fit: BoxFit.scaleDown,
                                     alignment: Alignment.center,
                                     child: Text(
-                                      rightBtnText,
+                                      "Cancel",
                                       style: TextStyle(
                                           fontSize: 15.sp,
                                           color: AppColors.btnColor,

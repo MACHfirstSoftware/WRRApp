@@ -49,7 +49,8 @@ class _NotificationPageState extends State<NotificationPage>
       if (_scrollController.offset ==
               _scrollController.position.maxScrollExtent &&
           _scrollController.position.atEdge &&
-          !notiProvider.allLoaded) {
+          !notiProvider.allLoaded &&
+          notiProvider.notifications.length > 9) {
         _lastRecordTime = notiProvider.notifications.last.createdOn;
         setState(() {
           onLoading = true;

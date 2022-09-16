@@ -319,4 +319,25 @@ class UserService {
       return [];
     }
   }
+
+  static Future<ApiResult<String>> accountDeletion(
+      String userId, String password) async {
+    // print("verify call");
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/Person?id=$userId&password=$password");
+      // print(response.statusCode);
+      if (response.statusCode == 200) {
+        return const ApiResult.success(data: "Successfully delete account.");
+      } else {
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      // print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
+    }
+  }
 }
