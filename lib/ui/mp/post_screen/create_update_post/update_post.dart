@@ -10,9 +10,13 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/upload_video.dart';
+import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_thumbnail.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
@@ -35,6 +39,7 @@ class _UpdatePostState extends State<UpdatePost> {
   FocusNode focusNode = FocusNode();
   late List<XFile> _images;
   late List<Media> _medias;
+  late List<UploadVideoModel> _videos;
   Media? _mediaForDelete;
   bool _isPostUpdate = false;
   String hintText = '...';
@@ -43,6 +48,7 @@ class _UpdatePostState extends State<UpdatePost> {
   void initState() {
     _images = [];
     _medias = [];
+    _videos = [];
     // _titleController = TextEditingController(text: widget.post.title);
     _bodyController = TextEditingController(text: widget.post.body);
     _medias.addAll(widget.post.media);
@@ -65,6 +71,12 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   _validatePostDetails() {
+    bool videoWhileProcessing = false;
+    for (var element in _videos) {
+      if (element.isUploading) {
+        videoWhileProcessing = true;
+      }
+    }
     ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
     // if (_titleController.text.isEmpty) {
     //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -80,6 +92,13 @@ class _UpdatePostState extends State<UpdatePost> {
           type: SnackBarType.error));
       return false;
     }
+    if (videoWhileProcessing) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Video uploads are being processed.",
+          type: SnackBarType.warning));
+      return false;
+    }
     return true;
   }
 
@@ -87,42 +106,111 @@ class _UpdatePostState extends State<UpdatePost> {
     if (_validatePostDetails()) {
       ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
       PageLoader.showLoader(context);
-      final updateResponse = await PostService.updatePost(
-          widget.post.id,
-          // _titleController.text,
-          "",
-          _bodyController.text);
+      List<Map<String, dynamic>> videoUrls = [];
+      for (var element in _videos) {
+        if (element.storeUrl != null) {
+          videoUrls.add({
+            "id": 0,
+            "postId": 0,
+            "caption": "",
+            "imageUrl": "",
+            "videoUrl": element.storeUrl!["url"],
+            "blobVideoUrl": element.storeUrl!["bloburl"],
+            "sortOrder": 0,
+            "createdOn": DateTime.now().toIso8601String()
+          });
+        }
+      }
+      final res = await PostService.addPostVideoUrl(widget.post.id, videoUrls);
+      res.when(success: (List<Media> data) async {
+        if (_images.isEmpty) {
+          Post _updatedPost = widget.post;
+          _updatedPost.media = data;
+//------------------------------------------ change bellow to update------------------
 
-      if (updateResponse) {
-        setState(() {
-          _isPostUpdate = true;
-        });
-        if (_images.isNotEmpty) {
-          List<Map<String, dynamic>> uploadList = [];
-          for (XFile image in _images) {
-            uploadList.add({
-              "postId": widget.post.id,
-              "caption": "No Caption",
-              "image": ImageUtil.getBase64Image(image.path),
-              "fileName": ImageUtil.getImageName(image.name),
-              "type": ImageUtil.getImageExtension(image.name),
-              "sortOrder": 0
+          Provider.of<WRRPostProvider>(context, listen: false)
+              .updatePost(_updatedPost);
+          Provider.of<RegionPostProvider>(context, listen: false)
+              .updatePost(_updatedPost);
+          Provider.of<AllPostProvider>(context, listen: false)
+              .updatePost(_updatedPost);
+
+//---------------------------------------------------------------------------------------
+        }
+        final updateResponse = await PostService.updatePost(
+            widget.post.id,
+            // _titleController.text,
+            "",
+            _bodyController.text);
+
+        if (updateResponse) {
+          setState(() {
+            _isPostUpdate = true;
+          });
+
+          if (_images.isNotEmpty) {
+            List<Map<String, dynamic>> uploadList = [];
+            for (XFile image in _images) {
+              uploadList.add({
+                "postId": widget.post.id,
+                "caption": "No Caption",
+                "image": ImageUtil.getBase64Image(image.path),
+                "fileName": ImageUtil.getImageName(image.name),
+                "type": ImageUtil.getImageExtension(image.name),
+                "sortOrder": 0
+              });
+            }
+            final imageResponse = await PostService.addPostImage(uploadList);
+            imageResponse.when(success: (List<Media> media) {
+              Post _updatedPost = widget.post;
+              // _updatedPost.title = _titleController.text;
+              _updatedPost.title = "";
+              _updatedPost.body = _bodyController.text;
+              _updatedPost.media = media;
+//------------------------------------------ change bellow to update------------------
+
+              Provider.of<WRRPostProvider>(context, listen: false)
+                  .updatePost(_updatedPost);
+              Provider.of<RegionPostProvider>(context, listen: false)
+                  .updatePost(_updatedPost);
+              Provider.of<AllPostProvider>(context, listen: false)
+                  .updatePost(_updatedPost);
+
+//---------------------------------------------------------------------------------------
+              Navigator.pop(context);
+              ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                  context: context,
+                  messageText: "Successfully updated",
+                  type: SnackBarType.success));
+              Navigator.pop(context);
+            }, failure: (NetworkExceptions error) {
+              Navigator.pop(context);
+              ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                  context: context,
+                  messageText: NetworkExceptions.getErrorMessage(error),
+                  type: SnackBarType.error));
+            }, responseError: (ResponseError responseError) {
+              Navigator.pop(context);
+              ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                  context: context,
+                  messageText: responseError.error,
+                  type: SnackBarType.error));
             });
-          }
-          final imageResponse = await PostService.addPostImage(uploadList);
-          imageResponse.when(success: (List<Media> media) {
+          } else {
             Post _updatedPost = widget.post;
             // _updatedPost.title = _titleController.text;
             _updatedPost.title = "";
             _updatedPost.body = _bodyController.text;
-            _updatedPost.media = media;
+            if (data.isEmpty) {
+              _updatedPost.media = _medias;
+            }
 //------------------------------------------ change bellow to update------------------
-
             Provider.of<WRRPostProvider>(context, listen: false)
                 .updatePost(_updatedPost);
             Provider.of<RegionPostProvider>(context, listen: false)
                 .updatePost(_updatedPost);
-
+            Provider.of<AllPostProvider>(context, listen: false)
+                .updatePost(_updatedPost);
 //---------------------------------------------------------------------------------------
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -130,45 +218,27 @@ class _UpdatePostState extends State<UpdatePost> {
                 messageText: "Successfully updated",
                 type: SnackBarType.success));
             Navigator.pop(context);
-          }, failure: (NetworkExceptions error) {
-            Navigator.pop(context);
-            ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-                context: context,
-                messageText: NetworkExceptions.getErrorMessage(error),
-                type: SnackBarType.error));
-          }, responseError: (ResponseError responseError) {
-            Navigator.pop(context);
-            ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-                context: context,
-                messageText: responseError.error,
-                type: SnackBarType.error));
-          });
+          }
         } else {
-          Post _updatedPost = widget.post;
-          // _updatedPost.title = _titleController.text;
-          _updatedPost.title = "";
-          _updatedPost.body = _bodyController.text;
-          _updatedPost.media = _medias;
-//------------------------------------------ change bellow to update------------------
-          Provider.of<WRRPostProvider>(context, listen: false)
-              .updatePost(_updatedPost);
-          Provider.of<RegionPostProvider>(context, listen: false)
-              .updatePost(_updatedPost);
-//---------------------------------------------------------------------------------------
           Navigator.pop(context);
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
               context: context,
-              messageText: "Successfully updated",
-              type: SnackBarType.success));
-          Navigator.pop(context);
+              messageText: "Post update failed.",
+              type: SnackBarType.error));
         }
-      } else {
+      }, failure: (NetworkExceptions error) {
         Navigator.pop(context);
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
             context: context,
-            messageText: "Post update failed.",
+            messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
-      }
+      }, responseError: (ResponseError responseError) {
+        Navigator.pop(context);
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+            context: context,
+            messageText: responseError.error,
+            type: SnackBarType.error));
+      });
     }
   }
 
@@ -197,6 +267,8 @@ class _UpdatePostState extends State<UpdatePost> {
         Provider.of<WRRPostProvider>(context, listen: false)
             .updatePost(_updatedPost);
         Provider.of<RegionPostProvider>(context, listen: false)
+            .updatePost(_updatedPost);
+        Provider.of<AllPostProvider>(context, listen: false)
             .updatePost(_updatedPost);
 //---------------------------------------------------------------------------------------
         Navigator.pop(context);
@@ -244,6 +316,45 @@ class _UpdatePostState extends State<UpdatePost> {
     }
   }
 
+  Future getVideo() async {
+    PageLoader.showLoader(context);
+    try {
+      final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+      if (pickedFile == null) {
+        Navigator.pop(context);
+        return;
+      } else {
+        final compressedVideo =
+            await VideoUtil.compressVideo(filePath: pickedFile.path);
+        final thumb =
+            await VideoUtil.generateThumbnail(filePath: pickedFile.path);
+        Navigator.pop(context);
+        if (compressedVideo != null) {
+          setState(() {
+            _videos.add(
+                UploadVideoModel(mediaInfo: compressedVideo, thubmnail: thumb));
+          });
+          _videoUploader(_videos.last);
+        } else {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Unable to add video",
+              type: SnackBarType.error));
+        }
+      }
+    } on PlatformException catch (e) {
+      Navigator.pop(context);
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
+    }
+  }
+
   _discardPost() {
     if (widget.post.media.length > _medias.length) {
       Post _updatedPost = widget.post;
@@ -252,6 +363,8 @@ class _UpdatePostState extends State<UpdatePost> {
       Provider.of<WRRPostProvider>(context, listen: false)
           .updatePost(_updatedPost);
       Provider.of<RegionPostProvider>(context, listen: false)
+          .updatePost(_updatedPost);
+      Provider.of<AllPostProvider>(context, listen: false)
           .updatePost(_updatedPost);
     }
     if (_isPostUpdate) {
@@ -264,6 +377,23 @@ class _UpdatePostState extends State<UpdatePost> {
   _removeImage() async {
     PageLoader.showLoader(context);
     final res = await PostService.imageDelete(_mediaForDelete!.id);
+    Navigator.pop(context);
+    if (res) {
+      setState(() {
+        _medias.remove(_mediaForDelete);
+        _mediaForDelete = null;
+      });
+    } else {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable to remove image",
+          type: SnackBarType.error));
+    }
+  }
+
+  _removeVideo() async {
+    PageLoader.showLoader(context);
+    final res = await PostService.videoDelete(_mediaForDelete!.id);
     Navigator.pop(context);
     if (res) {
       setState(() {
@@ -398,9 +528,49 @@ class _UpdatePostState extends State<UpdatePost> {
                       focusNode: focusNode,
                       label: hintText,
                       hintText: "...",
-                      maxLines: 5,
+                      maxLines: 4,
                     ),
                   ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          getImage();
+                        },
+                        child: Container(
+                          height: 40.h,
+                          width: 150.w,
+                          decoration: BoxDecoration(
+                              color: AppColors.popBGColor,
+                              borderRadius: BorderRadius.circular(7.5.w)),
+                          child: Icon(Icons.photo_library,
+                              color: AppColors.btnColor, size: 25.h),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          getVideo();
+                        },
+                        child: Container(
+                          height: 40.h,
+                          width: 150.w,
+                          decoration: BoxDecoration(
+                              color: AppColors.popBGColor,
+                              borderRadius: BorderRadius.circular(7.5.w)),
+                          child: Icon(Icons.video_collection_rounded,
+                              color: AppColors.btnColor, size: 25.h),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // SizedBox(
+                  //   height: 20.h,
+                  // ),
                   if (_medias.isNotEmpty)
                     Column(
                       children: [
@@ -408,7 +578,7 @@ class _UpdatePostState extends State<UpdatePost> {
                           height: 20.h,
                         ),
                         Text(
-                          "Current available image(s) in post",
+                          "Current available image(s) & video(s) in post",
                           style: TextStyle(
                               fontSize: 15.sp,
                               color: AppColors.btnColor,
@@ -444,36 +614,46 @@ class _UpdatePostState extends State<UpdatePost> {
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(7.5.w),
-                                              child: CachedNetworkImage(
-                                                imageUrl: media.imageUrl,
-                                                imageBuilder:
-                                                    (context, imageProvider) {
-                                                  return Image(
-                                                    image: imageProvider,
-                                                    height: 300.h,
-                                                    width: 360.w,
-                                                    fit: BoxFit.fill,
-                                                  );
-                                                },
-                                                progressIndicatorBuilder:
-                                                    (context, url, progress) =>
-                                                        Center(
-                                                  child: SizedBox(
-                                                    height: 15.h,
-                                                    width: 15.h,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      value: progress.progress,
+                                              child: media.imageUrl != null
+                                                  ? CachedNetworkImage(
+                                                      imageUrl: media.imageUrl!,
+                                                      imageBuilder: (context,
+                                                          imageProvider) {
+                                                        return Image(
+                                                          image: imageProvider,
+                                                          height: 300.h,
+                                                          width: 360.w,
+                                                          fit: BoxFit.fill,
+                                                        );
+                                                      },
+                                                      progressIndicatorBuilder:
+                                                          (context, url,
+                                                                  progress) =>
+                                                              Center(
+                                                        child: SizedBox(
+                                                          height: 15.h,
+                                                          width: 15.h,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            value: progress
+                                                                .progress,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Icon(Icons.error,
+                                                              color: AppColors
+                                                                  .btnColor,
+                                                              size: 15.h),
+                                                    )
+                                                  : SizedBox(
+                                                      height: 300.h,
+                                                      width: 360.w,
+                                                      child: VideoThumbs(
+                                                          videoUrl:
+                                                              media.videoUrl!),
                                                     ),
-                                                  ),
-                                                ),
-                                                errorWidget: (context, url,
-                                                        error) =>
-                                                    Icon(Icons.error,
-                                                        color:
-                                                            AppColors.btnColor,
-                                                        size: 15.h),
-                                              ),
                                             ),
                                           ),
                                         ),
@@ -490,12 +670,15 @@ class _UpdatePostState extends State<UpdatePost> {
                                                           ConfirmationPopup(
                                                             title: "Remove",
                                                             message:
-                                                                "This image is currently available in the post. If you remove now, no longer available this image.",
+                                                                "This ${media.videoUrl != null ? "video" : "image"} is currently available in the post. If you remove now, no longer available this ${media.videoUrl != null ? "video" : "image"}.",
                                                             leftBtnText:
                                                                 "Remove",
                                                             rightBtnText:
                                                                 "Keep",
-                                                            onTap: _removeImage,
+                                                            onTap: media.videoUrl !=
+                                                                    null
+                                                                ? _removeVideo
+                                                                : _removeImage,
                                                           )));
                                               //------------------------------------------------------------
                                             },
@@ -522,7 +705,7 @@ class _UpdatePostState extends State<UpdatePost> {
                     height: 20.h,
                   ),
                   Text(
-                    "Select image(s) to upload",
+                    "Select image(s) or video(s) to upload",
                     style: TextStyle(
                         fontSize: 15.sp,
                         color: AppColors.btnColor,
@@ -582,24 +765,105 @@ class _UpdatePostState extends State<UpdatePost> {
                               ],
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              getImage();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  color: AppColors.popBGColor,
-                                  borderRadius: BorderRadius.circular(7.5.w)),
-                              child: Icon(Icons.camera_alt_rounded,
-                                  color: AppColors.btnColor, size: 30.h),
+                          ..._videos.map(
+                            (video) => Stack(
+                              children: [
+                                Center(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(7.5.w),
+                                    child: video.thubmnail != null
+                                        ? Image.memory(
+                                            video.thubmnail!,
+                                            height: 300.h,
+                                            width: 360.w,
+                                            fit: BoxFit.fill,
+                                          )
+                                        : Container(
+                                            color: AppColors.popBGColor,
+                                            height: 300.h,
+                                            width: 360.w,
+                                          ),
+                                  ),
+                                ),
+                                if (!video.isUploading)
+                                  Center(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (video.mediaInfo != null &&
+                                            !video.isUploaded) {
+                                          _videoUploader(video);
+                                        }
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 20.h,
+                                        backgroundColor: Colors.black45,
+                                        child: Icon(
+                                          video.isUploaded
+                                              ? Icons
+                                                  .check_circle_outline_outlined
+                                              : Icons.cloud_upload,
+                                          size: 20.h,
+                                          color: video.isUploaded
+                                              ? Colors.greenAccent[400]
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                if (video.isUploading)
+                                  Center(
+                                    child: CircleAvatar(
+                                      radius: 20.h,
+                                      backgroundColor: Colors.black45,
+                                      child: CircularProgressIndicator(
+                                        value: video.progressValue,
+                                      ),
+                                    ),
+                                  ),
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: InkWell(
+                                    onTap: () {
+                                      if (!video.isUploading) {
+                                        setState(() {
+                                          _videos.remove(video);
+                                        });
+                                      }
+                                    },
+                                    child: SizedBox(
+                                      height: 50.w,
+                                      width: 50.w,
+                                      child: Icon(
+                                        Icons.cancel_outlined,
+                                        size: 30.w,
+                                        color: AppColors.btnColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  if (_videos.isNotEmpty)
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                  if (_videos.isNotEmpty)
+                    Text(
+                      "Note: video uploads may experience a delay while processing",
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.btnColor,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
                   SizedBox(
-                    height: 20.h,
+                    height: 10.h,
                   ),
                 ],
               ),
@@ -608,5 +872,35 @@ class _UpdatePostState extends State<UpdatePost> {
         ),
       ),
     );
+  }
+
+  _videoUploader(UploadVideoModel videoModel) async {
+    setState(() {
+      videoModel.isUploading = true;
+    });
+    final res = await PostService.postVideotoStore(
+        file: videoModel.mediaInfo!,
+        sendProgress: (double value) {
+          setState(() {
+            videoModel.progressValue = value;
+          });
+        });
+
+    if (res != null) {
+      setState(() {
+        videoModel.storeUrl = res;
+        videoModel.isUploading = false;
+        videoModel.isUploaded = true;
+      });
+    } else {
+      setState(() {
+        videoModel.isUploading = false;
+        videoModel.isUploaded = false;
+      });
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable upload video",
+          type: SnackBarType.error));
+    }
   }
 }

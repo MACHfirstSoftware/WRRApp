@@ -1,16 +1,20 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/response_error.dart';
+import 'package:wisconsin_app/models/upload_video.dart';
 import 'package:wisconsin_app/models/user.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
@@ -39,6 +43,9 @@ class _NewPostState extends State<NewPost> {
   // late TextEditingController _titleController;
   late TextEditingController _bodyController;
   late List<XFile> _images;
+  late List<UploadVideoModel> _videos;
+  // List<Map<String, dynamic>> _uploadedVideoLinks = [];
+  // late List<Uint8List?> _videoThumbnails;
   Post? newPost;
   bool _isPostPublished = false;
   FocusNode focusNode = FocusNode();
@@ -47,6 +54,8 @@ class _NewPostState extends State<NewPost> {
   @override
   void initState() {
     _images = [];
+    _videos = [];
+    // _videoThumbnails = [];
     // _titleController = TextEditingController();
     _bodyController = TextEditingController();
     focusNode.addListener(() {
@@ -68,6 +77,12 @@ class _NewPostState extends State<NewPost> {
   }
 
   _validatePostDetails() {
+    bool videoWhileProcessing = false;
+    for (var element in _videos) {
+      if (element.isUploading) {
+        videoWhileProcessing = true;
+      }
+    }
     ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
     // if (_titleController.text.isEmpty) {
     //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -83,13 +98,36 @@ class _NewPostState extends State<NewPost> {
           type: SnackBarType.error));
       return false;
     }
+    if (videoWhileProcessing) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Video uploads are being processed.",
+          type: SnackBarType.warning));
+      return false;
+    }
     return true;
   }
 
   _publishPost() async {
     if (_validatePostDetails()) {
+      PageLoader.showLoader(context);
       ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
       User _user = Provider.of<UserProvider>(context, listen: false).user;
+      List<Map<String, dynamic>> urls = [];
+      for (var element in _videos) {
+        if (element.storeUrl != null) {
+          urls.add({
+            "id": 0,
+            "postId": 0,
+            "caption": "",
+            "imageUrl": "",
+            "videoUrl": element.storeUrl!["url"],
+            "blobVideoUrl": element.storeUrl!["bloburl"],
+            "sortOrder": 0,
+            "createdOn": DateTime.now().toIso8601String()
+          });
+        }
+      }
       final data = {
         "personId": _user.id,
         "postTypeId": 1,
@@ -98,17 +136,18 @@ class _NewPostState extends State<NewPost> {
         // "title": _titleController.text,
         "title": "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
         "body": _bodyController.text,
-        "isFlagged": false
+        "isFlagged": false,
+        "media": urls
       };
 
-      log(data.toString());
+      // print(jsonEncode(data));
 
-      PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
 
-      postResponse.when(success: (int id) async {
+      postResponse.when(success: (Map<String, dynamic> data) async {
+        // print(id);
         newPost = Post(
-            id: id,
+            id: data["id"],
             personId: _user.id,
             firstName: _user.firstName,
             lastName: _user.lastName,
@@ -126,7 +165,7 @@ class _NewPostState extends State<NewPost> {
             timeAgo: "Just now",
             likes: [],
             comments: [],
-            media: [],
+            media: data["media"],
             county: County(
                 id: _user.countyId,
                 name: _user.countyName!,
@@ -134,6 +173,7 @@ class _NewPostState extends State<NewPost> {
         setState(() {
           _isPostPublished = true;
         });
+
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
           for (XFile image in _images) {
@@ -275,6 +315,45 @@ class _NewPostState extends State<NewPost> {
         print("Failed to pick image : $e");
       }
     } catch (e) {
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
+    }
+  }
+
+  Future getVideo() async {
+    PageLoader.showLoader(context);
+    try {
+      final pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+      if (pickedFile == null) {
+        Navigator.pop(context);
+        return;
+      } else {
+        final compressedVideo =
+            await VideoUtil.compressVideo(filePath: pickedFile.path);
+        final thumb =
+            await VideoUtil.generateThumbnail(filePath: pickedFile.path);
+        Navigator.pop(context);
+        if (compressedVideo != null) {
+          setState(() {
+            _videos.add(
+                UploadVideoModel(mediaInfo: compressedVideo, thubmnail: thumb));
+          });
+          _videoUploader(_videos.last);
+        } else {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Unable to add video",
+              type: SnackBarType.error));
+        }
+      }
+    } on PlatformException catch (e) {
+      Navigator.pop(context);
+      if (kDebugMode) {
+        print("Failed to pick image : $e");
+      }
+    } catch (e) {
+      Navigator.pop(context);
       if (kDebugMode) {
         print("Failed to pick image : $e");
       }
@@ -442,19 +521,55 @@ class _NewPostState extends State<NewPost> {
                     focusNode: focusNode,
                     label: hintText,
                     hintText: "...",
-                    maxLines: 5,
+                    maxLines: 4,
                   ),
                 ),
                 SizedBox(
                   height: 20.h,
                 ),
                 Text(
-                  "Select image(s) to upload",
+                  "Select image(s) or video(s) to upload",
                   style: TextStyle(
                       fontSize: 15.sp,
                       color: AppColors.btnColor,
                       fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        getImage();
+                      },
+                      child: Container(
+                        height: 40.h,
+                        width: 150.w,
+                        decoration: BoxDecoration(
+                            color: AppColors.popBGColor,
+                            borderRadius: BorderRadius.circular(7.5.w)),
+                        child: Icon(Icons.photo_library,
+                            color: AppColors.btnColor, size: 25.h),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        getVideo();
+                      },
+                      child: Container(
+                        height: 40.h,
+                        width: 150.w,
+                        decoration: BoxDecoration(
+                            color: AppColors.popBGColor,
+                            borderRadius: BorderRadius.circular(7.5.w)),
+                        child: Icon(Icons.video_collection_rounded,
+                            color: AppColors.btnColor, size: 25.h),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 20.h,
@@ -510,24 +625,105 @@ class _NewPostState extends State<NewPost> {
                             ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            getImage();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.popBGColor,
-                                borderRadius: BorderRadius.circular(7.5.w)),
-                            child: Icon(Icons.camera_alt_rounded,
-                                color: AppColors.btnColor, size: 30.h),
+                        ..._videos.map(
+                          (video) => Stack(
+                            children: [
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(7.5.w),
+                                  child: video.thubmnail != null
+                                      ? Image.memory(
+                                          video.thubmnail!,
+                                          height: 300.h,
+                                          width: 360.w,
+                                          fit: BoxFit.fill,
+                                        )
+                                      : Container(
+                                          color: AppColors.popBGColor,
+                                          height: 300.h,
+                                          width: 360.w,
+                                        ),
+                                ),
+                              ),
+                              if (!video.isUploading)
+                                Center(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      if (video.mediaInfo != null &&
+                                          !video.isUploaded) {
+                                        _videoUploader(video);
+                                      }
+                                    },
+                                    child: CircleAvatar(
+                                      radius: 20.h,
+                                      backgroundColor: Colors.black45,
+                                      child: Icon(
+                                        video.isUploaded
+                                            ? Icons
+                                                .check_circle_outline_outlined
+                                            : Icons.cloud_upload,
+                                        size: 20.h,
+                                        color: video.isUploaded
+                                            ? Colors.greenAccent[400]
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              if (video.isUploading)
+                                Center(
+                                  child: CircleAvatar(
+                                    radius: 20.h,
+                                    backgroundColor: Colors.black45,
+                                    child: CircularProgressIndicator(
+                                      value: video.progressValue,
+                                    ),
+                                  ),
+                                ),
+                              Positioned(
+                                right: 0,
+                                top: 0,
+                                child: InkWell(
+                                  onTap: () {
+                                    if (!video.isUploading) {
+                                      setState(() {
+                                        _videos.remove(video);
+                                      });
+                                    }
+                                  },
+                                  child: SizedBox(
+                                    height: 50.w,
+                                    width: 50.w,
+                                    child: Icon(
+                                      Icons.cancel_outlined,
+                                      size: 30.w,
+                                      color: AppColors.btnColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
                 )),
+                if (_videos.isNotEmpty)
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                if (_videos.isNotEmpty)
+                  Text(
+                    "Note: video uploads may experience a delay while processing",
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
                 SizedBox(
-                  height: 20.h,
+                  height: 10.h,
                 ),
               ],
             ),
@@ -535,5 +731,35 @@ class _NewPostState extends State<NewPost> {
         ),
       ),
     );
+  }
+
+  _videoUploader(UploadVideoModel videoModel) async {
+    setState(() {
+      videoModel.isUploading = true;
+    });
+    final res = await PostService.postVideotoStore(
+        file: videoModel.mediaInfo!,
+        sendProgress: (double value) {
+          setState(() {
+            videoModel.progressValue = value;
+          });
+        });
+
+    if (res != null) {
+      setState(() {
+        videoModel.storeUrl = res;
+        videoModel.isUploading = false;
+        videoModel.isUploaded = true;
+      });
+    } else {
+      setState(() {
+        videoModel.isUploading = false;
+        videoModel.isUploaded = false;
+      });
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable upload video",
+          type: SnackBarType.error));
+    }
   }
 }

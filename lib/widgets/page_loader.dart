@@ -50,4 +50,26 @@ class PageLoader {
       },
     );
   }
+
+  // static videoUploadWindow({required BuildContext context, required String progress}) {
+  //   showDialog(
+  //     barrierDismissible: false,
+  //     barrierColor: Colors.transparent,
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return WillPopScope(
+  //         onWillPop: () => Future.value(false),
+  //         child: Column(
+  //           children: [
+  //             Container(
+  //               color: Colors.transparent,
+  //               height: 926.h,
+  //               width: 428.w,
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 }

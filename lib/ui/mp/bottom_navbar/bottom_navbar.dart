@@ -33,14 +33,6 @@ import 'package:wisconsin_app/utils/local_notification_api.dart';
 Future<void> _firebaseMessagingBackgroundHandler(message) async {
   await Firebase.initializeApp();
   log('Handling a background message ${message.messageId}');
-  // debugPrint("onMessage BG :");
-  // log("notification id : ${message.data["Id"]}");
-  // log(message.notification != null ? "" : "NUll Noti");
-  // log(message.notification?.body ?? "Null Body");
-  // log(message.notification?.title ?? "Null Title");
-  // _BottomNavBarState().initState();
-  // WidgetsBinding.instance?.addPostFrameCallback((_) =>
-  //     _BottomNavBarState().getNotification(int.parse(message.data["Id"])));
 }
 
 class BottomNavBar extends StatefulWidget {
@@ -97,21 +89,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
     }
     LocalNotificationApi.init();
     listenNotifications();
-    // _init(userProvider.user);
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     _firebaseMessaging.getToken().then((value) {
-      // print("--------------- FCM TOKEN --------------");
-      // print(value);
-      // print("----------------------------------------");
       UserService.updateUserFcmToken(userProvider.user.id, value);
     });
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) async {
-        // debugPrint("onMessage:");
-        // log("notification id : ${message.data["Id"]}");
-        // log(message.notification != null ? "" : "NUll Noti");
-        // log(message.notification?.body ?? "Null Body");
-        // log(message.notification?.title ?? "Null Title");
         await getNotification(int.parse(message.data["Id"]));
         LocalNotificationApi.showNotification(
             title: message.notification?.title,
@@ -122,11 +106,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     FirebaseMessaging.onMessageOpenedApp.listen(
       (RemoteMessage message) async {
-        // debugPrint("onMessage:");
-        // log("notification id : ${message.data["Id"]}");
-        // log(message.notification != null ? "" : "NUll Noti");
-        // log(message.notification?.body ?? "Null Body");
-        // log(message.notification?.title ?? "Null Title");
         await getNotification(int.parse(message.data["Id"]));
         if (inCurrentThisPage) {
           inCurrentThisPage = false;

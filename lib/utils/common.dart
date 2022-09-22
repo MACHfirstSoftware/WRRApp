@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/region.dart';
 
@@ -174,5 +176,24 @@ class CountyUtil {
       }
     }
     return regionName;
+  }
+}
+
+class VideoUtil {
+  static Future<Uint8List?> generateThumbnail(
+      {required String filePath}) async {
+    final thumsBytes = await VideoCompress.getByteThumbnail(filePath);
+    return thumsBytes;
+  }
+
+  static Future<MediaInfo?> compressVideo({required String filePath}) async {
+    try {
+      await VideoCompress.setLogLevel(0);
+      return VideoCompress.compressVideo(filePath,
+          quality: VideoQuality.LowQuality, includeAudio: true);
+    } catch (e) {
+      VideoCompress.cancelCompression();
+      return null;
+    }
   }
 }

@@ -1,6 +1,9 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/like.dart';
@@ -142,14 +145,19 @@ class PostService {
     }
   }
 
-  static Future<ApiResult<int>> postPublish(
+  static Future<ApiResult<Map<String, dynamic>>> postPublish(
       Map<String, dynamic> postDetails) async {
     try {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/Post", data: postDetails);
       if (response.statusCode == 201) {
-        // print(response.data);
-        return ApiResult.success(data: response.data["id"] as int);
+        print("RESPONSE DATA");
+        print(response.data);
+        List<Media> postMedia = (response.data["media"] as List<dynamic>)
+            .map((e) => Media.fromJson(e))
+            .toList();
+        return ApiResult.success(
+            data: {"media": postMedia, "id": response.data["id"] as int});
       } else {
         // print(response.data);
         return ApiResult.responseError(
@@ -158,7 +166,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      // print(e);
+      print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -216,27 +224,36 @@ class PostService {
     }
   }
 
-  static Future<void> addPostVideo(String path) async {
-    // print(path);
+  static Future<Map<String, dynamic>?> postVideotoStore(
+      {required MediaInfo file,
+      required ValueChanged<double> sendProgress}) async {
+    // print("${file.path} ${file.}");
     FormData formData = FormData.fromMap({
-      "file": MultipartFile.fromFileSync(path, filename: "abc.mp4"),
+      "file": MultipartFile.fromFileSync(file.path!),
     });
     try {
       final response = await CustomHttp.getDio().post(
-        Constant.baseUrl + "/PostVideo",
-        data: formData,
-        // options: Options(
-        //     receiveTimeout: 60000,
-        //     sendTimeout: 60000,
-        //     contentType: "multipart/form-data")
-      );
+          Constant.baseUrl + "/PostVideo",
+          data: formData,
+          options: Options(
+              receiveDataWhenStatusError: true,
+              receiveTimeout: 60000,
+              sendTimeout: 60000,
+              contentType: "multipart/form-data"),
+          onSendProgress: (sent, total) {
+        print(sent / total);
+        sendProgress((sent / total));
+      });
       if (response.statusCode == 200) {
-        // print(response.data);
+        print(response.data);
+        return (response.data);
       } else {
-        // print(response.data);
+        print(response.data);
+        return null;
       }
     } catch (e) {
-      // print(e);
+      print(e);
+      return null;
     }
   }
 
@@ -244,6 +261,20 @@ class PostService {
     try {
       final response = await CustomHttp.getDio()
           .delete(Constant.baseUrl + "/DeleteImage?id=$id");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static Future<bool> videoDelete(int id) async {
+    try {
+      final response = await CustomHttp.getDio()
+          .delete(Constant.baseUrl + "/DeleteVedio?id=$id");
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -284,6 +315,33 @@ class PostService {
     } catch (e) {
       // print(e);
       return false;
+    }
+  }
+
+  static Future<ApiResult<List<Media>>> addPostVideoUrl(
+      int postId, List<Map<String, dynamic>> data) async {
+    // print("update call");
+    try {
+      final response = await CustomHttp.getDio()
+          .post(Constant.baseUrl + "/PostVideoUrls?postId=$postId", data: data);
+      log(response.data.toString());
+      if (response.statusCode == 201) {
+        // print(response.data);
+        List<dynamic> res = response.data;
+        return ApiResult.success(
+            data: res
+                .map((d) => Media.fromJson(d as Map<String, dynamic>))
+                .toList());
+      } else {
+        // print(response.data);
+        return ApiResult.responseError(
+            responseError: ResponseError(
+                error: "Something went wrong!",
+                errorCode: response.statusCode ?? 0));
+      }
+    } catch (e) {
+      // print(e);
+      return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
 

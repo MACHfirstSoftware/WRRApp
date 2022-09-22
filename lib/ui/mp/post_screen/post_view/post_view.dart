@@ -1,10 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wisconsin_app/config.dart';
 // import 'package:wisconsin_app/models/contest.dart';
 import 'package:wisconsin_app/models/like.dart';
@@ -22,6 +26,9 @@ import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/update_post.d
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_media_view.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_preview.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_thumbnail.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/update_report_post.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
@@ -952,7 +959,19 @@ class MediaView extends StatelessWidget {
   }
 
   _buildOneMedia(BuildContext context) {
-    return _imageTile(context, media[0].imageUrl, 0);
+    // if (media[0].imageUrl == null) {
+    //   print("IMAGE URL IS : ${media[0].imageUrl}");
+    //   print("VIDEO URL IS : ${media[0].videoUrl}");
+    // }
+
+    return media[0].imageUrl != null
+        ? _imageTile(context, media[0].imageUrl!, 0)
+        : VideoThumbs(videoUrl: media[0].videoUrl!, medias: media, index: 0);
+    // return VideoThumbs(
+    //     videoUrl:
+    //         "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+    // medias: media,
+    // index: 0);
   }
 
   _buildTwoMedia(BuildContext context) {
@@ -961,7 +980,10 @@ class MediaView extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 350.h,
-            child: _imageTile(context, media[0].imageUrl, 0),
+            child: media[0].imageUrl != null
+                ? _imageTile(context, media[0].imageUrl!, 0)
+                : VideoThumbs(
+                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -970,7 +992,11 @@ class MediaView extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 350.h,
-            child: _imageTile(context, media[1].imageUrl, 1),
+            child: media[1].imageUrl != null
+                ? _imageTile(context, media[1].imageUrl!, 1)
+                : VideoThumbs(
+                    videoUrl: media[1].videoUrl!, medias: media, index: 1),
+            // child: _imageTile(context, media[1].imageUrl!, 1),
           ),
         ),
       ],
@@ -983,7 +1009,11 @@ class MediaView extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 350.h,
-            child: _imageTile(context, media[0].imageUrl, 0),
+            // child: _imageTile(context, media[0].imageUrl!, 0),
+            child: media[0].imageUrl != null
+                ? _imageTile(context, media[0].imageUrl!, 0)
+                : VideoThumbs(
+                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -993,13 +1023,21 @@ class MediaView extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: _imageTile(context, media[1].imageUrl, 1),
+                // child: _imageTile(context, media[1].imageUrl!, 1),
+                child: media[1].imageUrl != null
+                    ? _imageTile(context, media[1].imageUrl!, 1)
+                    : VideoThumbs(
+                        videoUrl: media[1].videoUrl!, medias: media, index: 1),
               ),
               SizedBox(
                 height: 3.w,
               ),
               Expanded(
-                child: _imageTile(context, media[2].imageUrl, 2),
+                // child: _imageTile(context, media[2].imageUrl!, 2),
+                child: media[2].imageUrl != null
+                    ? _imageTile(context, media[2].imageUrl!, 2)
+                    : VideoThumbs(
+                        videoUrl: media[2].videoUrl!, medias: media, index: 2),
               ),
             ],
           ),
@@ -1014,7 +1052,11 @@ class MediaView extends StatelessWidget {
         Expanded(
           child: SizedBox(
             height: 350.h,
-            child: _imageTile(context, media[0].imageUrl, 0),
+            // child: _imageTile(context, media[0].imageUrl!, 0),
+            child: media[0].imageUrl != null
+                ? _imageTile(context, media[0].imageUrl!, 0)
+                : VideoThumbs(
+                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -1026,7 +1068,13 @@ class MediaView extends StatelessWidget {
               Expanded(
                 child: SizedBox(
                   width: 210.w,
-                  child: _imageTile(context, media[1].imageUrl, 1),
+                  // child: _imageTile(context, media[1].imageUrl!, 1),
+                  child: media[1].imageUrl != null
+                      ? _imageTile(context, media[1].imageUrl!, 1)
+                      : VideoThumbs(
+                          videoUrl: media[1].videoUrl!,
+                          medias: media,
+                          index: 1),
                 ),
               ),
               SizedBox(
@@ -1038,7 +1086,13 @@ class MediaView extends StatelessWidget {
                     Expanded(
                       child: SizedBox(
                         height: 350.h / 2,
-                        child: _imageTile(context, media[2].imageUrl, 2),
+                        // child: _imageTile(context, media[2].imageUrl!, 2),
+                        child: media[2].imageUrl != null
+                            ? _imageTile(context, media[2].imageUrl!, 2)
+                            : VideoThumbs(
+                                videoUrl: media[2].videoUrl!,
+                                medias: media,
+                                index: 2),
                       ),
                     ),
                     SizedBox(
@@ -1048,14 +1102,25 @@ class MediaView extends StatelessWidget {
                       child: media.length == 4
                           ? SizedBox(
                               height: 350.h / 2,
-                              child: _imageTile(context, media[3].imageUrl, 3),
+                              // child: _imageTile(context, media[3].imageUrl!, 3),
+                              child: media[3].imageUrl != null
+                                  ? _imageTile(context, media[3].imageUrl!, 3)
+                                  : VideoThumbs(
+                                      videoUrl: media[3].videoUrl!,
+                                      medias: media,
+                                      index: 3),
                             )
                           : Stack(
                               children: [
                                 SizedBox(
                                   height: 350.h / 2,
-                                  child:
-                                      _imageTile(context, media[3].imageUrl, 0),
+                                  child: media[3].imageUrl != null
+                                      ? _imageTile(
+                                          context, media[3].imageUrl!, 3)
+                                      : VideoThumbs(
+                                          videoUrl: media[3].videoUrl!,
+                                          medias: media,
+                                          index: 3),
                                 ),
                                 Positioned.fill(
                                   child: GestureDetector(
@@ -1063,8 +1128,8 @@ class MediaView extends StatelessWidget {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) =>
-                                                  ImagePreview(medias: media)));
+                                              builder: (_) => PostMediaView(
+                                                  medias: media)));
                                     },
                                     child: ClipRect(
                                       child: BackdropFilter(
@@ -1117,7 +1182,7 @@ class MediaView extends StatelessWidget {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => ImagePreview(medias: media, index: index)));
+                builder: (_) => PostMediaView(medias: media, index: index)));
       },
       child: CachedNetworkImage(
         imageUrl: url,

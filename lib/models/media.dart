@@ -9,7 +9,7 @@ class Media {
     required this.id,
     required this.postId,
     required this.caption,
-    required this.imageUrl,
+    this.imageUrl,
     this.videoUrl,
     required this.sortOrder,
     // required this.createdOn,
@@ -18,7 +18,7 @@ class Media {
   int id;
   int postId;
   String caption;
-  String imageUrl;
+  String? imageUrl;
   String? videoUrl;
   int sortOrder;
   // DateTime createdOn;
@@ -27,8 +27,18 @@ class Media {
         id: json["id"],
         postId: json["postId"],
         caption: json["caption"],
-        imageUrl: json["imageUrl"],
-        videoUrl: json["videoUrl"],
+        imageUrl: json["imageUrl"] == null
+            ? null
+            : json["imageUrl"] == ""
+                ? null
+                : json["imageUrl"],
+        videoUrl: json["videoUrl"] == null
+            ? null
+            : json["videoUrl"] == ""
+                ? null
+                : json["videoUrl"].toString().replaceAll(
+                    "manifest(format=mpd-time-csf)",
+                    "manifest(format=m3u8-cmaf).m3u8"),
         sortOrder: json["sortOrder"],
         // createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );

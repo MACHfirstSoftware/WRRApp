@@ -144,9 +144,9 @@ class _NewReportPostState extends State<NewReportPost> {
       PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
 
-      postResponse.when(success: (int id) async {
+      postResponse.when(success: (Map<String, dynamic> data) async {
         newPost = Post(
-            id: id,
+            id: data["id"],
             personId: _user.id,
             firstName: _user.firstName,
             lastName: _user.lastName,
@@ -164,7 +164,7 @@ class _NewReportPostState extends State<NewReportPost> {
             timeAgo: "Just now",
             likes: [],
             comments: [],
-            media: [],
+            media: data["media"],
             county: County(
                 id: _selectedCounty.id,
                 name: _selectedCounty.name,
@@ -173,7 +173,7 @@ class _NewReportPostState extends State<NewReportPost> {
           _isPostPublished = true;
         });
         final reportData = {
-          "postId": id,
+          "postId": data["id"],
           "start_DateTime": UtilCommon.formatDate(startAt),
           "numDeer": _deerSeenController.text,
           "numBucks": _bucksSeenController.text,

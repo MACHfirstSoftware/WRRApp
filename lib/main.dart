@@ -42,6 +42,7 @@ void main() async {
   CustomHttp.setInterceptor();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await PurchasesService.init();
+
   await Firebase.initializeApp();
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
@@ -53,7 +54,6 @@ void main() async {
     provisional: false,
     sound: true,
   );
-
   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
     debugPrint('User granted permission');
   } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
@@ -61,6 +61,7 @@ void main() async {
   } else {
     debugPrint('User declined or has not accepted permission');
   }
+
   List<County> _counties = await QuestionnaireService.getCounties(-1);
   User? _user;
   SubscriptionStatus _subscriptionStatus = SubscriptionStatus.free;
@@ -117,22 +118,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // print("${widget.subscriptionStatus}  ${widget.user?.appUserId}");
-    // FirebaseMessaging. ((RemoteMessage message) {});
-    // _firebaseMessaging.getToken().then((value) {
-    //   print("--------------- FCM TOKEN --------------");
-    //   print(value);
-    //   print("----------------------------------------");
-    // });
-    // FirebaseMessaging.onMessage.listen(
-    //   (RemoteMessage message) {
-    //     debugPrint("onMessage:");
-    //     log("notification id : ${message.data["Id"]}");
-    //     log(message.notification != null ? "" : "NUll Noti");
-    //     log(message.notification?.body ?? "Null Body");
-    //     log(message.notification?.title ?? "Null Title");
-    //   },
-    // );
     super.initState();
   }
 

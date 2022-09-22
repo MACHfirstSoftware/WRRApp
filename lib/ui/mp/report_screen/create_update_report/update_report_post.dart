@@ -895,7 +895,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                                               borderRadius:
                                                   BorderRadius.circular(7.5.w),
                                               child: CachedNetworkImage(
-                                                imageUrl: media.imageUrl,
+                                                imageUrl: media.imageUrl!,
                                                 imageBuilder:
                                                     (context, imageProvider) {
                                                   return Image(
