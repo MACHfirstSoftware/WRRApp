@@ -1,10 +1,9 @@
 import 'dart:typed_data';
-
-import 'package:video_compress/video_compress.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UploadVideoModel {
   Uint8List? thubmnail;
-  MediaInfo? mediaInfo;
+  XFile? file;
   Map<String, dynamic>? storeUrl;
   bool isUploaded;
   bool isUploading;
@@ -12,7 +11,7 @@ class UploadVideoModel {
 
   UploadVideoModel(
       {this.thubmnail,
-      this.mediaInfo,
+      this.file,
       this.storeUrl,
       this.isUploaded = false,
       this.isUploading = false,

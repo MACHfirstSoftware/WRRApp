@@ -1,16 +1,11 @@
-import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wisconsin_app/config.dart';
-// import 'package:wisconsin_app/models/contest.dart';
 import 'package:wisconsin_app/models/like.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
@@ -25,9 +20,8 @@ import 'package:wisconsin_app/services/search_service.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/create_update_post/update_post.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_share/post_share.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/comment_section.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/post_view/image_preview.dart';
+import 'package:wisconsin_app/ui/mp/post_screen/post_view/likes_preview.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_media_view.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_preview.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_thumbnail.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/update_report_post.dart';
 import 'package:wisconsin_app/utils/common.dart';
@@ -78,6 +72,11 @@ class _PostViewState extends State<PostView> {
         personId: _user.id,
         firstName: _user.firstName,
         lastName: _user.lastName,
+        code: _user.code,
+        isFollower: true,
+        countyName: _user.countyName ?? "",
+        countyId: _user.countyId,
+        imageLocation: _user.profileImageUrl,
         createdOn: UtilCommon.getDateTimeNow(),
         postId: widget.post.id);
 
@@ -279,13 +278,16 @@ class _PostViewState extends State<PostView> {
               color: Colors.white,
               child: Row(
                 children: [
-                  Text(
-                    "${widget.post.likes.length} likes",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400),
-                    textAlign: TextAlign.left,
+                  GestureDetector(
+                    onTap: () => _showLikesSheet(widget.post.likes),
+                    child: Text(
+                      "${widget.post.likes.length} likes",
+                      style: TextStyle(
+                          fontSize: 16.sp,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w400),
+                      textAlign: TextAlign.left,
+                    ),
                   ),
                   SizedBox(width: 25.w),
                   GestureDetector(
@@ -921,6 +923,14 @@ class _PostViewState extends State<PostView> {
       ),
     );
   }
+
+  _showLikesSheet(List<Like> likes) {
+    return showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isDismissible: true,
+        context: context,
+        builder: (context) => LikesPreview(likes: likes));
+  }
 }
 
 class MediaView extends StatelessWidget {
@@ -966,7 +976,7 @@ class MediaView extends StatelessWidget {
 
     return media[0].imageUrl != null
         ? _imageTile(context, media[0].imageUrl!, 0)
-        : VideoThumbs(videoUrl: media[0].videoUrl!, medias: media, index: 0);
+        : VideoThumbs(thumbnail: media[0].thumbnail, medias: media, index: 0);
     // return VideoThumbs(
     //     videoUrl:
     //         "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
@@ -983,7 +993,7 @@ class MediaView extends StatelessWidget {
             child: media[0].imageUrl != null
                 ? _imageTile(context, media[0].imageUrl!, 0)
                 : VideoThumbs(
-                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
+                    thumbnail: media[0].thumbnail, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -995,7 +1005,7 @@ class MediaView extends StatelessWidget {
             child: media[1].imageUrl != null
                 ? _imageTile(context, media[1].imageUrl!, 1)
                 : VideoThumbs(
-                    videoUrl: media[1].videoUrl!, medias: media, index: 1),
+                    thumbnail: media[1].thumbnail, medias: media, index: 1),
             // child: _imageTile(context, media[1].imageUrl!, 1),
           ),
         ),
@@ -1013,7 +1023,7 @@ class MediaView extends StatelessWidget {
             child: media[0].imageUrl != null
                 ? _imageTile(context, media[0].imageUrl!, 0)
                 : VideoThumbs(
-                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
+                    thumbnail: media[0].thumbnail, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -1027,7 +1037,7 @@ class MediaView extends StatelessWidget {
                 child: media[1].imageUrl != null
                     ? _imageTile(context, media[1].imageUrl!, 1)
                     : VideoThumbs(
-                        videoUrl: media[1].videoUrl!, medias: media, index: 1),
+                        thumbnail: media[1].thumbnail, medias: media, index: 1),
               ),
               SizedBox(
                 height: 3.w,
@@ -1037,7 +1047,7 @@ class MediaView extends StatelessWidget {
                 child: media[2].imageUrl != null
                     ? _imageTile(context, media[2].imageUrl!, 2)
                     : VideoThumbs(
-                        videoUrl: media[2].videoUrl!, medias: media, index: 2),
+                        thumbnail: media[2].thumbnail, medias: media, index: 2),
               ),
             ],
           ),
@@ -1056,7 +1066,7 @@ class MediaView extends StatelessWidget {
             child: media[0].imageUrl != null
                 ? _imageTile(context, media[0].imageUrl!, 0)
                 : VideoThumbs(
-                    videoUrl: media[0].videoUrl!, medias: media, index: 0),
+                    thumbnail: media[0].thumbnail, medias: media, index: 0),
           ),
         ),
         SizedBox(
@@ -1072,7 +1082,7 @@ class MediaView extends StatelessWidget {
                   child: media[1].imageUrl != null
                       ? _imageTile(context, media[1].imageUrl!, 1)
                       : VideoThumbs(
-                          videoUrl: media[1].videoUrl!,
+                          thumbnail: media[1].thumbnail,
                           medias: media,
                           index: 1),
                 ),
@@ -1090,7 +1100,7 @@ class MediaView extends StatelessWidget {
                         child: media[2].imageUrl != null
                             ? _imageTile(context, media[2].imageUrl!, 2)
                             : VideoThumbs(
-                                videoUrl: media[2].videoUrl!,
+                                thumbnail: media[2].thumbnail,
                                 medias: media,
                                 index: 2),
                       ),
@@ -1106,7 +1116,7 @@ class MediaView extends StatelessWidget {
                               child: media[3].imageUrl != null
                                   ? _imageTile(context, media[3].imageUrl!, 3)
                                   : VideoThumbs(
-                                      videoUrl: media[3].videoUrl!,
+                                      thumbnail: media[3].thumbnail,
                                       medias: media,
                                       index: 3),
                             )
@@ -1118,7 +1128,7 @@ class MediaView extends StatelessWidget {
                                       ? _imageTile(
                                           context, media[3].imageUrl!, 3)
                                       : VideoThumbs(
-                                          videoUrl: media[3].videoUrl!,
+                                          thumbnail: media[3].thumbnail,
                                           medias: media,
                                           index: 3),
                                 ),

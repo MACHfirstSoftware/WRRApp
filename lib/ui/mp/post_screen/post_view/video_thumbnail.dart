@@ -1,20 +1,17 @@
-import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_media_view.dart';
 
 class VideoThumbs extends StatefulWidget {
   final List<Media>? medias;
-  final String videoUrl;
+  final String? thumbnail;
   final int? index;
   const VideoThumbs({
     Key? key,
-    required this.videoUrl,
+    this.thumbnail,
     this.medias,
     this.index,
   }) : super(key: key);
@@ -24,29 +21,8 @@ class VideoThumbs extends StatefulWidget {
 }
 
 class _VideoThumbsState extends State<VideoThumbs> {
-  String? _thumbnailUrl;
-
-  _getVideoThumbnail() async {
-    print("Thumbs Called");
-    // print(widget.videoUrl);
-    // double hb = 400.h;
-    // int hh = int.parse(hb.toStringAsFixed(0));
-    _thumbnailUrl = await VideoThumbnail.thumbnailFile(
-      video: widget.videoUrl,
-      thumbnailPath: (await getTemporaryDirectory()).absolute.path,
-      imageFormat: ImageFormat.WEBP,
-      // maxHeight: 400,
-      maxWidth: int.parse((428.w).toStringAsFixed(0)),
-      quality: 75,
-    );
-
-    print("THUMS URL $_thumbnailUrl");
-    setState(() {});
-  }
-
   @override
   void initState() {
-    _getVideoThumbnail();
     super.initState();
   }
 
@@ -63,26 +39,45 @@ class _VideoThumbsState extends State<VideoThumbs> {
         }
       },
       child: Container(
-        // color: widget.medias != null
-        //     ? AppColors.backgroundColor
-        //     : AppColors.popBGColor,
         color: AppColors.popBGColor.withOpacity(0.8),
         alignment: Alignment.center,
         child: Stack(
           alignment: Alignment.center,
+          fit: StackFit.expand,
           children: [
-            if (_thumbnailUrl != null)
-              Image.file(
-                File(_thumbnailUrl!),
-                fit: BoxFit.fill,
+            if (widget.thumbnail != null)
+              CachedNetworkImage(
+                imageUrl: widget.thumbnail!,
+                imageBuilder: (context, imageProvider) {
+                  return Image(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                    alignment: widget.medias?.length == 1
+                        ? Alignment.center
+                        : Alignment.topCenter,
+                  );
+                },
+                progressIndicatorBuilder: (context, url, progress) => Center(
+                  child: SizedBox(
+                    height: 15.h,
+                    width: 15.h,
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) =>
+                    Icon(Icons.error, color: AppColors.btnColor, size: 15.h),
               ),
-            CircleAvatar(
-              radius: 20.h,
-              backgroundColor: Colors.black45,
-              child: Icon(
-                Icons.play_arrow,
-                size: 20.h,
-                color: Colors.white,
+            Center(
+              child: CircleAvatar(
+                radius: 20.h,
+                backgroundColor: Colors.black45,
+                child: Icon(
+                  Icons.play_arrow,
+                  size: 20.h,
+                  color: Colors.white,
+                ),
               ),
             )
           ],
@@ -91,3 +86,9 @@ class _VideoThumbsState extends State<VideoThumbs> {
     );
   }
 }
+
+/**{
+  "url": "https://rrmediaservice-uswe.streaming.media.azure.net/e1d50c66-8c67-484a-9399-f4fe58e3b49a/Butterfly-209-133084351480339619.ism/manifest(format=m3u8-cmaf).m3u8",
+  "bloburl": "https://usrutreports.blob.core.windows.net/test/Butterfly-209-133084351480339619.mp4",
+  "thumbnail": "https://usrutreports.blob.core.windows.net/test/thum_Butterfly-209-133084351480339619.jpg"
+} */

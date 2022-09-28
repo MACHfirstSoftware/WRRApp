@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/ui/landing/register_page/register_page.dart';
 import 'package:wisconsin_app/ui/landing/sign_in_page/sign_in_page.dart';
-import 'package:wisconsin_app/widgets/video_test.dart';
 
 class AuthMainPage extends StatefulWidget {
   const AuthMainPage({Key? key}) : super(key: key);
@@ -67,18 +66,6 @@ class _AuthMainPageState extends State<AuthMainPage> {
             height: 20.h,
             width: 428.w,
           ),
-          _buildSubmitBtn(
-              () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const VideoApp())),
-              "Video"),
-
-          // SizedBox(
-          //   height: 20.h,
-          //   width: 428.w,
-          // ),
-          // _buildSubmitBtn(() => PurchasesService.login(), "Login plans"),
-
-          //$RCAnonymousID:a1776857aca6464c8b4fb10c9abd7ef6
         ],
       ),
     );

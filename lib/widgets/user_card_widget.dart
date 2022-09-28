@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/providers/user_provider.dart';
 
 class UserCard extends StatelessWidget {
+  final String id;
   final String name;
   final String personCode;
   final String county;
@@ -17,11 +20,13 @@ class UserCard extends StatelessWidget {
       required this.county,
       this.profileImageUrl,
       required this.onTap,
-      required this.isFollowed})
+      required this.isFollowed,
+      this.id = ""})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final _user = Provider.of<UserProvider>(context).user;
     return Container(
       height: 75.h,
       width: 428.w,
@@ -142,18 +147,19 @@ class UserCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-              height: 60.h,
-              width: 60.h,
-              child: IconButton(
-                // splashColor: AppColors.btnColor.withOpacity(0.5),
-                iconSize: 25.h,
-                icon: Icon(
-                  Icons.person_add_alt_rounded,
-                  color: isFollowed ? AppColors.btnColor : Colors.black54,
-                ),
-                onPressed: onTap,
-              ))
+          if (_user.id != id)
+            SizedBox(
+                height: 60.h,
+                width: 60.h,
+                child: IconButton(
+                  // splashColor: AppColors.btnColor.withOpacity(0.5),
+                  iconSize: 25.h,
+                  icon: Icon(
+                    Icons.person_add_alt_rounded,
+                    color: isFollowed ? AppColors.btnColor : Colors.black54,
+                  ),
+                  onPressed: onTap,
+                ))
         ],
       ),
     );

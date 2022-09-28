@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:auto_orientation/auto_orientation.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';
@@ -14,41 +18,126 @@ class VideoPreview extends StatefulWidget {
 
 class _VideoPreviewState extends State<VideoPreview> {
   late VideoPlayerController _controller;
-  bool isShow = true;
+  ChewieController? chewieController;
 
   @override
   void initState() {
-    print(widget.videoUrl);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.portraitUp,
+    ]);
+    _initPlayer();
     super.initState();
-    _controller = VideoPlayerController.network(
-        // "https://rrmediaservice-uswe.streaming.media.azure.net/11dd311b-74d4-41d1-a8a1-5430647dcb44/abc-133082324312950384.ism/manifest(format=m3u8-cmaf).m3u8"
-        // "https://rrmediaservice-uswe.streaming.media.azure.net/b7d63db1-7fa5-44b7-a4c0-afda1ae68b6a/wr-133082292067427884-1330829536.ism/manifest(format=m3u8-cmaf).m3u8")
-        widget.videoUrl)
-      ..initialize().then((_) {
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+  }
 
-        Future.delayed(const Duration(milliseconds: 1500), () {
-          isShow = false;
+  _initPlayer() async {
+    _controller = _controller = VideoPlayerController.network(widget.videoUrl);
+    await Future.wait([_controller.initialize()]);
+    chewieController = ChewieController(
+        videoPlayerController: _controller,
+        aspectRatio: _controller.value.aspectRatio,
+        autoPlay: true,
+        allowFullScreen: true,
+        allowPlaybackSpeedChanging: false,
+        autoInitialize: true,
+        showOptions: false,
+        showControls: true,
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.portraitUp,
+        ],
+        deviceOrientationsOnEnterFullScreen: [
+          DeviceOrientation.landscapeRight,
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.portraitUp,
+        ],
+        systemOverlaysAfterFullScreen: SystemUiOverlay.values,
+        systemOverlaysOnEnterFullScreen: SystemUiOverlay.values,
+        routePageBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondAnimation, provider) {
+          return AnimatedBuilder(
+            animation: animation,
+            builder: (BuildContext context, Widget? child) {
+              return VideoScaffold(
+                child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  backgroundColor: AppColors.btnColor,
+                  body: Container(
+                    alignment: Alignment.center,
+                    color: Colors.black,
+                    child: provider,
+                  ),
+                ),
+              );
+            },
+          );
         });
-        setState(() {});
-      });
+    // chewieController?.addListener(() {
+    //   if (chewieController!.isFullScreen) {
+    //     if (Platform.isAndroid) {
+    //       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    //       final or = MediaQuery.of(context).orientation;
+    //       if (or == Orientation.portrait) {
+    //         chewieController?.exitFullScreen();
+    //       }
+    //     }
+    //     // SystemChrome.setPreferredOrientations([
+    //     //   DeviceOrientation.landscapeRight,
+    //     //   DeviceOrientation.landscapeLeft,
+    //     // ]);
+    //     // target = Orientation.portrait;
+    //     // AutoOrientation.landscapeAutoMode();
+    //     // NativeDeviceOrientationCommunicator()
+    //     //     .onOrientationChanged(useSensor: true)
+    //     //     .listen((event) {
+    //     //   if (event == target) {
+    //     //     target = null;
+    //     //     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    //     //   } else {
+    //     //     AutoOrientation.landscapeLeftMode();
+    //     //   }
+    //     // });
+    //     // AutoOrientation.landscapeLeftMode();
+    //   } else {
+    //     if (Platform.isAndroid) {
+    //       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    //       final or = MediaQuery.of(context).orientation;
+    //       if (or == Orientation.landscape) {
+    //         chewieController?.enterFullScreen();
+    //       }
+    //     }
+    //     // SystemChrome.setPreferredOrientations([
+    //     //   DeviceOrientation.portraitUp,
+    //     //   DeviceOrientation.portraitDown,
+    //     // ]);
+    //     // target = Orientation.landscape;
+    //     // AutoOrientation.portraitUpMode();
+    //     // AutoOrientation.portraitUpMode();
+    //     // NativeDeviceOrientationCommunicator()
+    //     //     .onOrientationChanged(useSensor: true)
+    //     //     .listen((event) {
+    //     //   if (event == target) {
+    //     //     target = null;
+    //     //     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    //     //   } else {
+    //     //     AutoOrientation.portraitUpMode();
+    //     //   }
+    //     // });
+    //   }
+    // });
+    setState(() {});
   }
 
   @override
   void dispose() {
-    super.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     _controller.dispose();
-  }
-
-  _showButtons() {
-    setState(() {
-      isShow = true;
-    });
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      setState(() {
-        isShow = false;
-      });
-    });
+    chewieController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -56,46 +145,77 @@ class _VideoPreviewState extends State<VideoPreview> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Center(
-        child: GestureDetector(
-          onTap: () {
-            if (_controller.value.isInitialized) {
-              _showButtons();
-            }
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              _controller.value.isInitialized
-                  ? AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    )
-                  : ViewModels.postLoader(),
-              if (_controller.value.isInitialized && isShow)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _controller.value.isPlaying
-                          ? _controller.pause()
-                          : _controller.play();
-                    });
-                  },
-                  child: CircleAvatar(
-                    radius: 20.h,
-                    backgroundColor: AppColors.popBGColor.withOpacity(0.8),
-                    child: Icon(
-                      _controller.value.isPlaying
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                      size: 20.h,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-            ],
-          ),
-        ),
-      ),
+          child: chewieController != null &&
+                  chewieController!.videoPlayerController.value.isInitialized
+              ? _buildVideo()
+              : ViewModels.postLoader()),
     );
+  }
+
+  _setOrientation(bool isPortrait) {
+    if (Platform.isIOS) {
+      if (!isPortrait) {
+        // print("LANDSCAPE");
+        WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+          chewieController?.enterFullScreen();
+        });
+      } else {
+        // print("PORTRAIT");
+        WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+          chewieController?.exitFullScreen();
+        });
+      }
+    }
+  }
+
+  OrientationBuilder _buildVideo() {
+    return OrientationBuilder(builder: (context, orientation) {
+      final isPortrait = orientation == Orientation.portrait;
+      _setOrientation(isPortrait);
+      return Chewie(
+        controller: chewieController!,
+      );
+    });
+  }
+}
+
+class VideoScaffold extends StatefulWidget {
+  const VideoScaffold({Key? key, required this.child}) : super(key: key);
+
+  final Widget child;
+
+  @override
+  State<StatefulWidget> createState() => _VideoScaffoldState();
+}
+
+class _VideoScaffoldState extends State<VideoScaffold> {
+  @override
+  void initState() {
+    if (Platform.isAndroid) {
+      // SystemChrome.setPreferredOrientations(
+      //     [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    }
+    AutoOrientation.landscapeAutoMode();
+    super.initState();
+  }
+
+  @override
+  dispose() {
+    if (Platform.isAndroid) {
+      // SystemChrome.setPreferredOrientations([
+      //   DeviceOrientation.landscapeLeft,
+      //   DeviceOrientation.landscapeRight,
+      //   DeviceOrientation.portraitUp
+      // ]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    }
+    AutoOrientation.fullAutoMode();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }

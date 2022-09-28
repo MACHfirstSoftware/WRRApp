@@ -186,14 +186,14 @@ class VideoUtil {
     return thumsBytes;
   }
 
-  static Future<MediaInfo?> compressVideo({required String filePath}) async {
-    try {
-      await VideoCompress.setLogLevel(0);
-      return VideoCompress.compressVideo(filePath,
-          quality: VideoQuality.LowQuality, includeAudio: true);
-    } catch (e) {
-      VideoCompress.cancelCompression();
-      return null;
-    }
-  }
+  // static Future<MediaInfo?> compressVideo({required String filePath}) async {
+  //   try {
+  //     await VideoCompress.setLogLevel(0);
+  //     return VideoCompress.compressVideo(filePath,
+  //         quality: VideoQuality.DefaultQuality, includeAudio: true);
+  //   } catch (e) {
+  //     VideoCompress.cancelCompression();
+  //     return null;
+  //   }
+  // }
 }

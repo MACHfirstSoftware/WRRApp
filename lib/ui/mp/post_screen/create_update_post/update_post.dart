@@ -15,7 +15,6 @@ import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
-import 'package:wisconsin_app/ui/mp/post_screen/post_view/post_view.dart';
 import 'package:wisconsin_app/ui/mp/post_screen/post_view/video_thumbnail.dart';
 import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/widgets/confirmation_popup.dart';
@@ -71,12 +70,12 @@ class _UpdatePostState extends State<UpdatePost> {
   }
 
   _validatePostDetails() {
-    bool videoWhileProcessing = false;
-    for (var element in _videos) {
-      if (element.isUploading) {
-        videoWhileProcessing = true;
-      }
-    }
+    // bool videoWhileProcessing = false;
+    // for (var element in _videos) {
+    //   if (element.isUploading) {
+    //     videoWhileProcessing = true;
+    //   }
+    // }
     ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
     // if (_titleController.text.isEmpty) {
     //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -92,20 +91,42 @@ class _UpdatePostState extends State<UpdatePost> {
           type: SnackBarType.error));
       return false;
     }
-    if (videoWhileProcessing) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Video uploads are being processed.",
-          type: SnackBarType.warning));
-      return false;
-    }
+    // if (videoWhileProcessing) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Video uploads are being processed.",
+    //       type: SnackBarType.warning));
+    //   return false;
+    // }
     return true;
+  }
+
+  _validateAllVideosUploaded() {
+    bool isAllUploaded = true;
+
+    for (var element in _videos) {
+      if (!element.isUploaded) {
+        isAllUploaded = false;
+      }
+    }
+    return isAllUploaded;
   }
 
   _updatePost() async {
     if (_validatePostDetails()) {
       ScaffoldMessenger.maybeOf(context)?.removeCurrentSnackBar();
       PageLoader.showLoader(context);
+      if (!_validateAllVideosUploaded()) {
+        final bulkUpload = await _videoBulkUploader();
+        if (!bulkUpload) {
+          Navigator.pop(context);
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Unable to published the post.",
+              type: SnackBarType.error));
+          return;
+        }
+      }
       List<Map<String, dynamic>> videoUrls = [];
       for (var element in _videos) {
         if (element.storeUrl != null) {
@@ -116,6 +137,7 @@ class _UpdatePostState extends State<UpdatePost> {
             "imageUrl": "",
             "videoUrl": element.storeUrl!["url"],
             "blobVideoUrl": element.storeUrl!["bloburl"],
+            "thumbnail": element.storeUrl!["thumbnail"],
             "sortOrder": 0,
             "createdOn": DateTime.now().toIso8601String()
           });
@@ -324,34 +346,43 @@ class _UpdatePostState extends State<UpdatePost> {
         Navigator.pop(context);
         return;
       } else {
-        final compressedVideo =
-            await VideoUtil.compressVideo(filePath: pickedFile.path);
+        // final compressedVideo =
+        //     await VideoUtil.compressVideo(filePath: pickedFile.path);
         final thumb =
             await VideoUtil.generateThumbnail(filePath: pickedFile.path);
         Navigator.pop(context);
-        if (compressedVideo != null) {
-          setState(() {
-            _videos.add(
-                UploadVideoModel(mediaInfo: compressedVideo, thubmnail: thumb));
-          });
-          _videoUploader(_videos.last);
-        } else {
-          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-              context: context,
-              messageText: "Unable to add video",
-              type: SnackBarType.error));
-        }
+        // if (compressedVideo != null) {
+        setState(() {
+          _videos.add(UploadVideoModel(
+              file: pickedFile,
+              thubmnail: thumb)); // ---------------------------
+        });
+        // _videoUploader(_videos.last);
+        // } else {
+        //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+        //       context: context,
+        //       messageText: "Unable to add video",
+        //       type: SnackBarType.error));
+        // }
       }
     } on PlatformException catch (e) {
       Navigator.pop(context);
       if (kDebugMode) {
         print("Failed to pick image : $e");
       }
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable to add video",
+          type: SnackBarType.error));
     } catch (e) {
       Navigator.pop(context);
       if (kDebugMode) {
         print("Failed to pick image : $e");
       }
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Unable to add video",
+          type: SnackBarType.error));
     }
   }
 
@@ -651,8 +682,8 @@ class _UpdatePostState extends State<UpdatePost> {
                                                       height: 300.h,
                                                       width: 360.w,
                                                       child: VideoThumbs(
-                                                          videoUrl:
-                                                              media.videoUrl!),
+                                                          thumbnail:
+                                                              media.thumbnail),
                                                     ),
                                             ),
                                           ),
@@ -788,12 +819,12 @@ class _UpdatePostState extends State<UpdatePost> {
                                 if (!video.isUploading)
                                   Center(
                                     child: GestureDetector(
-                                      onTap: () {
-                                        if (video.mediaInfo != null &&
-                                            !video.isUploaded) {
-                                          _videoUploader(video);
-                                        }
-                                      },
+                                      // onTap: () {
+                                      //   if (video.mediaInfo != null &&
+                                      //       !video.isUploaded) {
+                                      //     _videoUploader(video);
+                                      //   }
+                                      // },
                                       child: CircleAvatar(
                                         radius: 20.h,
                                         backgroundColor: Colors.black45,
@@ -814,7 +845,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                   Center(
                                     child: CircleAvatar(
                                       radius: 20.h,
-                                      backgroundColor: Colors.black45,
+                                      backgroundColor: Colors.transparent,
                                       child: CircularProgressIndicator(
                                         value: video.progressValue,
                                       ),
@@ -874,33 +905,70 @@ class _UpdatePostState extends State<UpdatePost> {
     );
   }
 
-  _videoUploader(UploadVideoModel videoModel) async {
-    setState(() {
-      videoModel.isUploading = true;
-    });
-    final res = await PostService.postVideotoStore(
-        file: videoModel.mediaInfo!,
-        sendProgress: (double value) {
-          setState(() {
-            videoModel.progressValue = value;
-          });
-        });
+  // _videoUploader(UploadVideoModel videoModel) async {
+  //   setState(() {
+  //     videoModel.isUploading = true;
+  //   });
+  //   final res = await PostService.postVideotoStore(
+  //       file: videoModel.mediaInfo!,
+  //       sendProgress: (double value) {
+  //         setState(() {
+  //           videoModel.progressValue = value;
+  //         });
+  //       });
 
-    if (res != null) {
-      setState(() {
-        videoModel.storeUrl = res;
-        videoModel.isUploading = false;
-        videoModel.isUploaded = true;
-      });
-    } else {
-      setState(() {
-        videoModel.isUploading = false;
-        videoModel.isUploaded = false;
-      });
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Unable upload video",
-          type: SnackBarType.error));
+  //   if (res != null) {
+  //     setState(() {
+  //       videoModel.storeUrl = res;
+  //       videoModel.isUploading = false;
+  //       videoModel.isUploaded = true;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       videoModel.isUploading = false;
+  //       videoModel.isUploaded = false;
+  //     });
+  //     ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+  //         context: context,
+  //         messageText: "Unable upload video",
+  //         type: SnackBarType.error));
+  //   }
+  // }
+
+  Future<bool> _videoBulkUploader() async {
+    bool isBulkUploadComplete = true;
+    for (var video in _videos) {
+      if (!video.isUploaded) {
+        setState(() {
+          video.isUploading = true;
+        });
+        final res = await PostService.postVideotoStore(
+            file: video.file!,
+            sendProgress: (double value) {
+              setState(() {
+                video.progressValue = value;
+              });
+            });
+
+        if (res != null) {
+          setState(() {
+            video.storeUrl = res;
+            video.isUploading = false;
+            video.isUploaded = true;
+          });
+        } else {
+          setState(() {
+            video.isUploading = false;
+            video.isUploaded = false;
+          });
+          isBulkUploadComplete = false;
+          // ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          //     context: context,
+          //     messageText: "Unable upload video",
+          //     type: SnackBarType.error));
+        }
+      }
     }
+    return isBulkUploadComplete;
   }
 }

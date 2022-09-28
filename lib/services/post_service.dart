@@ -1,9 +1,8 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:video_compress/video_compress.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/comment.dart';
 import 'package:wisconsin_app/models/like.dart';
@@ -151,8 +150,8 @@ class PostService {
       final response = await CustomHttp.getDio()
           .post(Constant.baseUrl + "/Post", data: postDetails);
       if (response.statusCode == 201) {
-        print("RESPONSE DATA");
-        print(response.data);
+        // print("RESPONSE DATA");
+        // print(response.data);
         List<Media> postMedia = (response.data["media"] as List<dynamic>)
             .map((e) => Media.fromJson(e))
             .toList();
@@ -166,7 +165,7 @@ class PostService {
                 errorCode: response.statusCode ?? 0));
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return ApiResult.failure(error: NetworkExceptions.getDioException(e));
     }
   }
@@ -225,34 +224,36 @@ class PostService {
   }
 
   static Future<Map<String, dynamic>?> postVideotoStore(
-      {required MediaInfo file,
-      required ValueChanged<double> sendProgress}) async {
-    // print("${file.path} ${file.}");
+      {required XFile file, required ValueChanged<double> sendProgress}) async {
+    // print(
+    //     "${file.path} ${file.name.replaceAll(".", "-") + "." + file.name.split(".").last}");
     FormData formData = FormData.fromMap({
-      "file": MultipartFile.fromFileSync(file.path!),
+      "file": MultipartFile.fromFileSync(file.path,
+          filename:
+              file.name.replaceAll(".", "-") + "." + file.name.split(".").last),
     });
     try {
-      final response = await CustomHttp.getDio().post(
-          Constant.baseUrl + "/PostVideo",
-          data: formData,
-          options: Options(
-              receiveDataWhenStatusError: true,
-              receiveTimeout: 60000,
-              sendTimeout: 60000,
-              contentType: "multipart/form-data"),
-          onSendProgress: (sent, total) {
-        print(sent / total);
+      final response = await CustomHttp.getDio()
+          .post(Constant.baseUrl + "/PostVideo",
+              data: formData,
+              options: Options(
+                  // receiveDataWhenStatusError: true,
+                  receiveTimeout: 60000,
+                  sendTimeout: 60000,
+                  contentType: "multipart/form-data"),
+              onSendProgress: (sent, total) {
+        // print(sent / total);
         sendProgress((sent / total));
       });
       if (response.statusCode == 200) {
-        print(response.data);
+        // print(response.data);
         return (response.data);
       } else {
-        print(response.data);
+        // print(response.data);
         return null;
       }
     } catch (e) {
-      print(e);
+      // print(e);
       return null;
     }
   }

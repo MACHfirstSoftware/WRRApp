@@ -13,6 +13,11 @@ class Like {
     required this.personId,
     required this.firstName,
     required this.lastName,
+    required this.code,
+    required this.countyName,
+    required this.isFollower,
+    this.imageLocation,
+    this.countyId,
     required this.createdOn,
   });
 
@@ -21,6 +26,11 @@ class Like {
   String personId;
   String firstName;
   String lastName;
+  String code;
+  String countyName;
+  int? countyId;
+  String? imageLocation;
+  bool isFollower;
   DateTime createdOn;
 
   factory Like.fromJson(Map<String, dynamic> json) => Like(
@@ -29,6 +39,11 @@ class Like {
         personId: json["personId"],
         firstName: json["firstName"],
         lastName: json["lastName"],
+        code: json["code"],
+        imageLocation: json["imageLocation"],
+        countyName: json["countyName"],
+        countyId: json["countyId"],
+        isFollower: json["isfollower"],
         createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 
@@ -38,6 +53,11 @@ class Like {
         "personId": personId,
         "firstName": firstName,
         "lastName": lastName,
+        "code": code,
+        "imageLocation": imageLocation,
+        "countyName": countyName,
+        "countyId": countyId,
+        "isFollower": isFollower,
         "createdOn": createdOn,
       };
 }
