@@ -148,7 +148,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<NotificationProvider>(
             create: (_) => NotificationProvider()),
         ChangeNotifierProvider<RevenueCatProvider>(
-            create: (_) => RevenueCatProvider(widget.subscriptionStatus)),
+            create: (_) => RevenueCatProvider(
+                // widget.subscriptionStatus
+                SubscriptionStatus.premium)),
       ],
       child: ScreenUtilInit(
         designSize: const Size(428, 926),

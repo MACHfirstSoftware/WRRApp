@@ -99,7 +99,8 @@ class ViewModels {
             fit: BoxFit.scaleDown,
             alignment: Alignment.center,
             child: Text(
-              text ?? "Sorry, no content to show",
+              text ??
+                  "Follow fellow hunters to create your WRR feed.", //"Sorry, no content to show",
               style: TextStyle(
                   fontSize: 20.sp,
                   color: Colors.white,

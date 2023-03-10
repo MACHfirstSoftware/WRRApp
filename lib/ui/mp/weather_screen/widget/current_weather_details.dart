@@ -1,16 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
 
 class CurrentWeatherDetails extends StatefulWidget {
   final Current currentWeather;
+  final Forecastday forecastDay;
   final Astro astro;
   const CurrentWeatherDetails({
     Key? key,
     required this.currentWeather,
     required this.astro,
+    required this.forecastDay,
   }) : super(key: key);
 
   @override
@@ -18,10 +23,29 @@ class CurrentWeatherDetails extends StatefulWidget {
 }
 
 class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
+  int currentHour = 0;
+  int low = 0;
+  int high = 0;
+  @override
+  void initState() {
+    currentHour = int.parse(DateFormat.H().format(DateTime.now()));
+    List<double> tempF = [];
+    for (final data in widget.forecastDay.hour) {
+      tempF.add(data.tempF);
+    }
+    high = tempF.indexOf(tempF.reduce(max));
+    low = tempF.indexOf(tempF.reduce(min));
+    super.initState();
+  }
+
   List<Map<String, String>> moreDetails = [];
   @override
   Widget build(BuildContext context) {
     moreDetails = [
+      {
+        "key": "Current Conditions",
+        "value": widget.forecastDay.hour[currentHour].condition.text
+      },
       {
         "key": "Wind",
         "value":
@@ -39,6 +63,10 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
         "key": "Pressure",
         "value": widget.currentWeather.pressureIn.toString() + " in."
       },
+      // {
+      //   "key": "Moon Phase",
+      //   "value": widget.astro.moonPhase + " (${widget.astro.moonIllumination})"
+      // },
       {
         "key": "Cloud Cover",
         "value": widget.currentWeather.cloud.toString() + " %"
@@ -57,39 +85,67 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: 40.h,
+              height: 20.h,
               width: 428.w,
+            ),
+            Text(
+              "${widget.forecastDay.hour[currentHour].tempF.toString()}° f",
+              style: TextStyle(
+                  fontSize: 40.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700),
+              textAlign: TextAlign.left,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  height: 50.h,
-                  width: 50.h,
-                  padding: EdgeInsets.all(5.h),
-                  decoration: BoxDecoration(
-                      color: AppColors.popBGColor,
-                      borderRadius: BorderRadius.circular(10.h)),
-                  child: Image.network(
-                    "https:${widget.currentWeather.condition.icon}",
-                    height: 45.h,
-                    width: 45.h,
-                    fit: BoxFit.fill,
-                    color: Colors.white,
-                  ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${widget.forecastDay.hour[high].tempF.toString()}° f",
+                      style: TextStyle(
+                          fontSize: 25.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(
+                      "High",
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
                 ),
                 SizedBox(
                   width: 20.w,
                 ),
-                Text(
-                  // "64° f",
-                  "${widget.currentWeather.tempF.toString()}° f",
-                  style: TextStyle(
-                      fontSize: 40.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700),
-                  textAlign: TextAlign.left,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${widget.forecastDay.hour[low].tempF.toString()}° f",
+                      style: TextStyle(
+                          fontSize: 25.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(
+                      "Low",
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -97,7 +153,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               height: 15.h,
             ),
             Text(
-              "Feel like ${widget.currentWeather.feelslikeF}° f",
+              "Feels like ${widget.forecastDay.hour[currentHour].feelslikeF}° f",
               style: TextStyle(
                   fontSize: 14.sp,
                   color: Colors.white,
@@ -107,17 +163,42 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             SizedBox(
               height: 15.h,
             ),
-            Text(
-              // "Cloudy",
-              widget.currentWeather.condition.text,
-              style: TextStyle(
-                  fontSize: 20.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600),
-              textAlign: TextAlign.left,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  height: 40.h,
+                  width: 40.h,
+                  padding: EdgeInsets.all(5.h),
+                  decoration: BoxDecoration(
+                      color: AppColors.popBGColor,
+                      borderRadius: BorderRadius.circular(10.h)),
+                  child: Image.network(
+                    "https:${widget.currentWeather.condition.icon}",
+                    height: 37.5.h,
+                    width: 37.5.h,
+                    fit: BoxFit.fill,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(
+                  width: 20.w,
+                ),
+                Text(
+                  // "Cloudy",
+                  widget.currentWeather.condition.text,
+                  style: TextStyle(
+                      fontSize: 20.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.left,
+                ),
+              ],
             ),
             SizedBox(
-              height: 15.h,
+              height: 20.h,
             ),
             _buildAstroRow("assets/icons/dayLight.svg", widget.astro.sunrise,
                 widget.astro.sunset),
@@ -127,7 +208,22 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             _buildAstroRow("assets/icons/moon.svg", widget.astro.moonrise,
                 widget.astro.moonset),
             SizedBox(
-              height: 15.h,
+              height: 10.h,
+            ),
+            Padding(
+              padding: EdgeInsets.only(right: 30.w),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  widget.astro.moonPhase +
+                      " (${widget.astro.moonIllumination})",
+                  style: TextStyle(
+                      fontSize: 15.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.right,
+                ),
+              ),
             ),
             Card(
               margin: EdgeInsets.all(10.w),

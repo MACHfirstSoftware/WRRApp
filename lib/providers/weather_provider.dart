@@ -87,6 +87,7 @@ class WeatherProvider with ChangeNotifier {
 
   Future<void> getWeatherDetails({bool isInit = false}) async {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
+    print(county.seat);
     final current = await WeatherService.getForecastWeather(
         countySeat: _county!.seat ?? "");
     current.when(success: (Weather weather) async {

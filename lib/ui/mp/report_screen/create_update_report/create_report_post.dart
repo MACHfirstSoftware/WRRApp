@@ -50,8 +50,8 @@ class _NewReportPostState extends State<NewReportPost> {
   String huntType = "G";
   bool _isHuntSuccess = false;
   DateTime startAt = DateTime.now();
-  List<int> _huntHours = [];
-  int? _huntSuccessHour;
+  // List<int> _huntHours = [];
+  // int? _huntSuccessHour;
 
   @override
   void initState() {
@@ -132,7 +132,7 @@ class _NewReportPostState extends State<NewReportPost> {
       User _user = Provider.of<UserProvider>(context, listen: false).user;
       final data = {
         "personId": _user.id,
-        "postTypeId": 2,
+        "postTypeId": 1,
         "regionId": _selectedCounty.regionId,
         "countyId": _selectedCounty.id,
         // "title": _titleController.text,
@@ -140,6 +140,7 @@ class _NewReportPostState extends State<NewReportPost> {
         "body": _bodyController.text,
         "isFlagged": false
       };
+      print(UtilCommon.formatDate(startAt));
 
       PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
@@ -181,10 +182,11 @@ class _NewReportPostState extends State<NewReportPost> {
           "numHours": _huntHoursController.text,
           "weaponUsed": huntType,
           "isSuccess": _isHuntSuccess,
-          "success_Time": _huntSuccessHour != null
-              ? UtilCommon.formatDate(
-                  startAt.add(Duration(hours: _huntSuccessHour!)))
-              : null,
+          "success_Time": null
+          // _huntSuccessHour != null
+          //     ? UtilCommon.formatDate(
+          //         startAt.add(Duration(hours: _huntSuccessHour!)))
+          //     : null,
         };
 
         final reportResponse = await PostService.reportPostPublish(reportData);
@@ -335,13 +337,26 @@ class _NewReportPostState extends State<NewReportPost> {
 
   Future getImage() async {
     try {
-      final pickedFile = await picker.pickMultiImage();
+      final pickedFile = await picker.pickMultiImage(
+        imageQuality: 50,
+      );
       if (pickedFile == null) {
         return;
       } else {
-        setState(() {
-          _images.addAll(pickedFile);
-        });
+        bool isHasOverSizeImage = false;
+        for (var element in pickedFile) {
+          var size = (await element.readAsBytes()).lengthInBytes;
+          if ((size / (1024 * 1024)) >= 5) {
+            isHasOverSizeImage = true;
+          } else {
+            _images.add(element);
+          }
+          print((size / (1024 * 1024)));
+        }
+        if (isHasOverSizeImage) {
+          print("Images larger than 5MB cannot be uploaded.");
+        }
+        setState(() {});
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -623,8 +638,7 @@ class _NewReportPostState extends State<NewReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_huntHoursController,
-                            onChange: _onHuntHourChange, hintText: "Hours")
+                        _buildTextField(_huntHoursController, hintText: "Hours")
                       ],
                     ),
                   ),
@@ -759,39 +773,55 @@ class _NewReportPostState extends State<NewReportPost> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "What time were you successful (Optional) : ",
-                            style: TextStyle(
-                                fontSize: 16.sp,
-                                color: AppColors.btnColor,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        _buildDropButton()
-                      ],
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 15.h,
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     children: [
+                  //       Expanded(
+                  //         child: Text(
+                  //           "What time were you successful (Optional) : ",
+                  //           style: TextStyle(
+                  //               fontSize: 16.sp,
+                  //               color: AppColors.btnColor,
+                  //               fontWeight: FontWeight.w500),
+                  //           textAlign: TextAlign.left,
+                  //         ),
+                  //       ),
+                  //       _buildDropButton()
+                  //     ],
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 20.h,
                   ),
+                  // Text(
+                  //   "Select image(s) to upload",
+                  //   style: TextStyle(
+                  //       fontSize: 15.sp,
+                  //       color: AppColors.btnColor,
+                  //       fontWeight: FontWeight.w500),
+                  //   textAlign: TextAlign.center,
+                  // ),
                   Text(
-                    "Select image(s) to upload",
+                    "Photos / Videos",
                     style: TextStyle(
                         fontSize: 15.sp,
                         color: AppColors.btnColor,
                         fontWeight: FontWeight.w500),
-                    textAlign: TextAlign.center,
+                    textAlign: TextAlign.left,
+                  ),
+                  Text(
+                    "You can upload as many as you want. Upload time will vary based on your service.",
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left,
                   ),
                   SizedBox(
                     height: 10.h,
@@ -937,52 +967,52 @@ class _NewReportPostState extends State<NewReportPost> {
     );
   }
 
-  _buildDropButton() {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton<int>(
-          dropdownColor: AppColors.popBGColor,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: AppColors.btnColor,
-            size: 30.h,
-          ),
-          style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.w600),
-          iconSize: 30.h,
-          value: _huntSuccessHour,
-          items: _huntHours
-              .map((e) => DropdownMenuItem<int>(
-                  value: e,
-                  child: Text(
-                    UtilCommon.getTimeString(startAt.add(Duration(hours: e))),
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  )))
-              .toList(),
-          onChanged: (int? value) {
-            setState(() {
-              _huntSuccessHour = value;
-            });
-          }),
-    );
-  }
+  // _buildDropButton() {
+  //   return DropdownButtonHideUnderline(
+  //     child: DropdownButton<int>(
+  //         dropdownColor: AppColors.popBGColor,
+  //         icon: Icon(
+  //           Icons.keyboard_arrow_down_rounded,
+  //           color: AppColors.btnColor,
+  //           size: 30.h,
+  //         ),
+  //         style: TextStyle(
+  //             fontSize: 16.sp,
+  //             color: Colors.white,
+  //             fontWeight: FontWeight.w600),
+  //         iconSize: 30.h,
+  //         value: _huntSuccessHour,
+  //         items: _huntHours
+  //             .map((e) => DropdownMenuItem<int>(
+  //                 value: e,
+  //                 child: Text(
+  //                   UtilCommon.getTimeString(startAt.add(Duration(hours: e))),
+  //                   style: TextStyle(
+  //                       fontSize: 16.sp,
+  //                       color: Colors.white,
+  //                       fontWeight: FontWeight.w600),
+  //                 )))
+  //             .toList(),
+  //         onChanged: (int? value) {
+  //           setState(() {
+  //             _huntSuccessHour = value;
+  //           });
+  //         }),
+  //   );
+  // }
 
-  _onHuntHourChange(String value) {
-    if (value.isNotEmpty) {
-      List<int> temp = [];
-      for (int i = 0; i < int.parse(value); i++) {
-        temp.add(i + 1);
-      }
-      setState(() {
-        _huntHours = temp;
-        _huntSuccessHour = null;
-      });
-    }
-  }
+  // _onHuntHourChange(String value) {
+  //   if (value.isNotEmpty) {
+  //     List<int> temp = [];
+  //     for (int i = 0; i < int.parse(value); i++) {
+  //       temp.add(i + 1);
+  //     }
+  //     setState(() {
+  //       _huntHours = temp;
+  //       _huntSuccessHour = null;
+  //     });
+  //   }
+  // }
 
   _buildTextField(TextEditingController controller,
           {Function? onChange, String hintText = "00"}) =>
@@ -1032,14 +1062,6 @@ class _NewReportPostState extends State<NewReportPost> {
 
   _buildDropMenu() {
     return PopupMenuButton(
-      // child: Text(
-      //   _selectedCounty.name,
-      //   style: TextStyle(
-      //       fontSize: 18.sp,
-      //       color: AppColors.btnColor,
-      //       fontWeight: FontWeight.w500),
-      //   textAlign: TextAlign.left,
-      // ),
       child: Container(
         height: 40.h,
         color: Colors.transparent,

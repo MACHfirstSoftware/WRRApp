@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_body.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/current_weather_details.dart';
@@ -21,9 +22,14 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage>
     with AutomaticKeepAliveClientMixin {
+  late PageController _pageController;
+  int _index = 0;
+
   @override
   void initState() {
     _init();
+    _pageController = PageController(initialPage: 0);
+
     super.initState();
   }
 
@@ -33,11 +39,18 @@ class _WeatherPageState extends State<WeatherPage>
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final weatherProvider = Provider.of<WeatherProvider>(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -51,17 +64,54 @@ class _WeatherPageState extends State<WeatherPage>
                 if (tabIndex! == 0) {
                   Provider.of<WeatherProvider>(context, listen: false)
                       .onPagechange(-1);
+                  _index = 0;
+                  _pageController.jumpToPage(_index);
                 } else {
                   Provider.of<WeatherProvider>(context, listen: false)
                       .onPagechange(0);
                 }
               },
-              tabs: const [
-                Tab(
+              tabs: [
+                const Tab(
                   child: TabTitle(title: "Current"),
                 ),
                 Tab(
-                  child: TabTitle(title: "Forecast"),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (weatherProvider.pageNum != -1)
+                        GestureDetector(
+                          onTap: () {
+                            if (_index > 0) {
+                              _pageController.jumpToPage(--_index);
+                            }
+                          },
+                          child: Icon(
+                            Icons.arrow_back_ios_rounded,
+                            size: 25.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                      const TabTitle(title: "Forecast"),
+                      if (weatherProvider.pageNum != -1)
+                        GestureDetector(
+                          onTap: () {
+                            if (_index <
+                                weatherProvider
+                                        .weather.forecast.forecastday.length -
+                                    1) {
+                              _pageController.jumpToPage(++_index);
+                            }
+                          },
+                          child: Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 25.h,
+                            color: Colors.white,
+                          ),
+                        ),
+                    ],
+                  ),
                 )
               ]),
         ),
@@ -76,11 +126,24 @@ class _WeatherPageState extends State<WeatherPage>
           return TabBarView(
             children: [
               CurrentWeatherDetails(
+                forecastDay: weatherProvider.weather.forecast.forecastday[0],
                 currentWeather: weatherProvider.weather.current,
                 astro: weatherProvider.weather.forecast.forecastday[0].astro,
               ),
-              ForecastWeather(
-                  forecastDays: weatherProvider.weather.forecast.forecastday)
+              PageView.builder(
+                  controller: _pageController,
+                  itemCount:
+                      weatherProvider.weather.forecast.forecastday.length,
+                  onPageChanged: (int index) {
+                    Provider.of<WeatherProvider>(context, listen: false)
+                        .onPagechange(index);
+                    _index = index;
+                  },
+                  itemBuilder: (_, index) {
+                    return ForecastBody(
+                        forecastDay: weatherProvider
+                            .weather.forecast.forecastday[index]);
+                  })
             ],
           );
         }),
