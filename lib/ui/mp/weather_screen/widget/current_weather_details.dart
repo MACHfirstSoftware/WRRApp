@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/widget/houry_card.dart';
 
 class CurrentWeatherDetails extends StatefulWidget {
   final Current currentWeather;
@@ -26,12 +27,20 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
   int currentHour = 0;
   int low = 0;
   int high = 0;
+  List<Hour> forcastDayHours = [];
+  bool isExpanded = false;
+
   @override
   void initState() {
     currentHour = int.parse(DateFormat.H().format(DateTime.now()));
     List<double> tempF = [];
     for (final data in widget.forecastDay.hour) {
       tempF.add(data.tempF);
+      if (DateFormat("yyyy-MM-dd HH:mm")
+          .parse(data.time)
+          .isAfter(DateTime.now())) {
+        forcastDayHours.add(data);
+      }
     }
     high = tempF.indexOf(tempF.reduce(max));
     low = tempF.indexOf(tempF.reduce(min));
@@ -225,6 +234,34 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 ),
               ),
             ),
+            Theme(
+                data: ThemeData(
+                    unselectedWidgetColor: Colors.white,
+                    indicatorColor: Colors.white),
+                child: ExpansionTile(
+                    trailing: Icon(
+                      isExpanded
+                          ? Icons.arrow_circle_up_rounded
+                          : Icons.arrow_circle_down_rounded,
+                      size: 25.h,
+                      color: AppColors.btnColor,
+                    ),
+                    onExpansionChanged: (value) {
+                      setState(() {
+                        isExpanded = value;
+                      });
+                    },
+                    title: Text(
+                      "Hourly Forecast",
+                      style: TextStyle(
+                          fontSize: 18.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.left,
+                    ),
+                    children: [
+                      ...forcastDayHours.map((data) => HourlyCard(hour: data))
+                    ])),
             Card(
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(

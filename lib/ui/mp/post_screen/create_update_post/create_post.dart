@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -55,6 +56,7 @@ class _NewPostState extends State<NewPost> {
   double weatherRate = 0.0;
   String huntType = "G";
   bool _isHuntSuccess = false;
+  bool _isReportDataInclude = false;
   DateTime startAt = DateTime.now();
   late User _user;
 
@@ -584,6 +586,7 @@ class _NewPostState extends State<NewPost> {
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
                     height: 15.h,
@@ -846,18 +849,45 @@ class _NewPostState extends State<NewPost> {
                     height: 10.h,
                   ),
 
+                  // if (_videos.isEmpty && _images.isEmpty)
+                  //   SizedBox(
+                  //     height: 250.h,
+                  //   ),
                   Theme(
                     data: ThemeData(unselectedWidgetColor: AppColors.btnColor),
                     child: ExpansionTile(
                         iconColor: AppColors.btnColor,
                         collapsedIconColor: AppColors.btnColor,
-                        title: Text(
-                          "Report Data",
-                          style: TextStyle(
-                              fontSize: 18.sp,
-                              color: AppColors.btnColor,
-                              fontWeight: FontWeight.w700),
-                          textAlign: TextAlign.left,
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Report Data",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(
+                              height: 35.h,
+                              width: 70.h,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: CupertinoSwitch(
+                                  value: _isReportDataInclude,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _isReportDataInclude =
+                                          !_isReportDataInclude;
+                                    });
+                                  },
+                                  activeColor: AppColors.btnColor,
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                         children: [
                           Padding(

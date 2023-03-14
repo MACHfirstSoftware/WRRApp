@@ -130,6 +130,43 @@ class HourlyCard extends StatelessWidget {
                 ],
               ),
             ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 2.5.h),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Humidity",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 5,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "${hour.humidity}%",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             if (hour.willItRain == 1 || hour.willItSnow == 1)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 2.5.h),
