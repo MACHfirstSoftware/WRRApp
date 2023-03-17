@@ -65,7 +65,16 @@ class AllPostProvider with ChangeNotifier {
   }
 
   void deletePost(Post _post) {
-    allPosts.remove(_post);
+    int? index;
+    for (int i = 0; i < allPosts.length; i++) {
+      if (_post.id == allPosts[i].id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != null) {
+      allPosts.removeAt(index);
+    }
     notifyListeners();
   }
 

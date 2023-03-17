@@ -71,7 +71,16 @@ class RegionPostProvider with ChangeNotifier {
   }
 
   void deletePost(Post _post) {
-    postsOfRegion.remove(_post);
+    int? index;
+    for (int i = 0; i < postsOfRegion.length; i++) {
+      if (_post.id == postsOfRegion[i].id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != null) {
+      postsOfRegion.removeAt(index);
+    }
     notifyListeners();
   }
 

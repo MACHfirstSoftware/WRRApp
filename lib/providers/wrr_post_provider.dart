@@ -49,7 +49,16 @@ class WRRPostProvider with ChangeNotifier {
   }
 
   void deletePost(Post _post) {
-    postsOfWRR.remove(_post);
+    int? index;
+    for (int i = 0; i < postsOfWRR.length; i++) {
+      if (_post.id == postsOfWRR[i].id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != null) {
+      postsOfWRR.removeAt(index);
+    }
     notifyListeners();
   }
 

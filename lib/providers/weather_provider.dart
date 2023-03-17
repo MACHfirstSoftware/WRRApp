@@ -12,6 +12,7 @@ class WeatherProvider with ChangeNotifier {
   Weather? _weather;
   // CurrentWeather? _currentWeather;
   // Astros? _astro;
+  bool isPremium = false;
   int pageNum = -1;
   String errorMessage = '';
 
@@ -89,7 +90,7 @@ class WeatherProvider with ChangeNotifier {
     isInit ? _apiStatus = ApiStatus.isBusy : setBusy();
     print(county.seat);
     final current = await WeatherService.getForecastWeather(
-        countySeat: _county!.seat ?? "");
+        countySeat: _county!.seat ?? "", isPremium: isPremium);
     current.when(success: (Weather weather) async {
       _weather = weather;
       setIdle();

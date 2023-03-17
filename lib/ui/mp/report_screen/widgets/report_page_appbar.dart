@@ -249,8 +249,8 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
             userProvider.setUser(_user);
             Provider.of<RegionPostProvider>(context, listen: false)
                 .chnageRegion(_user.id, value.id);
-            Provider.of<ReportPostProvider>(context, listen: false)
-                .chnageRegion(_user.id, value.id);
+            // Provider.of<ReportPostProvider>(context, listen: false)
+            //     .chnageRegion(_user.id, value.id);
             // Provider.of<AllPostProvider>(context, listen: false)
             //     .chnageRegion(_user.id, value.id);
             Provider.of<ContestProvider>(context, listen: false)

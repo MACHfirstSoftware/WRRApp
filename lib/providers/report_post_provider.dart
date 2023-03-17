@@ -65,7 +65,16 @@ class ReportPostProvider with ChangeNotifier {
   }
 
   void deletePost(Post _post) {
-    posts.remove(_post);
+    int? index;
+    for (int i = 0; i < posts.length; i++) {
+      if (_post.id == posts[i].id) {
+        index = i;
+        break;
+      }
+    }
+    if (index != null) {
+      posts.removeAt(index);
+    }
     notifyListeners();
   }
 

@@ -41,9 +41,9 @@ class Like {
         lastName: json["lastName"],
         code: json["code"],
         imageLocation: json["imageLocation"],
-        countyName: json["countyName"],
+        countyName: json["countyName"] ?? "",
         countyId: json["countyId"],
-        isFollower: json["isfollower"],
+        isFollower: json["isfollower"] ?? false,
         createdOn: UtilCommon.getDatefromString(json["createdOn"]),
       );
 

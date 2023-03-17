@@ -21,11 +21,11 @@ import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
+import 'package:wisconsin_app/widgets/number_drop_menu.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
 class NewReportPost extends StatefulWidget {
-  // final bool isWRRPost;
   const NewReportPost({Key? key}) : super(key: key);
 
   @override
@@ -35,9 +35,6 @@ class NewReportPost extends StatefulWidget {
 class _NewReportPostState extends State<NewReportPost> {
   // late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  late TextEditingController _deerSeenController;
-  late TextEditingController _bucksSeenController;
-  late TextEditingController _huntHoursController;
   FocusNode focusNode = FocusNode();
   String hintText = '...';
   late List<XFile> _images;
@@ -52,6 +49,9 @@ class _NewReportPostState extends State<NewReportPost> {
   DateTime startAt = DateTime.now();
   // List<int> _huntHours = [];
   // int? _huntSuccessHour;
+  int _deerSeen = 0;
+  int _bulkSeen = 0;
+  int _huntHours = 1;
 
   @override
   void initState() {
@@ -62,9 +62,6 @@ class _NewReportPostState extends State<NewReportPost> {
         id: _user.countyId, name: _user.countyName!, regionId: _user.regionId);
     // _titleController = TextEditingController();
     _bodyController = TextEditingController();
-    _deerSeenController = TextEditingController();
-    _bucksSeenController = TextEditingController();
-    _huntHoursController = TextEditingController();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         hintText = 'Body';
@@ -80,9 +77,6 @@ class _NewReportPostState extends State<NewReportPost> {
   void dispose() {
     // _titleController.dispose();
     _bodyController.dispose();
-    _deerSeenController.dispose();
-    _bucksSeenController.dispose();
-    _huntHoursController.dispose();
     super.dispose();
   }
 
@@ -102,21 +96,21 @@ class _NewReportPostState extends State<NewReportPost> {
           type: SnackBarType.error));
       return false;
     }
-    if (_deerSeenController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Deer seen is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (_bucksSeenController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Bucks seen is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (_huntHoursController.text.isEmpty) {
+    // if (_deerSeen < 1) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Deer seen is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    // if (_bulkSeen < 1) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Bucks seen is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    if (_huntHours < 1) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
           context: context,
           messageText: "Hunt hours is required",
@@ -132,15 +126,15 @@ class _NewReportPostState extends State<NewReportPost> {
       User _user = Provider.of<UserProvider>(context, listen: false).user;
       final data = {
         "personId": _user.id,
-        "postTypeId": 1,
+        "postTypeId": 3,
         "regionId": _selectedCounty.regionId,
         "countyId": _selectedCounty.id,
         // "title": _titleController.text,
-        "title": "Report - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
+        "title": "Premium - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
         "body": _bodyController.text,
-        "isFlagged": false
+        "isFlagged": false,
+        "media": []
       };
-      print(UtilCommon.formatDate(startAt));
 
       PageLoader.showLoader(context);
       final postResponse = await PostService.postPublish(data);
@@ -155,10 +149,10 @@ class _NewReportPostState extends State<NewReportPost> {
             profileImageUrl: _user.profileImageUrl,
             isFollowed: true,
             // title: _titleController.text,
-            title: "Report - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
+            title: "Premium - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
             body: _bodyController.text,
             postPersonCounty: _user.countyName!,
-            postType: "Report",
+            postType: "Premium",
             isShare: false,
             createdOn: UtilCommon.getDateTimeNow(),
             modifiedOn: UtilCommon.getDateTimeNow(),
@@ -176,26 +170,22 @@ class _NewReportPostState extends State<NewReportPost> {
         final reportData = {
           "postId": data["id"],
           "start_DateTime": UtilCommon.formatDate(startAt),
-          "numDeer": _deerSeenController.text,
-          "numBucks": _bucksSeenController.text,
+          "numDeer": _deerSeen,
+          "numBucks": _bulkSeen,
           "weatherRating": (weatherRate.round() + 1),
-          "numHours": _huntHoursController.text,
+          "numHours": _huntHours,
           "weaponUsed": huntType,
           "isSuccess": _isHuntSuccess,
           "success_Time": null
-          // _huntSuccessHour != null
-          //     ? UtilCommon.formatDate(
-          //         startAt.add(Duration(hours: _huntSuccessHour!)))
-          //     : null,
         };
 
         final reportResponse = await PostService.reportPostPublish(reportData);
         reportResponse.when(success: (Report report) {
           newPost!.report = report;
         }, failure: (NetworkExceptions error) {
-          // print("Failed to create report post");
+          debugPrint("Failed to create report post");
         }, responseError: (ResponseError error) {
-          // print("Failed to create report post");
+          debugPrint("Failed to create report post");
         });
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
@@ -232,12 +222,16 @@ class _NewReportPostState extends State<NewReportPost> {
             Navigator.pop(context);
           }, failure: (NetworkExceptions error) {
             Navigator.pop(context);
+            debugPrint("Failed to upload media");
+
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
                 messageText: NetworkExceptions.getErrorMessage(error),
                 type: SnackBarType.error));
           }, responseError: (ResponseError responseError) {
             Navigator.pop(context);
+            debugPrint("Failed to upload media");
+
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
                 messageText: responseError.error,
@@ -265,12 +259,16 @@ class _NewReportPostState extends State<NewReportPost> {
         }
       }, failure: (NetworkExceptions error) {
         Navigator.pop(context);
+        debugPrint("Failed to create post");
+
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
             context: context,
             messageText: NetworkExceptions.getErrorMessage(error),
             type: SnackBarType.error));
       }, responseError: (ResponseError responseError) {
         Navigator.pop(context);
+        debugPrint("Failed to create post");
+
         ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
             context: context,
             messageText: responseError.error,
@@ -355,6 +353,11 @@ class _NewReportPostState extends State<NewReportPost> {
         }
         if (isHasOverSizeImage) {
           print("Images larger than 5MB cannot be uploaded.");
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Images larger than 5MB cannot be uploaded.",
+              type: SnackBarType.error,
+              duration: 5));
         }
         setState(() {});
       }
@@ -524,36 +527,40 @@ class _NewReportPostState extends State<NewReportPost> {
                   ),
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: 25.w),
-                      child: Row(
+                      child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Start at  :  ",
+                              "What time did you start your hunt  :  ",
+                              // "",
                               style: TextStyle(
                                   fontSize: 16.sp,
                                   color: AppColors.btnColor,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => _pickDateTime(),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 40.h,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5.h),
-                                      border: Border.all(
-                                          color: Colors.white, width: 1.h)),
-                                  child: Text(
-                                    UtilCommon.formatDate(startAt),
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        // color: AppColors.btnColor,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
+                            SizedBox(
+                              height: 5.h,
+                            ),
+                            GestureDetector(
+                              onTap: () => _pickDateTime(),
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.h),
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.h)),
+                                child: Text(
+                                  UtilCommon.formatDate(startAt),
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
                             )
@@ -576,7 +583,14 @@ class _NewReportPostState extends State<NewReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_deerSeenController)
+                        // _buildTextField(_deerSeenController)
+                        NumberDropMenu(
+                            value: _deerSeen,
+                            onChange: (seen) {
+                              setState(() {
+                                _deerSeen = seen;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -598,7 +612,14 @@ class _NewReportPostState extends State<NewReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_bucksSeenController)
+                        // _buildTextField(_bucksSeenController)
+                        NumberDropMenu(
+                            value: _bulkSeen,
+                            onChange: (seen) {
+                              setState(() {
+                                _bulkSeen = seen;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -638,7 +659,15 @@ class _NewReportPostState extends State<NewReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_huntHoursController, hintText: "Hours")
+                        // _buildTextField(_huntHoursController, hintText: "Hours")
+                        NumberDropMenu(
+                            isStartFromZero: false,
+                            value: _huntHours,
+                            onChange: (hour) {
+                              setState(() {
+                                _huntHours = hour;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -808,7 +837,7 @@ class _NewReportPostState extends State<NewReportPost> {
                   //   textAlign: TextAlign.center,
                   // ),
                   Text(
-                    "Photos / Videos",
+                    "Photos",
                     style: TextStyle(
                         fontSize: 15.sp,
                         color: AppColors.btnColor,
@@ -1014,51 +1043,51 @@ class _NewReportPostState extends State<NewReportPost> {
   //   }
   // }
 
-  _buildTextField(TextEditingController controller,
-          {Function? onChange, String hintText = "00"}) =>
-      SizedBox(
-        height: 40.h,
-        width: 100.w,
-        child: TextField(
-          controller: controller,
-          style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              decoration: TextDecoration.none),
-          textAlignVertical: TextAlignVertical.center,
-          cursorColor: AppColors.btnColor,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-          ],
-          onChanged: (String value) {
-            if (onChange != null) {
-              onChange(value);
-            }
-          },
-          decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-            fillColor: Colors.transparent,
-            filled: true,
-            hintText: hintText,
-            hintStyle: TextStyle(
-              color: Colors.grey[200],
-              fontSize: 16.sp,
-              decoration: TextDecoration.none,
-            ),
-            border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(5.w)),
-            focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: AppColors.btnColor),
-                borderRadius: BorderRadius.circular(5.w)),
-            enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(5.w)),
-          ),
-        ),
-      );
+  // _buildTextField(TextEditingController controller,
+  //         {Function? onChange, String hintText = "00"}) =>
+  //     SizedBox(
+  //       height: 40.h,
+  //       width: 100.w,
+  //       child: TextField(
+  //         controller: controller,
+  //         style: TextStyle(
+  //             color: Colors.white,
+  //             fontSize: 16.sp,
+  //             decoration: TextDecoration.none),
+  //         textAlignVertical: TextAlignVertical.center,
+  //         cursorColor: AppColors.btnColor,
+  //         keyboardType: TextInputType.number,
+  //         inputFormatters: [
+  //           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+  //         ],
+  //         onChanged: (String value) {
+  //           if (onChange != null) {
+  //             onChange(value);
+  //           }
+  //         },
+  //         decoration: InputDecoration(
+  //           contentPadding:
+  //               EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+  //           fillColor: Colors.transparent,
+  //           filled: true,
+  //           hintText: hintText,
+  //           hintStyle: TextStyle(
+  //             color: Colors.grey[200],
+  //             fontSize: 16.sp,
+  //             decoration: TextDecoration.none,
+  //           ),
+  //           border: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: Colors.white),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           focusedBorder: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: AppColors.btnColor),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           enabledBorder: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: Colors.white),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //         ),
+  //       ),
+  //     );
 
   _buildDropMenu() {
     return PopupMenuButton(

@@ -62,7 +62,9 @@ class _NewPostState extends State<NewPost> {
 
   int _deerSeen = 0;
   int _bulkSeen = 0;
-  int _huntHours = 0;
+  int _huntHours = 1;
+
+  bool isExpanded = false;
 
   @override
   void initState() {
@@ -116,6 +118,9 @@ class _NewPostState extends State<NewPost> {
           type: SnackBarType.error));
       return false;
     }
+    if (_isReportDataInclude) {
+      return _validateReportData();
+    }
     // if (videoWhileProcessing) {
     //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
     //       context: context,
@@ -123,6 +128,31 @@ class _NewPostState extends State<NewPost> {
     //       type: SnackBarType.warning));
     //   return false;
     // }
+    return true;
+  }
+
+  _validateReportData() {
+    // if (_deerSeen < 1) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Deer seen is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    // if (_bulkSeen < 1) {
+    //   ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+    //       context: context,
+    //       messageText: "Bucks seen is required",
+    //       type: SnackBarType.error));
+    //   return false;
+    // }
+    if (_huntHours < 1) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+          context: context,
+          messageText: "Hunt hours is required",
+          type: SnackBarType.error));
+      return false;
+    }
     return true;
   }
 
@@ -171,11 +201,12 @@ class _NewPostState extends State<NewPost> {
       }
       final data = {
         "personId": _user.id,
-        "postTypeId": 1,
+        "postTypeId": _isReportDataInclude ? 2 : 1,
         "regionId": _user.regionId,
         "countyId": _user.countyId,
         // "title": _titleController.text,
-        "title": "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
+        "title":
+            "${_isReportDataInclude ? "Report" : "General"} - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
         "body": _bodyController.text,
         "isFlagged": false,
         "media": urls
@@ -196,10 +227,11 @@ class _NewPostState extends State<NewPost> {
             profileImageUrl: _user.profileImageUrl,
             isFollowed: true,
             // title: _titleController.text,
-            title: "General - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
+            title:
+                "${_isReportDataInclude ? "Report" : "General"} - ${UtilCommon.getDateTimeNow()} - ${_user.code}",
             body: _bodyController.text,
             postPersonCounty: _user.countyName!,
-            postType: "General",
+            postType: _isReportDataInclude ? "Report" : "General",
             isShare: false,
             createdOn: UtilCommon.getDateTimeNow(),
             modifiedOn: UtilCommon.getDateTimeNow(),
@@ -214,30 +246,29 @@ class _NewPostState extends State<NewPost> {
         setState(() {
           _isPostPublished = true;
         });
-        final reportData = {
-          "postId": data["id"],
-          "start_DateTime": UtilCommon.formatDate(startAt),
-          "numDeer": _deerSeen,
-          "numBucks": _bulkSeen,
-          "weatherRating": (weatherRate.round() + 1),
-          "numHours": _huntHours,
-          "weaponUsed": huntType,
-          "isSuccess": _isHuntSuccess,
-          "success_Time": null
-          // _huntSuccessHour != null
-          //     ? UtilCommon.formatDate(
-          //         startAt.add(Duration(hours: _huntSuccessHour!)))
-          //     : null,
-        };
+        if (_isReportDataInclude) {
+          final reportData = {
+            "postId": data["id"],
+            "start_DateTime": UtilCommon.formatDate(startAt),
+            "numDeer": _deerSeen,
+            "numBucks": _bulkSeen,
+            "weatherRating": (weatherRate.round() + 1),
+            "numHours": _huntHours,
+            "weaponUsed": huntType,
+            "isSuccess": _isHuntSuccess,
+            "success_Time": null
+          };
 
-        final reportResponse = await PostService.reportPostPublish(reportData);
-        reportResponse.when(success: (Report report) {
-          newPost!.report = report;
-        }, failure: (NetworkExceptions error) {
-          // print("Failed to create report post");
-        }, responseError: (ResponseError error) {
-          // print("Failed to create report post");
-        });
+          final reportResponse =
+              await PostService.reportPostPublish(reportData);
+          reportResponse.when(success: (Report report) {
+            newPost!.report = report;
+          }, failure: (NetworkExceptions error) {
+            // print("Failed to create report post");
+          }, responseError: (ResponseError error) {
+            // print("Failed to create report post");
+          });
+        }
         if (_images.isNotEmpty) {
           List<Map<String, dynamic>> uploadList = [];
           for (XFile image in _images) {
@@ -372,13 +403,31 @@ class _NewPostState extends State<NewPost> {
 
   Future getImage() async {
     try {
-      final pickedFile = await picker.pickMultiImage();
+      final pickedFile = await picker.pickMultiImage(
+        imageQuality: 50,
+      );
       if (pickedFile == null) {
         return;
       } else {
-        setState(() {
-          _images.addAll(pickedFile);
-        });
+        bool isHasOverSizeImage = false;
+        for (var element in pickedFile) {
+          var size = (await element.readAsBytes()).lengthInBytes;
+          if ((size / (1024 * 1024)) >= 5) {
+            isHasOverSizeImage = true;
+          } else {
+            _images.add(element);
+          }
+          print((size / (1024 * 1024)));
+        }
+        if (isHasOverSizeImage) {
+          print("Images larger than 5MB cannot be uploaded.");
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Images larger than 5MB cannot be uploaded.",
+              type: SnackBarType.error,
+              duration: 5));
+        }
+        setState(() {});
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -853,173 +902,240 @@ class _NewPostState extends State<NewPost> {
                   //   SizedBox(
                   //     height: 250.h,
                   //   ),
-                  Theme(
-                    data: ThemeData(unselectedWidgetColor: AppColors.btnColor),
-                    child: ExpansionTile(
-                        iconColor: AppColors.btnColor,
-                        collapsedIconColor: AppColors.btnColor,
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Report Data",
+
+                  SizedBox(
+                    height: 15.h,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          bottomNavigationBar: SafeArea(
+            child: Theme(
+              data: ThemeData(unselectedWidgetColor: AppColors.btnColor),
+              child: ExpansionTile(
+                  key: Key(isExpanded.toString()),
+                  initiallyExpanded: isExpanded,
+                  onExpansionChanged: (value) {
+                    isExpanded = value;
+                  },
+                  iconColor: AppColors.btnColor,
+                  collapsedIconColor: AppColors.btnColor,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Report Data",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: AppColors.btnColor,
+                            fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(
+                        height: 35.h,
+                        width: 70.h,
+                        child: FittedBox(
+                          alignment: Alignment.center,
+                          fit: BoxFit.scaleDown,
+                          child: CupertinoSwitch(
+                            value: _isReportDataInclude,
+                            onChanged: (value) {
+                              setState(() {
+                                _isReportDataInclude = !_isReportDataInclude;
+                                isExpanded = _isReportDataInclude;
+                              });
+                            },
+                            activeColor: AppColors.btnColor,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "County  :  ",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.btnColor,
+                                fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.left,
+                          ),
+                          Expanded(child: _buildDropMenu())
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 25.w),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "What time did you start your hunt  :  ",
+                                // "",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: AppColors.btnColor,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                              SizedBox(
+                                height: 5.h,
+                              ),
+                              GestureDetector(
+                                onTap: () => _pickDateTime(),
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 40.h,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5.h),
+                                      border: Border.all(
+                                          color: Colors.white, width: 1.h)),
+                                  child: Text(
+                                    UtilCommon.formatDate(startAt),
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        // color: AppColors.btnColor,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              )
+                            ])),
+                    SizedBox(
+                      height: 15.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Number of deer seen  :  ",
                               style: TextStyle(
-                                  fontSize: 18.sp,
+                                  fontSize: 16.sp,
                                   color: AppColors.btnColor,
-                                  fontWeight: FontWeight.w700),
+                                  fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
-                            SizedBox(
-                              height: 35.h,
-                              width: 70.h,
-                              child: FittedBox(
-                                alignment: Alignment.center,
-                                fit: BoxFit.scaleDown,
-                                child: CupertinoSwitch(
-                                  value: _isReportDataInclude,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _isReportDataInclude =
-                                          !_isReportDataInclude;
-                                    });
-                                  },
-                                  activeColor: AppColors.btnColor,
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                          // _buildTextField(_deerSeenController)
+                          NumberDropMenu(
+                              value: _deerSeen,
+                              onChange: (seen) {
+                                setState(() {
+                                  _deerSeen = seen;
+                                });
+                              })
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "County  :  ",
-                                  style: TextStyle(
-                                      fontSize: 16.sp,
-                                      color: AppColors.btnColor,
-                                      fontWeight: FontWeight.w500),
-                                  textAlign: TextAlign.left,
-                                ),
-                                Expanded(child: _buildDropMenu())
-                              ],
+                          Expanded(
+                            child: Text(
+                              "Number of bucks seen  :  ",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
                             ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 25.w),
-                              child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "What time did you start your hunt  :  ",
-                                      // "",
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: AppColors.btnColor,
-                                          fontWeight: FontWeight.w500),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    SizedBox(
-                                      height: 5.h,
-                                    ),
-                                    GestureDetector(
-                                      onTap: () => _pickDateTime(),
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        height: 40.h,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5.h),
-                                            border: Border.all(
-                                                color: Colors.white,
-                                                width: 1.h)),
-                                        child: Text(
-                                          UtilCommon.formatDate(startAt),
-                                          maxLines: 2,
-                                          style: TextStyle(
-                                              fontSize: 16.sp,
-                                              // color: AppColors.btnColor,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w400),
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                    )
-                                  ])),
-                          SizedBox(
-                            height: 15.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Number of deer seen  :  ",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                // _buildTextField(_deerSeenController)
-                                NumberDropMenu(
-                                    value: _deerSeen,
-                                    onChange: (seen) {
-                                      setState(() {
-                                        _deerSeen = seen;
-                                      });
-                                    })
-                              ],
+                          // _buildTextField(_bucksSeenController)
+                          NumberDropMenu(
+                              value: _bulkSeen,
+                              onChange: (seen) {
+                                setState(() {
+                                  _bulkSeen = seen;
+                                });
+                              })
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: SizedBox(
+                        width: 428.w,
+                        child: Text(
+                          "Weather Condition : ",
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              color: AppColors.btnColor,
+                              fontWeight: FontWeight.w500),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ),
+                    _weatherSlider(),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "How long did you hunt  :  ",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
                             ),
                           ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Number of bucks seen  :  ",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                // _buildTextField(_bucksSeenController)
-                                NumberDropMenu(
-                                    value: _bulkSeen,
-                                    onChange: (seen) {
-                                      setState(() {
-                                        _bulkSeen = seen;
-                                      });
-                                    })
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: SizedBox(
-                              width: 428.w,
+                          NumberDropMenu(
+                              isStartFromZero: false,
+                              value: _huntHours,
+                              onChange: (hour) {
+                                setState(() {
+                                  _huntHours = hour;
+                                });
+                              })
+                          // _buildTextField(_huntHoursController,
+                          //     onChange: _onHuntHourChange, hintText: "Hours")
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Theme(
+                        data: ThemeData(
+                          // unselectedWidgetColor: Colors.grey[300],
+                          unselectedWidgetColor: AppColors.btnColor,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
                               child: Text(
-                                "Weather Condition : ",
+                                "How did you hunt  :  ",
                                 style: TextStyle(
                                     fontSize: 16.sp,
                                     color: AppColors.btnColor,
@@ -1027,177 +1143,115 @@ class _NewPostState extends State<NewPost> {
                                 textAlign: TextAlign.left,
                               ),
                             ),
-                          ),
-                          _weatherSlider(),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Row(
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    "How long did you hunt  :  ",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                NumberDropMenu(
-                                    value: _huntHours,
-                                    onChange: (hour) {
+                                Radio(
+                                    value: "G",
+                                    groupValue: huntType,
+                                    activeColor: AppColors.btnColor,
+                                    onChanged: (value) {
                                       setState(() {
-                                        _huntHours = hour;
+                                        huntType = value.toString();
                                       });
-                                    })
-                                // _buildTextField(_huntHoursController,
-                                //     onChange: _onHuntHourChange, hintText: "Hours")
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Theme(
-                              data: ThemeData(
-                                // unselectedWidgetColor: Colors.grey[300],
-                                unselectedWidgetColor: AppColors.btnColor,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "How did you hunt  :  ",
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: AppColors.btnColor,
-                                          fontWeight: FontWeight.w500),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Radio(
-                                          value: "G",
-                                          groupValue: huntType,
-                                          activeColor: AppColors.btnColor,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              huntType = value.toString();
-                                            });
-                                          }),
-                                      Text(
-                                        "Gun",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            // color: AppColors.btnColor,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      Radio(
-                                          value: "B",
-                                          groupValue: huntType,
-                                          activeColor: AppColors.btnColor,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              huntType = value.toString();
-                                            });
-                                          }),
-                                      Text(
-                                        "Bow",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            // color: AppColors.btnColor,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Was your hunt successful  :  ",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.left,
-                                  ),
+                                    }),
+                                Text(
+                                  "Gun",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
                                 ),
-                                Theme(
-                                  data: ThemeData(
-                                    // unselectedWidgetColor: Colors.grey[300],
-                                    unselectedWidgetColor: AppColors.btnColor,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Radio(
-                                          value: true,
-                                          groupValue: _isHuntSuccess,
-                                          activeColor: AppColors.btnColor,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _isHuntSuccess = value as bool;
-                                            });
-                                          }),
-                                      Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            // color: AppColors.btnColor,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      Radio(
-                                          value: false,
-                                          groupValue: _isHuntSuccess,
-                                          activeColor: AppColors.btnColor,
-                                          onChanged: (value) {
-                                            setState(() {
-                                              _isHuntSuccess = value as bool;
-                                            });
-                                          }),
-                                      Text(
-                                        "No",
-                                        style: TextStyle(
-                                            fontSize: 16.sp,
-                                            // color: AppColors.btnColor,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w500),
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ],
-                                  ),
-                                )
+                                Radio(
+                                    value: "B",
+                                    groupValue: huntType,
+                                    activeColor: AppColors.btnColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        huntType = value.toString();
+                                      });
+                                    }),
+                                Text(
+                                  "Bow",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
+                                ),
                               ],
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 25.w),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Was your hunt successful  :  ",
+                              style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
                             ),
                           ),
-                        ]),
-                  ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                ],
-              ),
+                          Theme(
+                            data: ThemeData(
+                              // unselectedWidgetColor: Colors.grey[300],
+                              unselectedWidgetColor: AppColors.btnColor,
+                            ),
+                            child: Row(
+                              children: [
+                                Radio(
+                                    value: true,
+                                    groupValue: _isHuntSuccess,
+                                    activeColor: AppColors.btnColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _isHuntSuccess = value as bool;
+                                      });
+                                    }),
+                                Text(
+                                  "Yes",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
+                                ),
+                                Radio(
+                                    value: false,
+                                    groupValue: _isHuntSuccess,
+                                    activeColor: AppColors.btnColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _isHuntSuccess = value as bool;
+                                      });
+                                    }),
+                                Text(
+                                  "No",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ]),
             ),
           ),
         ),

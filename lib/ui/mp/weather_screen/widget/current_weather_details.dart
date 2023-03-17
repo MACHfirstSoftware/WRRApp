@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/weather_color_theme.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/houry_card.dart';
 
 class CurrentWeatherDetails extends StatefulWidget {
@@ -51,10 +52,10 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
   @override
   Widget build(BuildContext context) {
     moreDetails = [
-      {
-        "key": "Current Conditions",
-        "value": widget.forecastDay.hour[currentHour].condition.text
-      },
+      // {
+      //   "key": "Current Conditions",
+      //   "value": widget.forecastDay.hour[currentHour].condition.text
+      // },
       {
         "key": "Wind",
         "value":
@@ -86,6 +87,8 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
       },
       {"key": "UV Index", "value": widget.currentWeather.uv.toString()},
     ];
+    WeatherColorTheme.setWeatherTheme(
+        widget.currentWeather.condition.text.toLowerCase());
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SingleChildScrollView(
@@ -94,117 +97,136 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              height: 20.h,
+              height: 10.h,
               width: 428.w,
             ),
-            Text(
-              "${widget.forecastDay.hour[currentHour].tempF.toString()}° f",
-              style: TextStyle(
-                  fontSize: 40.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700),
-              textAlign: TextAlign.left,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            Container(
+              padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 5.w),
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              decoration: BoxDecoration(
+                  color: WeatherColorTheme.bgColor,
+                  borderRadius: BorderRadius.circular(10.h)),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "${widget.forecastDay.hour[high].tempF.toString()}° f",
+                      "${widget.forecastDay.hour[currentHour].tempF.toString()}° f",
                       style: TextStyle(
-                          fontSize: 25.sp,
-                          color: Colors.white,
+                          fontSize: 40.sp,
+                          color: WeatherColorTheme.ftColor,
                           fontWeight: FontWeight.w700),
                       textAlign: TextAlign.left,
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${widget.forecastDay.hour[high].tempF.toString()}° f",
+                              style: TextStyle(
+                                  fontSize: 25.sp,
+                                  color: WeatherColorTheme.ftColor,
+                                  fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left,
+                            ),
+                            Text(
+                              "High",
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: WeatherColorTheme.ftColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 20.w,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "${widget.forecastDay.hour[low].tempF.toString()}° f",
+                              style: TextStyle(
+                                  fontSize: 25.sp,
+                                  color: WeatherColorTheme.ftColor,
+                                  fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left,
+                            ),
+                            Text(
+                              "Low",
+                              style: TextStyle(
+                                  fontSize: 12.sp,
+                                  color: WeatherColorTheme.ftColor,
+                                  fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15.h,
+                    ),
                     Text(
-                      "High",
+                      "Feels like ${widget.forecastDay.hour[currentHour].feelslikeF}° f",
                       style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 14.sp,
+                          color: WeatherColorTheme.ftColor,
+                          fontWeight: FontWeight.w400),
                       textAlign: TextAlign.left,
                     ),
-                  ],
-                ),
-                SizedBox(
-                  width: 20.w,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "${widget.forecastDay.hour[low].tempF.toString()}° f",
-                      style: TextStyle(
-                          fontSize: 25.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.left,
+                    SizedBox(
+                      height: 15.h,
                     ),
-                    Text(
-                      "Low",
-                      style: TextStyle(
-                          fontSize: 12.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.left,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15.h,
-            ),
-            Text(
-              "Feels like ${widget.forecastDay.hour[currentHour].feelslikeF}° f",
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w400),
-              textAlign: TextAlign.left,
-            ),
-            SizedBox(
-              height: 15.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  height: 40.h,
-                  width: 40.h,
-                  padding: EdgeInsets.all(5.h),
-                  decoration: BoxDecoration(
-                      color: AppColors.popBGColor,
-                      borderRadius: BorderRadius.circular(10.h)),
-                  child: Image.network(
-                    "https:${widget.currentWeather.condition.icon}",
-                    height: 37.5.h,
-                    width: 37.5.h,
-                    fit: BoxFit.fill,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(
-                  width: 20.w,
-                ),
-                Text(
-                  // "Cloudy",
-                  widget.currentWeather.condition.text,
-                  style: TextStyle(
-                      fontSize: 20.sp,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.left,
-                ),
-              ],
+                    SizedBox(
+                        width: 408.w,
+                        height: 40.h,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.center,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                alignment: Alignment.center,
+                                height: 40.h,
+                                width: 40.h,
+                                padding: EdgeInsets.all(5.h),
+                                decoration: BoxDecoration(
+                                    color: AppColors.popBGColor,
+                                    borderRadius: BorderRadius.circular(10.h)),
+                                child: Image.network(
+                                  "https:${widget.currentWeather.condition.icon}",
+                                  height: 37.5.h,
+                                  width: 37.5.h,
+                                  fit: BoxFit.fill,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20.w,
+                              ),
+                              Text(
+                                // "Cloudy",
+                                widget.currentWeather.condition.text,
+                                style: TextStyle(
+                                    fontSize: 20.sp,
+                                    color: WeatherColorTheme.ftColor,
+                                    fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                        ))
+                  ]),
             ),
             SizedBox(
               height: 20.h,
@@ -234,34 +256,90 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                 ),
               ),
             ),
+            SizedBox(
+              height: 15.h,
+            ),
+            Container(
+              height: 40.h,
+              decoration: BoxDecoration(
+                  color: AppColors.btnColor,
+                  borderRadius: BorderRadius.circular(5.h)),
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              margin: EdgeInsets.symmetric(horizontal: 10.w),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Current Conditions",
+                    style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600),
+                    textAlign: TextAlign.left,
+                  ),
+                  SizedBox(
+                    width: 10.w,
+                  ),
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        widget.forecastDay.hour[currentHour].condition.text,
+                        style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
             Theme(
                 data: ThemeData(
                     unselectedWidgetColor: Colors.white,
                     indicatorColor: Colors.white),
-                child: ExpansionTile(
-                    trailing: Icon(
-                      isExpanded
-                          ? Icons.arrow_circle_up_rounded
-                          : Icons.arrow_circle_down_rounded,
-                      size: 25.h,
+                child: Container(
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                  ),
+                  decoration: BoxDecoration(
                       color: AppColors.btnColor,
-                    ),
-                    onExpansionChanged: (value) {
-                      setState(() {
-                        isExpanded = value;
-                      });
-                    },
-                    title: Text(
-                      "Hourly Forecast",
-                      style: TextStyle(
-                          fontSize: 18.sp,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700),
-                      textAlign: TextAlign.left,
-                    ),
-                    children: [
-                      ...forcastDayHours.map((data) => HourlyCard(hour: data))
-                    ])),
+                      borderRadius: BorderRadius.circular(5.h)),
+                  child: ExpansionTile(
+                      tilePadding:
+                          EdgeInsets.symmetric(horizontal: 10.w, vertical: 0.h),
+                      trailing: Icon(
+                        isExpanded
+                            ? Icons.arrow_circle_up_rounded
+                            : Icons.arrow_circle_down_rounded,
+                        size: 25.h,
+                        color: Colors.white,
+                      ),
+                      onExpansionChanged: (value) {
+                        setState(() {
+                          isExpanded = value;
+                        });
+                      },
+                      title: Text(
+                        "Hourly Forecast",
+                        style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700),
+                        textAlign: TextAlign.left,
+                      ),
+                      children: [
+                        ...forcastDayHours
+                            .map((data) => HourlyCard(hour: data)),
+                        SizedBox(height: 2.5.h)
+                      ]),
+                )),
             Card(
               margin: EdgeInsets.all(10.w),
               shape: RoundedRectangleBorder(

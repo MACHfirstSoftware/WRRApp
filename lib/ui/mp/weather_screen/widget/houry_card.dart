@@ -16,7 +16,7 @@ class HourlyCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.5.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.h)),
-      color: AppColors.popBGColor.withOpacity(.75),
+      color: AppColors.popBGColor,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.5.h),
         child: Column(

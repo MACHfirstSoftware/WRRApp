@@ -11,6 +11,7 @@ import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
 import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/user.dart';
+import 'package:wisconsin_app/providers/all_post_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/report_post_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
@@ -44,6 +45,7 @@ class _PostViewState extends State<PostView> {
   late bool _isFollowed;
   late User _user;
   bool _showComments = false;
+  bool _showFullReport = false;
   @override
   void initState() {
     _isApiCall = false;
@@ -154,10 +156,12 @@ class _PostViewState extends State<PostView> {
     final res = await PostService.postDelete(widget.post.id);
     Navigator.pop(context);
     if (res) {
-      if (widget.post.report == null) {
+      if (widget.post.postType != "Premium") {
         Provider.of<WRRPostProvider>(context, listen: false)
             .deletePost(widget.post);
         Provider.of<RegionPostProvider>(context, listen: false)
+            .deletePost(widget.post);
+        Provider.of<AllPostProvider>(context, listen: false)
             .deletePost(widget.post);
       } else {
         Provider.of<ReportPostProvider>(context, listen: false)
@@ -256,7 +260,7 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
-          if (widget.post.report != null)
+          if (widget.post.report != null && widget.post.postType == "Premium")
             ReportView(report: widget.post.report!),
           // if (widget.post.contest != null)
           //   ContestView(contest: widget.post.contest!),
@@ -271,7 +275,8 @@ class _PostViewState extends State<PostView> {
                       right: BorderSide(color: Colors.black54, width: 1.w))),
             ),
           if (widget.post.postType == "General" ||
-              widget.post.postType == "Report")
+              widget.post.postType == "Report" ||
+              widget.post.postType == "Premium")
             Container(
               alignment: Alignment.bottomLeft,
               padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
@@ -309,7 +314,8 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           if (widget.post.postType == "General" ||
-              widget.post.postType == "Report")
+              widget.post.postType == "Report" ||
+              widget.post.postType == "Premium")
             Padding(
               padding: EdgeInsets.symmetric(vertical: 0.h),
               child: Container(
@@ -450,7 +456,28 @@ class _PostViewState extends State<PostView> {
             ),
           SizedBox(
             height: 5.h,
-          )
+          ),
+          if ((widget.post.postType == "General" ||
+                  widget.post.postType == "Report") &&
+              widget.post.report != null) ...[
+            GestureDetector(
+              onTap: () => setState(() {
+                _showFullReport = !_showFullReport;
+              }),
+              child: Text(
+                "Read Full Report",
+                style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            if (_showFullReport) ReportView(report: widget.post.report!),
+            SizedBox(
+              height: 5.h,
+            ),
+          ]
         ],
       ),
     );
@@ -888,7 +915,7 @@ class _PostViewState extends State<PostView> {
                             rightBtnText: "Cancel")));
                   }
                   if (value == "Edit") {
-                    if (widget.post.report == null) {
+                    if (widget.post.postType != "Premium") {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) => UpdatePost(
@@ -1237,7 +1264,9 @@ class ReportView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildReportDataRow("Start time", report.startDateTime),
+            _buildReportDataRow(
+                "What time did you start your hunt", report.startDateTime,
+                isLong: true),
             _buildReportDataRow("No. Deer Seen", report.numDeer.toString()),
             _buildReportDataRow("No. Bucks Seen", report.numBucks.toString()),
             _buildReportDataRow(
@@ -1250,28 +1279,36 @@ class ReportView extends StatelessWidget {
     );
   }
 
-  _buildReportDataRow(String name, String data) {
-    return Row(
-      children: [
-        Text(
-          name,
-          style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.black,
-              fontWeight: FontWeight.w400),
-          textAlign: TextAlign.left,
-        ),
-        Expanded(
-          child: Text(
-            data,
-            style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.black,
-                fontWeight: FontWeight.w500),
-            textAlign: TextAlign.right,
+  _buildReportDataRow(String name, String data, {bool isLong = false}) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLong ? 3.h : 0),
+      child: Row(
+        children: [
+          Expanded(
+            // flex: 6,
+            child: Text(
+              name,
+              style: TextStyle(
+                  height: isLong ? 1 : null,
+                  fontSize: 14.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w400),
+              textAlign: TextAlign.left,
+            ),
           ),
-        ),
-      ],
+          Expanded(
+            // flex: 4,
+            child: Text(
+              data,
+              style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

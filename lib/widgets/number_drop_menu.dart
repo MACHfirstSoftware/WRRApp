@@ -3,12 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 
 class NumberDropMenu extends StatelessWidget {
+  final bool isStartFromZero;
   final int value;
   final ValueChanged<int> onChange;
   const NumberDropMenu({
     Key? key,
     required this.value,
     required this.onChange,
+    this.isStartFromZero = true,
   }) : super(key: key);
 
   @override
@@ -41,7 +43,7 @@ class NumberDropMenu extends StatelessWidget {
       ),
       color: AppColors.popBGColor,
       itemBuilder: (context) => [
-        ...[for (int i = 0; i <= 100; i++) i]
+        ...[for (int i = isStartFromZero ? 0 : 1; i <= 100; i++) i]
             .map((number) => PopupMenuItem<int>(
                 value: number,
                 child: SizedBox(

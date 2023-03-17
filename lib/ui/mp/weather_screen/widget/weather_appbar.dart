@@ -45,7 +45,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
         } else {
           date = " - " +
               UtilCommon.getDate(weatherProvider.weather.current.lastUpdated,
-                  forecasrDay: weatherProvider.pageNum);
+                  forecastDay: weatherProvider.pageNum + 1);
         }
       }
 
@@ -54,7 +54,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
         width: 428.w,
         child: Stack(
           children: [
-            Positioned(bottom: 10.h, left: 0.w, child: _buildDropMenu()),
+            // Positioned(bottom: 10.h, left: 0.w, child: _buildDropMenu()),
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -192,7 +192,7 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
   _buildDropMenuForCounty(WeatherProvider weatherProvider) {
     return PopupMenuButton(
       child: SvgPicture.asset(
-        'assets/icons/home.svg',
+        'assets/icons/location.svg',
         height: 30.h,
         width: 30.h,
         fit: BoxFit.fill,

@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
+import 'package:wisconsin_app/enum/subscription_status.dart';
+import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_body.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
@@ -34,8 +36,13 @@ class _WeatherPageState extends State<WeatherPage>
   }
 
   _init() {
-    Provider.of<WeatherProvider>(context, listen: false)
-        .getWeatherDetails(isInit: true);
+    final weatherProvider =
+        Provider.of<WeatherProvider>(context, listen: false);
+    weatherProvider.isPremium =
+        Provider.of<RevenueCatProvider>(context, listen: false)
+                .subscriptionStatus ==
+            SubscriptionStatus.premium;
+    weatherProvider.getWeatherDetails(isInit: true);
   }
 
   @override
@@ -100,7 +107,7 @@ class _WeatherPageState extends State<WeatherPage>
                             if (_index <
                                 weatherProvider
                                         .weather.forecast.forecastday.length -
-                                    1) {
+                                    2) {
                               _pageController.jumpToPage(++_index);
                             }
                           },
@@ -133,7 +140,7 @@ class _WeatherPageState extends State<WeatherPage>
               PageView.builder(
                   controller: _pageController,
                   itemCount:
-                      weatherProvider.weather.forecast.forecastday.length,
+                      weatherProvider.weather.forecast.forecastday.length - 1,
                   onPageChanged: (int index) {
                     Provider.of<WeatherProvider>(context, listen: false)
                         .onPagechange(index);
@@ -141,8 +148,9 @@ class _WeatherPageState extends State<WeatherPage>
                   },
                   itemBuilder: (_, index) {
                     return ForecastBody(
-                        forecastDay: weatherProvider
-                            .weather.forecast.forecastday[index]);
+                        forecastDay: (weatherProvider
+                            .weather.forecast.forecastday
+                            .sublist(1))[index]);
                   })
             ],
           );

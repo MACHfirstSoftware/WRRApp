@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,11 +8,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
+import 'package:wisconsin_app/models/county.dart';
 import 'package:wisconsin_app/models/media.dart';
 import 'package:wisconsin_app/models/post.dart';
+import 'package:wisconsin_app/models/report.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/models/upload_video.dart';
 import 'package:wisconsin_app/providers/all_post_provider.dart';
+import 'package:wisconsin_app/providers/county_provider.dart';
 import 'package:wisconsin_app/providers/region_post_provider.dart';
 import 'package:wisconsin_app/providers/wrr_post_provider.dart';
 import 'package:wisconsin_app/services/post_service.dart';
@@ -21,6 +25,7 @@ import 'package:wisconsin_app/widgets/confirmation_popup.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
+import 'package:wisconsin_app/widgets/number_drop_menu.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
@@ -43,14 +48,57 @@ class _UpdatePostState extends State<UpdatePost> {
   bool _isPostUpdate = false;
   String hintText = '...';
 
+  // int _deerSeen = 0;
+  // int _bulkSeen = 0;
+  // int _huntHours = 0;
+  // double weatherRate = 0.0;
+  // String huntType = "G";
+  // bool _isHuntSuccess = false;
+  bool _isReportDataInclude = false;
+  // DateTime startAt = DateTime.now();
+
+  late List<County> _counties;
+  late County _selectedCounty;
+  Report? _updatedReport;
+
+  bool isExpanded = false;
+
   @override
   void initState() {
     _images = [];
     _medias = [];
     _videos = [];
+    _counties = Provider.of<CountyProvider>(context, listen: false).counties;
+    _selectedCounty = widget.post.county;
     // _titleController = TextEditingController(text: widget.post.title);
     _bodyController = TextEditingController(text: widget.post.body);
     _medias.addAll(widget.post.media);
+
+    if (widget.post.report != null) {
+      final report = widget.post.report;
+      _updatedReport = Report(
+          id: report?.id ?? -1,
+          postId: report?.postId ?? -1,
+          numDeer: report?.numDeer ?? 0,
+          numBucks: report?.numBucks ?? 0,
+          numHours: report?.numHours ?? 0,
+          weaponUsed: report?.weaponUsed ?? "G",
+          weatherRating: report?.weatherRating ?? 0,
+          startDateTime:
+              report?.startDateTime ?? UtilCommon.formatDate(DateTime.now()),
+          endDateTime:
+              report?.endDateTime ?? UtilCommon.formatDate(DateTime.now()),
+          isSuccess: report?.isSuccess ?? false);
+    }
+    // _deerSeen = widget.post.report?.numDeer;
+    // _bulkSeen = widget.post.report?.numBucks;
+    // _huntHours = widget.post.report?.numHours;
+    // weatherRate = widget.post.report?.weatherRating.toDouble() - 1;
+    // startAt = UtilCommon.getDatefromString(widget.post.report?.startDateTime);
+    // huntType = widget.post.report?.weaponUsed;
+    // _isHuntSuccess = widget.post.report?.isSuccess;
+    _isReportDataInclude = widget.post.report != null;
+    isExpanded = widget.post.report != null;
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         hintText = 'Body';
@@ -159,45 +207,88 @@ class _UpdatePostState extends State<UpdatePost> {
 
 //---------------------------------------------------------------------------------------
         }
-        final updateResponse = await PostService.updatePost(
+        final updateResponse = await PostService.updateReportPost(
             widget.post.id,
-            // _titleController.text,
             "",
-            _bodyController.text);
+            _bodyController.text,
+            _selectedCounty.id,
+            _selectedCounty.regionId);
 
         if (updateResponse) {
           setState(() {
             _isPostUpdate = true;
           });
+          bool reportResponse = true;
+          if (_isReportDataInclude && _updatedReport != null) {
+            reportResponse = await PostService.updateReport(_updatedReport!);
+          }
 
-          if (_images.isNotEmpty) {
-            List<Map<String, dynamic>> uploadList = [];
-            for (XFile image in _images) {
-              uploadList.add({
-                "postId": widget.post.id,
-                "caption": "No Caption",
-                "image": ImageUtil.getBase64Image(image.path),
-                "fileName": ImageUtil.getImageName(image.name),
-                "type": ImageUtil.getImageExtension(image.name),
-                "sortOrder": 0
+          if (reportResponse) {
+            if (_images.isNotEmpty) {
+              List<Map<String, dynamic>> uploadList = [];
+              for (XFile image in _images) {
+                uploadList.add({
+                  "postId": widget.post.id,
+                  "caption": "No Caption",
+                  "image": ImageUtil.getBase64Image(image.path),
+                  "fileName": ImageUtil.getImageName(image.name),
+                  "type": ImageUtil.getImageExtension(image.name),
+                  "sortOrder": 0
+                });
+              }
+              final imageResponse = await PostService.addPostImage(uploadList);
+              imageResponse.when(success: (List<Media> media) {
+                Post _updatedPost = widget.post;
+                // _updatedPost.title = _titleController.text;
+                _updatedPost.title = "";
+                _updatedPost.body = _bodyController.text;
+                _updatedPost.media = media;
+                _updatedPost.report = _updatedReport;
+//------------------------------------------ change bellow to update------------------
+
+                Provider.of<WRRPostProvider>(context, listen: false)
+                    .updatePost(_updatedPost);
+                Provider.of<RegionPostProvider>(context, listen: false)
+                    .updatePost(_updatedPost);
+                Provider.of<AllPostProvider>(context, listen: false)
+                    .updatePost(_updatedPost);
+
+//---------------------------------------------------------------------------------------
+                Navigator.pop(context);
+                ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                    context: context,
+                    messageText: "Successfully updated",
+                    type: SnackBarType.success));
+                Navigator.pop(context);
+              }, failure: (NetworkExceptions error) {
+                Navigator.pop(context);
+                ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                    context: context,
+                    messageText: NetworkExceptions.getErrorMessage(error),
+                    type: SnackBarType.error));
+              }, responseError: (ResponseError responseError) {
+                Navigator.pop(context);
+                ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+                    context: context,
+                    messageText: responseError.error,
+                    type: SnackBarType.error));
               });
-            }
-            final imageResponse = await PostService.addPostImage(uploadList);
-            imageResponse.when(success: (List<Media> media) {
+            } else {
               Post _updatedPost = widget.post;
               // _updatedPost.title = _titleController.text;
               _updatedPost.title = "";
               _updatedPost.body = _bodyController.text;
-              _updatedPost.media = media;
+              if (data.isEmpty) {
+                _updatedPost.media = _medias;
+              }
+              _updatedPost.report = _updatedReport;
 //------------------------------------------ change bellow to update------------------
-
               Provider.of<WRRPostProvider>(context, listen: false)
                   .updatePost(_updatedPost);
               Provider.of<RegionPostProvider>(context, listen: false)
                   .updatePost(_updatedPost);
               Provider.of<AllPostProvider>(context, listen: false)
                   .updatePost(_updatedPost);
-
 //---------------------------------------------------------------------------------------
               Navigator.pop(context);
               ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
@@ -205,41 +296,13 @@ class _UpdatePostState extends State<UpdatePost> {
                   messageText: "Successfully updated",
                   type: SnackBarType.success));
               Navigator.pop(context);
-            }, failure: (NetworkExceptions error) {
-              Navigator.pop(context);
-              ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-                  context: context,
-                  messageText: NetworkExceptions.getErrorMessage(error),
-                  type: SnackBarType.error));
-            }, responseError: (ResponseError responseError) {
-              Navigator.pop(context);
-              ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-                  context: context,
-                  messageText: responseError.error,
-                  type: SnackBarType.error));
-            });
-          } else {
-            Post _updatedPost = widget.post;
-            // _updatedPost.title = _titleController.text;
-            _updatedPost.title = "";
-            _updatedPost.body = _bodyController.text;
-            if (data.isEmpty) {
-              _updatedPost.media = _medias;
             }
-//------------------------------------------ change bellow to update------------------
-            Provider.of<WRRPostProvider>(context, listen: false)
-                .updatePost(_updatedPost);
-            Provider.of<RegionPostProvider>(context, listen: false)
-                .updatePost(_updatedPost);
-            Provider.of<AllPostProvider>(context, listen: false)
-                .updatePost(_updatedPost);
-//---------------------------------------------------------------------------------------
+          } else {
             Navigator.pop(context);
             ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
                 context: context,
-                messageText: "Successfully updated",
-                type: SnackBarType.success));
-            Navigator.pop(context);
+                messageText: "Post update failed.",
+                type: SnackBarType.error));
           }
         } else {
           Navigator.pop(context);
@@ -319,13 +382,31 @@ class _UpdatePostState extends State<UpdatePost> {
 
   Future getImage() async {
     try {
-      final pickedFile = await picker.pickMultiImage();
+      final pickedFile = await picker.pickMultiImage(
+        imageQuality: 50,
+      );
       if (pickedFile == null) {
         return;
       } else {
-        setState(() {
-          _images.addAll(pickedFile);
-        });
+        bool isHasOverSizeImage = false;
+        for (var element in pickedFile) {
+          var size = (await element.readAsBytes()).lengthInBytes;
+          if ((size / (1024 * 1024)) >= 5) {
+            isHasOverSizeImage = true;
+          } else {
+            _images.add(element);
+          }
+          print((size / (1024 * 1024)));
+        }
+        if (isHasOverSizeImage) {
+          print("Images larger than 5MB cannot be uploaded.");
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Images larger than 5MB cannot be uploaded.",
+              type: SnackBarType.error,
+              duration: 5));
+        }
+        setState(() {});
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -565,7 +646,6 @@ class _UpdatePostState extends State<UpdatePost> {
                   SizedBox(
                     height: 20.h,
                   ),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -574,28 +654,59 @@ class _UpdatePostState extends State<UpdatePost> {
                           getImage();
                         },
                         child: Container(
-                          height: 40.h,
-                          width: 150.w,
-                          decoration: BoxDecoration(
-                              color: AppColors.popBGColor,
-                              borderRadius: BorderRadius.circular(7.5.w)),
-                          child: Icon(Icons.photo_library,
-                              color: AppColors.btnColor, size: 25.h),
-                        ),
+                            height: 40.h,
+                            width: 150.w,
+                            decoration: BoxDecoration(
+                                color: AppColors.popBGColor,
+                                borderRadius: BorderRadius.circular(7.5.w)),
+                            child: SizedBox(
+                              height: 30.h,
+                              width: 120.w,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "Upload Image",
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: AppColors.btnColor,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )
+                            // Icon(Icons.photo_library,
+                            //     color: AppColors.btnColor, size: 25.h),
+                            ),
                       ),
                       GestureDetector(
                         onTap: () {
                           getVideo();
                         },
                         child: Container(
-                          height: 40.h,
-                          width: 150.w,
-                          decoration: BoxDecoration(
-                              color: AppColors.popBGColor,
-                              borderRadius: BorderRadius.circular(7.5.w)),
-                          child: Icon(Icons.video_collection_rounded,
-                              color: AppColors.btnColor, size: 25.h),
-                        ),
+                            height: 40.h,
+                            width: 150.w,
+                            decoration: BoxDecoration(
+                                color: AppColors.popBGColor,
+                                borderRadius: BorderRadius.circular(7.5.w)),
+                            // child: Icon(Icons.video_collection_rounded,
+                            //     color: AppColors.btnColor, size: 25.h),
+                            child: SizedBox(
+                              height: 30.h,
+                              width: 120.w,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  "Upload Video",
+                                  style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: AppColors.btnColor,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            )),
                       ),
                     ],
                   ),
@@ -742,6 +853,14 @@ class _UpdatePostState extends State<UpdatePost> {
                         color: AppColors.btnColor,
                         fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "You can upload as many as you want. Upload time will vary based on your service.",
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left,
                   ),
                   SizedBox(
                     height: 10.h,
@@ -900,6 +1019,368 @@ class _UpdatePostState extends State<UpdatePost> {
               ),
             ),
           ),
+          bottomNavigationBar: widget.post.report == null
+              ? null
+              : SafeArea(
+                  child: Theme(
+                    data: ThemeData(unselectedWidgetColor: AppColors.btnColor),
+                    child: ExpansionTile(
+                        key: Key(isExpanded.toString()),
+                        initiallyExpanded: isExpanded,
+                        onExpansionChanged: (value) {
+                          isExpanded = value;
+                        },
+                        iconColor: AppColors.btnColor,
+                        collapsedIconColor: AppColors.btnColor,
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Report Data",
+                              style: TextStyle(
+                                  fontSize: 18.sp,
+                                  color: AppColors.btnColor,
+                                  fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left,
+                            ),
+                            SizedBox(
+                              height: 35.h,
+                              width: 70.h,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: CupertinoSwitch(
+                                  value: _isReportDataInclude,
+                                  onChanged: (value) {
+                                    if (widget.post.report == null) {
+                                      setState(() {
+                                        _isReportDataInclude =
+                                            !_isReportDataInclude;
+                                        isExpanded = _isReportDataInclude;
+                                      });
+                                    }
+                                  },
+                                  activeColor: AppColors.btnColor,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "County  :  ",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: AppColors.btnColor,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
+                                ),
+                                Expanded(child: _buildDropMenu())
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 25.w),
+                              child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "What time did you start your hunt  :  ",
+                                      // "",
+                                      style: TextStyle(
+                                          fontSize: 16.sp,
+                                          color: AppColors.btnColor,
+                                          fontWeight: FontWeight.w500),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                    SizedBox(
+                                      height: 5.h,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () => _pickDateTime(),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        height: 40.h,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5.h),
+                                            border: Border.all(
+                                                color: Colors.white,
+                                                width: 1.h)),
+                                        child: Text(
+                                          UtilCommon.formatDate(
+                                              UtilCommon.getDatefromString(
+                                                  _updatedReport!
+                                                      .startDateTime)),
+                                          maxLines: 2,
+                                          style: TextStyle(
+                                              fontSize: 16.sp,
+                                              // color: AppColors.btnColor,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    )
+                                  ])),
+                          SizedBox(
+                            height: 15.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Number of deer seen  :  ",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                // _buildTextField(_deerSeenController)
+                                NumberDropMenu(
+                                    value: _updatedReport!.numDeer,
+                                    onChange: (seen) {
+                                      setState(() {
+                                        _updatedReport!.numDeer = seen;
+                                      });
+                                    })
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Number of bucks seen  :  ",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                // _buildTextField(_bucksSeenController)
+                                NumberDropMenu(
+                                    value: _updatedReport!.numBucks,
+                                    onChange: (seen) {
+                                      setState(() {
+                                        _updatedReport!.numBucks = seen;
+                                      });
+                                    })
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: SizedBox(
+                              width: 428.w,
+                              child: Text(
+                                "Weather Condition : ",
+                                style: TextStyle(
+                                    fontSize: 16.sp,
+                                    color: AppColors.btnColor,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ),
+                          _weatherSlider(),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "How long did you hunt  :  ",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                NumberDropMenu(
+                                    isStartFromZero: false,
+                                    value: _updatedReport!.numHours,
+                                    onChange: (hour) {
+                                      setState(() {
+                                        _updatedReport!.numHours = hour;
+                                      });
+                                    })
+                                // _buildTextField(_huntHoursController,
+                                //     onChange: _onHuntHourChange, hintText: "Hours")
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Theme(
+                              data: ThemeData(
+                                // unselectedWidgetColor: Colors.grey[300],
+                                unselectedWidgetColor: AppColors.btnColor,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "How did you hunt  :  ",
+                                      style: TextStyle(
+                                          fontSize: 16.sp,
+                                          color: AppColors.btnColor,
+                                          fontWeight: FontWeight.w500),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Radio(
+                                          value: "G",
+                                          groupValue:
+                                              _updatedReport!.weaponUsed,
+                                          activeColor: AppColors.btnColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _updatedReport!.weaponUsed =
+                                                  value.toString();
+                                            });
+                                          }),
+                                      Text(
+                                        "Gun",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            // color: AppColors.btnColor,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      Radio(
+                                          value: "B",
+                                          groupValue:
+                                              _updatedReport!.weaponUsed,
+                                          activeColor: AppColors.btnColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _updatedReport!.weaponUsed =
+                                                  value.toString();
+                                            });
+                                          }),
+                                      Text(
+                                        "Bow",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            // color: AppColors.btnColor,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Was your hunt successful  :  ",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Theme(
+                                  data: ThemeData(
+                                    // unselectedWidgetColor: Colors.grey[300],
+                                    unselectedWidgetColor: AppColors.btnColor,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Radio(
+                                          value: true,
+                                          groupValue: _updatedReport!.isSuccess,
+                                          activeColor: AppColors.btnColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _updatedReport!.isSuccess =
+                                                  value as bool;
+                                            });
+                                          }),
+                                      Text(
+                                        "Yes",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            // color: AppColors.btnColor,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      Radio(
+                                          value: false,
+                                          groupValue: _updatedReport!.isSuccess,
+                                          activeColor: AppColors.btnColor,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _updatedReport!.isSuccess =
+                                                  value as bool;
+                                            });
+                                          }),
+                                      Text(
+                                        "No",
+                                        style: TextStyle(
+                                            fontSize: 16.sp,
+                                            // color: AppColors.btnColor,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ]),
+                  ),
+                ),
         ),
       ),
     );
@@ -970,5 +1451,153 @@ class _UpdatePostState extends State<UpdatePost> {
       }
     }
     return isBulkUploadComplete;
+  }
+
+  _buildDropMenu() {
+    return PopupMenuButton(
+      child: Container(
+        height: 40.h,
+        color: Colors.transparent,
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  _selectedCounty.name,
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      // color: AppColors.btnColor,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.btnColor,
+              ),
+            ]),
+      ),
+      color: AppColors.popBGColor,
+      itemBuilder: (context) => [
+        ..._counties.map((county) => PopupMenuItem<County>(
+            value: county,
+            child: SizedBox(
+              width: 200.w,
+              child: ListTile(
+                trailing: county.id == _selectedCounty.id
+                    ? const Icon(
+                        Icons.check,
+                        color: AppColors.btnColor,
+                      )
+                    : null,
+                title: Text(
+                  county.name,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 1,
+                ),
+              ),
+            )))
+      ],
+      onSelected: (County value) {
+        setState(() {
+          _selectedCounty = value;
+        });
+      },
+    );
+  }
+
+  Future _pickDateTime() async {
+    DateTime? date = await pickDate();
+    if (date == null) return;
+
+    TimeOfDay? time = await pickTime();
+    if (time == null) return;
+
+    final dateTime =
+        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    setState(() {
+      _updatedReport!.startDateTime = UtilCommon.formatDate(dateTime);
+    });
+  }
+
+  Future<DateTime?> pickDate() => showDatePicker(
+        context: context,
+        initialDate:
+            UtilCommon.getDatefromString(_updatedReport!.startDateTime),
+        firstDate: DateTime(2020),
+        lastDate: DateTime(2025),
+      );
+
+  Future<TimeOfDay?> pickTime() => showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(
+          hour:
+              UtilCommon.getDatefromString(_updatedReport!.startDateTime).hour,
+          minute: UtilCommon.getDatefromString(_updatedReport!.startDateTime)
+              .minute));
+
+  _weatherSlider() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 25.w),
+      child: Row(
+        children: [
+          Text(
+            "Bad",
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600),
+            textAlign: TextAlign.left,
+          ),
+          Expanded(
+            child: SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 10.h,
+                trackShape: const RoundedRectSliderTrackShape(),
+                activeTrackColor: AppColors.popBGColor,
+                inactiveTrackColor: AppColors.primaryColor,
+                thumbShape: const RoundSliderThumbShape(
+                  enabledThumbRadius: 14.0,
+                  pressedElevation: 8.0,
+                ),
+                thumbColor: AppColors.btnColor,
+                overlayColor: AppColors.btnColor.withOpacity(0.2),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 30.w),
+                tickMarkShape: const RoundSliderTickMarkShape(),
+                activeTickMarkColor: AppColors.btnColor,
+                inactiveTickMarkColor: Colors.white,
+                valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
+                valueIndicatorColor: AppColors.popBGColor,
+                valueIndicatorTextStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.sp,
+                ),
+              ),
+              child: Slider(
+                  value: _updatedReport!.weatherRating.toDouble() - 1,
+                  min: 0.0,
+                  max: 4.0,
+                  divisions: 4,
+                  label: '${_updatedReport!.weatherRating}',
+                  onChanged: (double value) {
+                    setState(() {
+                      _updatedReport!.weatherRating = value.toInt() + 1;
+                    });
+                  }),
+            ),
+          ),
+          Text(
+            "Good",
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.white,
+                fontWeight: FontWeight.w600),
+            textAlign: TextAlign.right,
+          )
+        ],
+      ),
+    );
   }
 }

@@ -81,10 +81,10 @@ class UtilCommon {
     return DateFormat("hh:mm a").format(date);
   }
 
-  static String getDate(String value, {int forecasrDay = 0}) {
+  static String getDate(String value, {int forecastDay = 0}) {
     DateTime date = DateTime.parse(value.substring(0, 10) + " 00:00:00.000");
     return DateFormat("MMM dd, yyyy")
-        .format(date.add(Duration(days: forecasrDay)));
+        .format(date.add(Duration(days: forecastDay)));
   }
 
   static void launchAnUrl(String url) async {

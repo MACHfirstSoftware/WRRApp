@@ -22,6 +22,7 @@ import 'package:wisconsin_app/utils/common.dart';
 import 'package:wisconsin_app/utils/exceptions/network_exceptions.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';
 import 'package:wisconsin_app/widgets/custom_input.dart';
+import 'package:wisconsin_app/widgets/number_drop_menu.dart';
 import 'package:wisconsin_app/widgets/page_loader.dart';
 import 'package:wisconsin_app/widgets/snackbar.dart';
 
@@ -36,9 +37,9 @@ class UpdateReportPost extends StatefulWidget {
 class _UpdateReportPostState extends State<UpdateReportPost> {
   // late TextEditingController _titleController;
   late TextEditingController _bodyController;
-  late TextEditingController _deerSeenController;
-  late TextEditingController _bucksSeenController;
-  late TextEditingController _huntHoursController;
+  int _deerSeen = 0;
+  int _bulkSeen = 0;
+  int _huntHours = 1;
   FocusNode focusNode = FocusNode();
   String hintText = '...';
   late List<XFile> _images;
@@ -53,8 +54,6 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
   String huntType = "G";
   bool _isHuntSuccess = false;
   DateTime startAt = DateTime.now();
-  List<int> _huntHours = [];
-  int? _huntSuccessHour;
   late Post _post;
 
   @override
@@ -67,28 +66,14 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
     _selectedCounty = _post.county;
     // _titleController = TextEditingController(text: _post.title);
     _bodyController = TextEditingController(text: _post.body);
-    _deerSeenController =
-        TextEditingController(text: _post.report!.numDeer.toString());
-    _bucksSeenController =
-        TextEditingController(text: _post.report!.numBucks.toString());
-    _huntHoursController =
-        TextEditingController(text: _post.report!.numHours.toString());
+    _deerSeen = _post.report!.numDeer;
+    _bulkSeen = _post.report!.numBucks;
+    _huntHours = _post.report!.numHours;
     weatherRate = _post.report!.weatherRating.toDouble() - 1;
     startAt = UtilCommon.getDatefromString(_post.report!.startDateTime);
     huntType = _post.report!.weaponUsed;
     _isHuntSuccess = _post.report!.isSuccess;
-    final diff = UtilCommon.getDatefromString(_post.report!.endDateTime)
-        .difference(UtilCommon.getDatefromString(_post.report!.startDateTime))
-        .inHours;
-    for (int i = 0; i < diff; i++) {
-      _huntHours.add(i + 1);
-    }
-    if (_post.report!.successTime!.isNotEmpty) {
-      final diff = UtilCommon.getDatefromString(_post.report!.successTime!)
-          .difference(UtilCommon.getDatefromString(_post.report!.startDateTime))
-          .inHours;
-      _huntSuccessHour = diff;
-    }
+
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         hintText = 'Body';
@@ -104,9 +89,6 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
   void dispose() {
     // _titleController.dispose();
     _bodyController.dispose();
-    _deerSeenController.dispose();
-    _bucksSeenController.dispose();
-    _huntHoursController.dispose();
     super.dispose();
   }
 
@@ -126,21 +108,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
           type: SnackBarType.error));
       return false;
     }
-    if (_deerSeenController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Deer seen is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (_bucksSeenController.text.isEmpty) {
-      ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
-          context: context,
-          messageText: "Bucks seen is required",
-          type: SnackBarType.error));
-      return false;
-    }
-    if (_huntHoursController.text.isEmpty) {
+    if (_huntHours < 1) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
           context: context,
           messageText: "Hunt hours is required",
@@ -180,7 +148,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             isShare: _post.isShare,
             createdOn: _post.createdOn,
             modifiedOn: _post.modifiedOn,
-            timeAgo: "Just now",
+            timeAgo: _post.timeAgo,
             likes: _post.likes,
             comments: _post.comments,
             media: [],
@@ -191,17 +159,14 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
         _updatedReport = Report(
             id: _post.report!.id,
             postId: _post.id,
-            numDeer: int.parse(_deerSeenController.text),
-            numBucks: int.parse(_bucksSeenController.text),
-            numHours: int.parse(_deerSeenController.text),
+            numDeer: _deerSeen,
+            numBucks: _bulkSeen,
+            numHours: _huntHours,
             weaponUsed: huntType,
             weatherRating: (weatherRate.round() + 1),
             startDateTime: UtilCommon.formatDate(startAt),
             endDateTime: _post.report!.endDateTime,
-            successTime: _huntSuccessHour != null
-                ? UtilCommon.formatDate(
-                    startAt.add(Duration(hours: _huntSuccessHour!)))
-                : null,
+            successTime: null,
             isSuccess: _isHuntSuccess);
 
         final reportResponse = await PostService.updateReport(_updatedReport!);
@@ -210,56 +175,7 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
             _isPostUpdate = true;
           });
           _updatedPost!.report = _updatedReport;
-          //   } else {}
-          // } else {}
 
-          // postResponse.when(success: (int id) async {
-          //   newPost = Post(
-          //       id: id,
-          //       personId: _user.id,
-          //       firstName: _user.firstName,
-          //       lastName: _user.lastName,
-          //       personCode: _user.code,
-          //       title: _titleController.text,
-          //       body: _bodyController.text,
-          //       postPersonCounty: _user.countyName!,
-          //       postType: "Report",
-          //       isShare: false,
-          //       createdOn: UtilCommon.getDateTimeNow(),
-          //       modifiedOn: UtilCommon.getDateTimeNow(),
-          //       likes: [],
-          //       comments: [],
-          //       media: [],
-          //       county: County(
-          //           id: _selectedCounty.id,
-          //           name: _selectedCounty.name,
-          //           regionId: _selectedCounty.regionId));
-          //   setState(() {
-          //     _isPostUpdate = true;
-          //   });
-          // final reportData = {
-          //   "postId": id,
-          //   "start_DateTime": UtilCommon.formatDate(startAt),
-          //   "numDeer": _deerSeenController.text,
-          //   "numBucks": _bucksSeenController.text,
-          //   "weatherRating": (weatherRate.round() + 1),
-          //   "numHours": _huntHoursController.text,
-          //   "weaponUsed": huntType,
-          //   "isSuccess": _isHuntSuccess,
-          //   "success_Time": _huntSuccessHour != null
-          //       ? UtilCommon.formatDate(
-          //           startAt.add(Duration(hours: _huntSuccessHour!)))
-          //       : null,
-          // };
-
-          // final reportResponse = await PostService.reportPostPublish(reportData);
-          // reportResponse.when(success: (Report report) {
-          //   newPost!.report = report;
-          // }, failure: (NetworkExceptions error) {
-          //   print("Failed to create report post");
-          // }, responseError: (ResponseError error) {
-          //   print("Failed to create report post");
-          // });
           if (_images.isNotEmpty) {
             List<Map<String, dynamic>> uploadList = [];
             for (XFile image in _images) {
@@ -375,13 +291,31 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
 
   Future getImage() async {
     try {
-      final pickedFile = await picker.pickMultiImage();
+      final pickedFile = await picker.pickMultiImage(
+        imageQuality: 50,
+      );
       if (pickedFile == null) {
         return;
       } else {
-        setState(() {
-          _images.addAll(pickedFile);
-        });
+        bool isHasOverSizeImage = false;
+        for (var element in pickedFile) {
+          var size = (await element.readAsBytes()).lengthInBytes;
+          if ((size / (1024 * 1024)) >= 5) {
+            isHasOverSizeImage = true;
+          } else {
+            _images.add(element);
+          }
+          print((size / (1024 * 1024)));
+        }
+        if (isHasOverSizeImage) {
+          print("Images larger than 5MB cannot be uploaded.");
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
+              context: context,
+              messageText: "Images larger than 5MB cannot be uploaded.",
+              type: SnackBarType.error,
+              duration: 5));
+        }
+        setState(() {});
       }
     } on PlatformException catch (e) {
       if (kDebugMode) {
@@ -578,36 +512,40 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                   ),
                   Padding(
                       padding: EdgeInsets.symmetric(horizontal: 25.w),
-                      child: Row(
+                      child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Start at  :  ",
+                              "What time did you start your hunt  :  ",
+                              // "",
                               style: TextStyle(
                                   fontSize: 16.sp,
                                   color: AppColors.btnColor,
                                   fontWeight: FontWeight.w500),
                               textAlign: TextAlign.left,
                             ),
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () => _pickDateTime(),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  height: 40.h,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5.h),
-                                      border: Border.all(
-                                          color: Colors.white, width: 1.h)),
-                                  child: Text(
-                                    UtilCommon.formatDate(startAt),
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        // color: AppColors.btnColor,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
+                            SizedBox(
+                              height: 5.h,
+                            ),
+                            GestureDetector(
+                              onTap: () => _pickDateTime(),
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 40.h,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5.h),
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.h)),
+                                child: Text(
+                                  UtilCommon.formatDate(startAt),
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      // color: AppColors.btnColor,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
                             )
@@ -630,7 +568,13 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_deerSeenController)
+                        NumberDropMenu(
+                            value: _deerSeen,
+                            onChange: (seen) {
+                              setState(() {
+                                _deerSeen = seen;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -652,7 +596,13 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_bucksSeenController)
+                        NumberDropMenu(
+                            value: _bulkSeen,
+                            onChange: (seen) {
+                              setState(() {
+                                _bulkSeen = seen;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -692,8 +642,14 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                             textAlign: TextAlign.left,
                           ),
                         ),
-                        _buildTextField(_huntHoursController,
-                            onChange: _onHuntHourChange, hintText: "Hours")
+                        NumberDropMenu(
+                            isStartFromZero: false,
+                            value: _huntHours,
+                            onChange: (hour) {
+                              setState(() {
+                                _huntHours = hour;
+                              });
+                            })
                       ],
                     ),
                   ),
@@ -828,29 +784,29 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 15.h,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 25.w),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "What time were you successful (Optional) : ",
-                            style: TextStyle(
-                                fontSize: 16.sp,
-                                color: AppColors.btnColor,
-                                fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        _buildDropButton()
-                      ],
-                    ),
-                  ),
+                  // SizedBox(
+                  //   height: 5.h,
+                  // ),
+                  // Padding(
+                  //   padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //     crossAxisAlignment: CrossAxisAlignment.center,
+                  //     children: [
+                  //       Expanded(
+                  //         child: Text(
+                  //           "What time were you successful (Optional) : ",
+                  //           style: TextStyle(
+                  //               fontSize: 16.sp,
+                  //               color: AppColors.btnColor,
+                  //               fontWeight: FontWeight.w500),
+                  //           textAlign: TextAlign.left,
+                  //         ),
+                  //       ),
+                  //       _buildDropButton()
+                  //     ],
+                  //   ),
+                  // ),
                   if (_medias.isNotEmpty)
                     Column(
                       children: [
@@ -978,6 +934,14 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
                         color: AppColors.btnColor,
                         fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "You can upload as many as you want. Upload time will vary based on your service.",
+                    style: TextStyle(
+                        fontSize: 12.sp,
+                        color: AppColors.btnColor,
+                        fontWeight: FontWeight.w400),
+                    textAlign: TextAlign.left,
                   ),
                   SizedBox(
                     height: 10.h,
@@ -1123,98 +1087,85 @@ class _UpdateReportPostState extends State<UpdateReportPost> {
     );
   }
 
-  _buildDropButton() {
-    return DropdownButtonHideUnderline(
-      child: DropdownButton<int>(
-          dropdownColor: AppColors.popBGColor,
-          icon: Icon(
-            Icons.keyboard_arrow_down_rounded,
-            color: AppColors.btnColor,
-            size: 30.h,
-          ),
-          style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.white,
-              fontWeight: FontWeight.w600),
-          iconSize: 30.h,
-          value: _huntSuccessHour,
-          items: _huntHours
-              .map((e) => DropdownMenuItem<int>(
-                  value: e,
-                  child: Text(
-                    UtilCommon.getTimeString(startAt.add(Duration(hours: e))),
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  )))
-              .toList(),
-          onChanged: (int? value) {
-            setState(() {
-              _huntSuccessHour = value;
-            });
-          }),
-    );
-  }
+  // _buildDropButton() {
+  //   return DropdownButtonHideUnderline(
+  //     child: DropdownButton<int>(
+  //         dropdownColor: AppColors.popBGColor,
+  //         icon: Icon(
+  //           Icons.keyboard_arrow_down_rounded,
+  //           color: AppColors.btnColor,
+  //           size: 30.h,
+  //         ),
+  //         style: TextStyle(
+  //             fontSize: 16.sp,
+  //             color: Colors.white,
+  //             fontWeight: FontWeight.w600),
+  //         iconSize: 30.h,
+  //         value: _huntSuccessHour,
+  //         items: _huntHours
+  //             .map((e) => DropdownMenuItem<int>(
+  //                 value: e,
+  //                 child: Text(
+  //                   UtilCommon.getTimeString(startAt.add(Duration(hours: e))),
+  //                   style: TextStyle(
+  //                       fontSize: 16.sp,
+  //                       color: Colors.white,
+  //                       fontWeight: FontWeight.w600),
+  //                 )))
+  //             .toList(),
+  //         onChanged: (int? value) {
+  //           setState(() {
+  //             _huntSuccessHour = value;
+  //           });
+  //         }),
+  //   );
+  // }
 
-  _onHuntHourChange(String value) {
-    if (value.isNotEmpty) {
-      List<int> temp = [];
-      for (int i = 0; i < int.parse(value); i++) {
-        temp.add(i + 1);
-      }
-      setState(() {
-        _huntHours = temp;
-        _huntSuccessHour = null;
-      });
-    }
-  }
-
-  _buildTextField(TextEditingController controller,
-          {Function? onChange, String hintText = "00"}) =>
-      SizedBox(
-        height: 40.h,
-        width: 100.w,
-        child: TextField(
-          controller: controller,
-          style: TextStyle(
-              color: Colors.white,
-              fontSize: 16.sp,
-              decoration: TextDecoration.none),
-          textAlignVertical: TextAlignVertical.center,
-          cursorColor: AppColors.btnColor,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-          ],
-          onChanged: (String value) {
-            if (onChange != null) {
-              onChange(value);
-            }
-          },
-          decoration: InputDecoration(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-            fillColor: Colors.transparent,
-            filled: true,
-            hintText: hintText,
-            hintStyle: TextStyle(
-              color: Colors.grey[200],
-              fontSize: 16.sp,
-              decoration: TextDecoration.none,
-            ),
-            border: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(5.w)),
-            focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: AppColors.btnColor),
-                borderRadius: BorderRadius.circular(5.w)),
-            enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.white),
-                borderRadius: BorderRadius.circular(5.w)),
-          ),
-        ),
-      );
+  // _buildTextField(TextEditingController controller,
+  //         {Function? onChange, String hintText = "00"}) =>
+  //     SizedBox(
+  //       height: 40.h,
+  //       width: 100.w,
+  //       child: TextField(
+  //         controller: controller,
+  //         style: TextStyle(
+  //             color: Colors.white,
+  //             fontSize: 16.sp,
+  //             decoration: TextDecoration.none),
+  //         textAlignVertical: TextAlignVertical.center,
+  //         cursorColor: AppColors.btnColor,
+  //         keyboardType: TextInputType.number,
+  //         inputFormatters: [
+  //           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+  //         ],
+  //         onChanged: (String value) {
+  //           if (onChange != null) {
+  //             onChange(value);
+  //           }
+  //         },
+  //         decoration: InputDecoration(
+  //           contentPadding:
+  //               EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+  //           fillColor: Colors.transparent,
+  //           filled: true,
+  //           hintText: hintText,
+  //           hintStyle: TextStyle(
+  //             color: Colors.grey[200],
+  //             fontSize: 16.sp,
+  //             decoration: TextDecoration.none,
+  //           ),
+  //           border: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: Colors.white),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           focusedBorder: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: AppColors.btnColor),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //           enabledBorder: OutlineInputBorder(
+  //               borderSide: const BorderSide(color: Colors.white),
+  //               borderRadius: BorderRadius.circular(5.w)),
+  //         ),
+  //       ),
+  //     );
 
   _buildDropMenu() {
     return PopupMenuButton(
