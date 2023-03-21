@@ -26,7 +26,7 @@ class NumberDropMenu extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  value.toString(),
+                  "$value ${isStartFromZero ? "" : "hrs"}",
                   style: TextStyle(
                       fontSize: 15.sp,
                       // color: AppColors.btnColor,

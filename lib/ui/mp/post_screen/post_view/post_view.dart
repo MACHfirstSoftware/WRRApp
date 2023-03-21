@@ -260,8 +260,8 @@ class _PostViewState extends State<PostView> {
               ),
             ),
           if (widget.post.media.isNotEmpty) MediaView(media: widget.post.media),
-          if (widget.post.report != null && widget.post.postType == "Premium")
-            ReportView(report: widget.post.report!),
+          // if (widget.post.report != null && widget.post.postType == "Premium")
+          //   ReportView(report: widget.post.report!),
           // if (widget.post.contest != null)
           //   ContestView(contest: widget.post.contest!),
           if (widget.post.isShare)
@@ -464,13 +464,41 @@ class _PostViewState extends State<PostView> {
               onTap: () => setState(() {
                 _showFullReport = !_showFullReport;
               }),
-              child: Text(
-                "Read Full Report",
-                style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w400),
-                textAlign: TextAlign.center,
+              child: Container(
+                alignment: Alignment.center,
+                height: 30.h,
+                margin: EdgeInsets.symmetric(horizontal: 10.w),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.h),
+                    border: Border.all(
+                      color: Colors.black54,
+                      width: 0.75.w,
+                    )),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Read Full Report",
+                        style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.iconGrey,
+                            fontWeight: FontWeight.w600),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 5.h),
+                      child: Icon(
+                        _showFullReport
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        size: 20.h,
+                        color: AppColors.iconGrey,
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
             if (_showFullReport) ReportView(report: widget.post.report!),
@@ -1255,7 +1283,7 @@ class ReportView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 25.w),
-      margin: EdgeInsets.only(top: 10.h, left: 10.w, right: 10.w, bottom: 0),
+      margin: EdgeInsets.only(top: 5.h, left: 10.w, right: 10.w, bottom: 0.h),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(5.h),
@@ -1265,8 +1293,10 @@ class ReportView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildReportDataRow(
-                "What time did you start your hunt", report.startDateTime,
-                isLong: true),
+              "Start Date/Time",
+              UtilCommon.formatDate(
+                  UtilCommon.getDatefromString(report.startDateTime)),
+            ),
             _buildReportDataRow("No. Deer Seen", report.numDeer.toString()),
             _buildReportDataRow("No. Bucks Seen", report.numBucks.toString()),
             _buildReportDataRow(
@@ -1279,36 +1309,32 @@ class ReportView extends StatelessWidget {
     );
   }
 
-  _buildReportDataRow(String name, String data, {bool isLong = false}) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: isLong ? 3.h : 0),
-      child: Row(
-        children: [
-          Expanded(
-            // flex: 6,
-            child: Text(
-              name,
-              style: TextStyle(
-                  height: isLong ? 1 : null,
-                  fontSize: 14.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w400),
-              textAlign: TextAlign.left,
-            ),
+  _buildReportDataRow(String name, String data) {
+    return Row(
+      children: [
+        Expanded(
+          // flex: 6,
+          child: Text(
+            name,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w400),
+            textAlign: TextAlign.left,
           ),
-          Expanded(
-            // flex: 4,
-            child: Text(
-              data,
-              style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.black,
-                  fontWeight: FontWeight.w500),
-              textAlign: TextAlign.right,
-            ),
+        ),
+        Expanded(
+          // flex: 4,
+          child: Text(
+            data,
+            style: TextStyle(
+                fontSize: 14.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w500),
+            textAlign: TextAlign.right,
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

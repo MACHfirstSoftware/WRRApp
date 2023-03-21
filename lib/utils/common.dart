@@ -63,7 +63,7 @@ class UtilCommon {
   }
 
   static String formatDate(DateTime dateTime) {
-    return DateFormat("MM/dd/yyyy").add_jms().format(dateTime);
+    return DateFormat("MM/dd/yyyy").add_jm().format(dateTime);
   }
 
   static String getTimeString(DateTime dateTime) {

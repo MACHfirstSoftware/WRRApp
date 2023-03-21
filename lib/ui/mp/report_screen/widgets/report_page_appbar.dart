@@ -47,11 +47,12 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
       width: 428.w,
       child: Stack(
         children: [
-          Positioned(
-              bottom: 10.h, left: 0.w, child: _buildDropMenu(userProvider)),
+          if (!widget.isReports)
+            Positioned(
+                bottom: 10.h, left: 0.w, child: _buildDropMenu(userProvider)),
           Positioned(
               bottom: 10.h,
-              left: 40.w,
+              left: widget.isReports ? 0.w : 40.w,
               child: GestureDetector(
                 onTap: (() {
                   Navigator.push(context,
@@ -88,7 +89,7 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.center,
                       child: Text(
-                        "Reports",
+                        "WRR Premium",
                         style: TextStyle(
                             fontSize: 18.sp,
                             color: Colors.white,

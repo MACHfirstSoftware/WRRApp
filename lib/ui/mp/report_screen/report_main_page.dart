@@ -67,24 +67,24 @@ class _ReportPageState extends State<ReportPage> with WidgetsBindingObserver {
               context: context,
               userId:
                   Provider.of<UserProvider>(context, listen: false).user.id),
-      floatingActionButton: _subscriptionStatus == SubscriptionStatus.premium
-          ? Visibility(
-              visible: !keyboardIsOpen,
-              child: FloatingActionButton(
-                  heroTag: "2",
-                  backgroundColor: AppColors.btnColor,
-                  child: Icon(
-                    Icons.add,
-                    size: 30.h,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => const NewReportPost()),
-                    );
-                  }),
-            )
-          : null,
+      // floatingActionButton: _subscriptionStatus == SubscriptionStatus.premium
+      //     ? Visibility(
+      //         visible: !keyboardIsOpen,
+      //         child: FloatingActionButton(
+      //             heroTag: "2",
+      //             backgroundColor: AppColors.btnColor,
+      //             child: Icon(
+      //               Icons.add,
+      //               size: 30.h,
+      //             ),
+      //             onPressed: () {
+      //               Navigator.of(context).push(
+      //                 MaterialPageRoute(
+      //                     builder: (context) => const NewReportPost()),
+      //               );
+      //             }),
+      //       )
+      //     : null,
     );
   }
 }

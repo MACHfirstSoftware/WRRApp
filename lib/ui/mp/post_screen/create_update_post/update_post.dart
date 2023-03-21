@@ -1096,7 +1096,6 @@ class _UpdatePostState extends State<UpdatePost> {
                                   children: [
                                     Text(
                                       "What time did you start your hunt  :  ",
-                                      // "",
                                       style: TextStyle(
                                           fontSize: 16.sp,
                                           color: AppColors.btnColor,
@@ -1250,22 +1249,25 @@ class _UpdatePostState extends State<UpdatePost> {
                                 // unselectedWidgetColor: Colors.grey[300],
                                 unselectedWidgetColor: AppColors.btnColor,
                               ),
-                              child: Row(
+                              child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: Text(
-                                      "How did you hunt  :  ",
-                                      style: TextStyle(
-                                          fontSize: 16.sp,
-                                          color: AppColors.btnColor,
-                                          fontWeight: FontWeight.w500),
-                                      textAlign: TextAlign.left,
-                                    ),
+                                  Text(
+                                    "How did you hunt  :  ",
+                                    style: TextStyle(
+                                        fontSize: 16.sp,
+                                        color: AppColors.btnColor,
+                                        fontWeight: FontWeight.w500),
+                                    textAlign: TextAlign.left,
                                   ),
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
+                                      const Spacer(),
                                       Radio(
                                           value: "G",
                                           groupValue:
@@ -1286,6 +1288,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                             fontWeight: FontWeight.w500),
                                         textAlign: TextAlign.left,
                                       ),
+                                      const Spacer(),
                                       Radio(
                                           value: "B",
                                           groupValue:
@@ -1306,6 +1309,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                             fontWeight: FontWeight.w500),
                                         textAlign: TextAlign.left,
                                       ),
+                                      const Spacer(),
                                     ],
                                   )
                                 ],
@@ -1314,18 +1318,17 @@ class _UpdatePostState extends State<UpdatePost> {
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 25.w),
-                            child: Row(
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Text(
-                                    "Was your hunt successful  :  ",
-                                    style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: AppColors.btnColor,
-                                        fontWeight: FontWeight.w500),
-                                    textAlign: TextAlign.left,
-                                  ),
+                                Text(
+                                  "Was your hunt successful  :  ",
+                                  style: TextStyle(
+                                      fontSize: 16.sp,
+                                      color: AppColors.btnColor,
+                                      fontWeight: FontWeight.w500),
+                                  textAlign: TextAlign.left,
                                 ),
                                 Theme(
                                   data: ThemeData(
@@ -1333,7 +1336,11 @@ class _UpdatePostState extends State<UpdatePost> {
                                     unselectedWidgetColor: AppColors.btnColor,
                                   ),
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
+                                      const Spacer(),
                                       Radio(
                                           value: true,
                                           groupValue: _updatedReport!.isSuccess,
@@ -1353,6 +1360,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                             fontWeight: FontWeight.w500),
                                         textAlign: TextAlign.left,
                                       ),
+                                      const Spacer(),
                                       Radio(
                                           value: false,
                                           groupValue: _updatedReport!.isSuccess,
@@ -1372,6 +1380,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                             fontWeight: FontWeight.w500),
                                         textAlign: TextAlign.left,
                                       ),
+                                      const Spacer(),
                                     ],
                                   ),
                                 )
