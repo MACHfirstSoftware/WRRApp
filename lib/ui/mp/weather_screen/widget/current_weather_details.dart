@@ -29,7 +29,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
   int low = 0;
   int high = 0;
   List<Hour> forcastDayHours = [];
-  bool isExpanded = false;
+  bool isExpanded = true;
 
   @override
   void initState() {
@@ -51,42 +51,42 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
   List<Map<String, String>> moreDetails = [];
   @override
   Widget build(BuildContext context) {
-    moreDetails = [
-      // {
-      //   "key": "Current Conditions",
-      //   "value": widget.forecastDay.hour[currentHour].condition.text
-      // },
-      {
-        "key": "Wind",
-        "value":
-            "${widget.currentWeather.windDir} at ${widget.currentWeather.windMph} mph Gusting to ${widget.currentWeather.gustMph} mph"
-      },
-      {
-        "key": "Precip",
-        "value": widget.currentWeather.precipIn.toString() + " in."
-      },
-      {
-        "key": "Humidy",
-        "value": widget.currentWeather.humidity.toString() + "%"
-      },
-      {
-        "key": "Pressure",
-        "value": widget.currentWeather.pressureIn.toString() + " in."
-      },
-      // {
-      //   "key": "Moon Phase",
-      //   "value": widget.astro.moonPhase + " (${widget.astro.moonIllumination})"
-      // },
-      {
-        "key": "Cloud Cover",
-        "value": widget.currentWeather.cloud.toString() + " %"
-      },
-      {
-        "key": "Visability",
-        "value": widget.currentWeather.visMiles.toString() + " miles"
-      },
-      {"key": "UV Index", "value": widget.currentWeather.uv.toString()},
-    ];
+    // moreDetails = [
+    //   // {
+    //   //   "key": "Current Conditions",
+    //   //   "value": widget.forecastDay.hour[currentHour].condition.text
+    //   // },
+    //   {
+    //     "key": "Wind",
+    //     "value":
+    //         "${widget.currentWeather.windDir} at ${widget.currentWeather.windMph} mph Gusting to ${widget.currentWeather.gustMph} mph"
+    //   },
+    //   {
+    //     "key": "Precip",
+    //     "value": widget.currentWeather.precipIn.toString() + " in."
+    //   },
+    //   {
+    //     "key": "Humidy",
+    //     "value": widget.currentWeather.humidity.toString() + "%"
+    //   },
+    //   {
+    //     "key": "Pressure",
+    //     "value": widget.currentWeather.pressureIn.toString() + " in."
+    //   },
+    //   // {
+    //   //   "key": "Moon Phase",
+    //   //   "value": widget.astro.moonPhase + " (${widget.astro.moonIllumination})"
+    //   // },
+    //   {
+    //     "key": "Cloud Cover",
+    //     "value": widget.currentWeather.cloud.toString() + " %"
+    //   },
+    //   {
+    //     "key": "Visability",
+    //     "value": widget.currentWeather.visMiles.toString() + " miles"
+    //   },
+    //   {"key": "UV Index", "value": widget.currentWeather.uv.toString()},
+    // ];
     WeatherColorTheme.setWeatherTheme(
         widget.currentWeather.condition.text.toLowerCase());
     return Scaffold(
@@ -242,14 +242,14 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
               height: 10.h,
             ),
             Padding(
-              padding: EdgeInsets.only(right: 30.w),
+              padding: EdgeInsets.only(right: 25.w),
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Text(
                   widget.astro.moonPhase +
                       " (${widget.astro.moonIllumination})",
                   style: TextStyle(
-                      fontSize: 15.sp,
+                      fontSize: 12.sp,
                       color: Colors.white,
                       fontWeight: FontWeight.w500),
                   textAlign: TextAlign.right,
@@ -259,47 +259,47 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
             SizedBox(
               height: 15.h,
             ),
-            Container(
-              height: 40.h,
-              decoration: BoxDecoration(
-                  color: AppColors.btnColor,
-                  borderRadius: BorderRadius.circular(5.h)),
-              padding: EdgeInsets.symmetric(horizontal: 10.w),
-              margin: EdgeInsets.symmetric(horizontal: 10.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Current Conditions",
-                    style: TextStyle(
-                        fontSize: 16.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                    textAlign: TextAlign.left,
-                  ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        widget.forecastDay.hour[currentHour].condition.text,
-                        style: TextStyle(
-                            fontSize: 16.sp,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
+            // Container(
+            //   height: 40.h,
+            //   decoration: BoxDecoration(
+            //       color: AppColors.btnColor,
+            //       borderRadius: BorderRadius.circular(5.h)),
+            //   padding: EdgeInsets.symmetric(horizontal: 10.w),
+            //   margin: EdgeInsets.symmetric(horizontal: 10.w),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Text(
+            //         "Current Conditions",
+            //         style: TextStyle(
+            //             fontSize: 16.sp,
+            //             color: Colors.white,
+            //             fontWeight: FontWeight.w600),
+            //         textAlign: TextAlign.left,
+            //       ),
+            //       SizedBox(
+            //         width: 10.w,
+            //       ),
+            //       Expanded(
+            //         child: FittedBox(
+            //           fit: BoxFit.scaleDown,
+            //           alignment: Alignment.centerRight,
+            //           child: Text(
+            //             widget.forecastDay.hour[currentHour].condition.text,
+            //             style: TextStyle(
+            //                 fontSize: 16.sp,
+            //                 color: Colors.white,
+            //                 fontWeight: FontWeight.w600),
+            //             textAlign: TextAlign.left,
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // SizedBox(
+            //   height: 10.h,
+            // ),
             Theme(
                 data: ThemeData(
                     unselectedWidgetColor: Colors.white,
@@ -309,7 +309,8 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                     horizontal: 10.w,
                   ),
                   decoration: BoxDecoration(
-                      color: AppColors.btnColor,
+                      // color: AppColors.btnColor,
+                      color: const Color(0xFF36454F),
                       borderRadius: BorderRadius.circular(5.h)),
                   child: ExpansionTile(
                       tilePadding:
@@ -321,6 +322,7 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                         size: 25.h,
                         color: Colors.white,
                       ),
+                      initiallyExpanded: true,
                       onExpansionChanged: (value) {
                         setState(() {
                           isExpanded = value;
@@ -340,33 +342,33 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
                         SizedBox(height: 2.5.h)
                       ]),
                 )),
-            Card(
-              margin: EdgeInsets.all(10.w),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.w)),
-              color: AppColors.popBGColor.withOpacity(.75),
-              child: Center(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                  child: ListView.separated(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      itemBuilder: (_, index) {
-                        return _buildDataRow(moreDetails[index]["key"]!,
-                            moreDetails[index]["value"]!);
-                      },
-                      separatorBuilder: (_, index) {
-                        return Divider(
-                          color: Colors.white10,
-                          thickness: 1.25.h,
-                        );
-                      },
-                      itemCount: moreDetails.length),
-                ),
-              ),
-            ),
+            // Card(
+            //   margin: EdgeInsets.all(10.w),
+            //   shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(15.w)),
+            //   color: AppColors.popBGColor.withOpacity(.75),
+            //   child: Center(
+            //     child: Padding(
+            //       padding:
+            //           EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+            //       child: ListView.separated(
+            //           padding: EdgeInsets.zero,
+            //           shrinkWrap: true,
+            //           physics: const BouncingScrollPhysics(),
+            //           itemBuilder: (_, index) {
+            //             return _buildDataRow(moreDetails[index]["key"]!,
+            //                 moreDetails[index]["value"]!);
+            //           },
+            //           separatorBuilder: (_, index) {
+            //             return Divider(
+            //               color: Colors.white10,
+            //               thickness: 1.25.h,
+            //             );
+            //           },
+            //           itemCount: moreDetails.length),
+            //     ),
+            //   ),
+            // ),
             SizedBox(
               height: 10.h,
             )
@@ -376,83 +378,88 @@ class _CurrentWeatherDetailsState extends State<CurrentWeatherDetails> {
     );
   }
 
-  Row _buildAstroRow(String iconPath, String rise, String set) {
-    return Row(
-      children: [
-        // const Spacer(),
-        Expanded(
-          child: Center(
-            child: Container(
-              height: 40.h,
-              width: 40.h,
-              padding: EdgeInsets.all(10.h),
-              decoration: BoxDecoration(
-                  color: AppColors.popBGColor,
-                  borderRadius: BorderRadius.circular(10.h)),
-              child: SvgPicture.asset(
-                iconPath,
-                height: 15.h,
-                width: 15.h,
-                color: Colors.white,
+  _buildAstroRow(String iconPath, String rise, String set) {
+    return Padding(
+      padding: EdgeInsets.only(right: 25.w, left: 0.w),
+      child: Row(
+        children: [
+          // const Spacer(),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Container(
+                alignment: Alignment.center,
+                height: 40.h,
+                width: 40.h,
+                padding: EdgeInsets.all(10.h),
+                decoration: BoxDecoration(
+                    color: AppColors.popBGColor,
+                    borderRadius: BorderRadius.circular(10.h)),
+                child: SvgPicture.asset(
+                  iconPath,
+                  height: 15.h,
+                  width: 15.h,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
-        ),
-        // const Spacer(),
-        Expanded(
-          child: Text(
-            rise,
-            style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        // const Spacer(),
-        Expanded(
-          child: Text(
-            set,
-            style: TextStyle(
-                fontSize: 16.sp,
-                color: Colors.white,
-                fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        // const Spacer(),
-      ],
-    );
-  }
-
-  _buildDataRow(String title, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 7.5.w),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 135.w,
-            child: Text(
-              title,
-              style: TextStyle(
-                  fontSize: 15.sp,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700),
-              textAlign: TextAlign.left,
-            ),
-          ),
+          // const Spacer(),
           Expanded(
             child: Text(
-              value,
+              rise,
               style: TextStyle(
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
                   color: Colors.white,
                   fontWeight: FontWeight.w600),
-              textAlign: TextAlign.left,
+              textAlign: TextAlign.center,
             ),
           ),
+          // const Spacer(),
+          Expanded(
+            child: Text(
+              set,
+              style: TextStyle(
+                  fontSize: 16.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+              textAlign: TextAlign.right,
+            ),
+          ),
+          // const Spacer(),
         ],
       ),
     );
   }
+
+  // _buildDataRow(String title, String value) {
+  //   return Padding(
+  //     padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 7.5.w),
+  //     child: Row(
+  //       children: [
+  //         SizedBox(
+  //           width: 135.w,
+  //           child: Text(
+  //             title,
+  //             style: TextStyle(
+  //                 fontSize: 15.sp,
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.w700),
+  //             textAlign: TextAlign.left,
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: Text(
+  //             value,
+  //             style: TextStyle(
+  //                 fontSize: 14.sp,
+  //                 color: Colors.white,
+  //                 fontWeight: FontWeight.w600),
+  //             textAlign: TextAlign.left,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

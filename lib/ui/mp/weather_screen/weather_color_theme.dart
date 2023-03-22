@@ -15,7 +15,7 @@ class WeatherColorTheme {
       ftColor = Colors.black;
       bgColor = Colors.white;
     }
-    if (condition.contains("overcast")) {
+    if (condition.contains("overcast") || condition.contains("cloudy")) {
       ftColor = Colors.white;
       bgColor = Colors.grey;
     }
@@ -23,9 +23,7 @@ class WeatherColorTheme {
       ftColor = Colors.black;
       bgColor = Colors.grey[200]!;
     }
-    if (condition.contains("rain") ||
-        condition.contains("cloudy") ||
-        condition.contains("drizzle")) {
+    if (condition.contains("rain") || condition.contains("drizzle")) {
       ftColor = Colors.white;
       bgColor = Colors.deepPurpleAccent;
     }

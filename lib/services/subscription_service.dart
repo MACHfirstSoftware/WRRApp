@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/response_error.dart';
 import 'package:wisconsin_app/utils/api_results/api_result.dart';
@@ -49,7 +51,7 @@ class SubscriptionService {
       {required String personId, required bool isPremium}) async {
     try {
       final response = await CustomHttp.getDio().post(Constant.baseUrl +
-          "/Subscription?personId=$personId&isPremium=$isPremium");
+          "/Subscription?personId=$personId&isPremium=$isPremium&platform=${Platform.isIOS ? "A" : "G"}");
       if (response.statusCode != 201) {
         return ApiResult.responseError(
             responseError: ResponseError(

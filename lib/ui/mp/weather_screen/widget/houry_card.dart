@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/models/weather.dart';
+import 'package:wisconsin_app/ui/mp/weather_screen/weather_color_theme.dart';
 import 'package:wisconsin_app/utils/common.dart';
 
 class HourlyCard extends StatelessWidget {
@@ -13,10 +14,12 @@ class HourlyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WeatherColorTheme.setWeatherTheme(hour.condition.text.toLowerCase());
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.5.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.h)),
-      color: AppColors.popBGColor,
+      // color: AppColors.popBGColor,
+      color: WeatherColorTheme.bgColor,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 2.5.h),
         child: Column(
@@ -36,7 +39,7 @@ class HourlyCard extends StatelessWidget {
                         UtilCommon.getWeatherHourlyTime(hour.time),
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -51,7 +54,7 @@ class HourlyCard extends StatelessWidget {
                         "${hour.tempF} °f",
                         style: TextStyle(
                             fontSize: 16.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w700),
                         textAlign: TextAlign.left,
                       ),
@@ -86,7 +89,7 @@ class HourlyCard extends StatelessWidget {
                         hour.condition.text,
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -106,7 +109,7 @@ class HourlyCard extends StatelessWidget {
                         "Pressure",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -121,7 +124,7 @@ class HourlyCard extends StatelessWidget {
                         "${hour.pressureIn} in.",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -143,7 +146,7 @@ class HourlyCard extends StatelessWidget {
                         "Humidity",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -158,7 +161,7 @@ class HourlyCard extends StatelessWidget {
                         "${hour.humidity}%",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -181,7 +184,7 @@ class HourlyCard extends StatelessWidget {
                           hour.willItRain == 1 ? "Rain" : "Snow",
                           style: TextStyle(
                               fontSize: 14.sp,
-                              color: Colors.white,
+                              color: WeatherColorTheme.ftColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
                         ),
@@ -196,7 +199,7 @@ class HourlyCard extends StatelessWidget {
                           "${hour.willItRain == 1 ? hour.chanceOfRain : hour.chanceOfSnow}% chance of ${hour.willItRain == 1 ? "rain" : "snow"}",
                           style: TextStyle(
                               fontSize: 14.sp,
-                              color: Colors.white,
+                              color: WeatherColorTheme.ftColor,
                               fontWeight: FontWeight.w500),
                           textAlign: TextAlign.left,
                         ),
@@ -218,7 +221,7 @@ class HourlyCard extends StatelessWidget {
                         "Wind",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
@@ -233,7 +236,7 @@ class HourlyCard extends StatelessWidget {
                         "${hour.windDir} at ${hour.windMph} mph gusting to ${hour.gustMph} mph",
                         style: TextStyle(
                             fontSize: 14.sp,
-                            color: Colors.white,
+                            color: WeatherColorTheme.ftColor,
                             fontWeight: FontWeight.w500),
                         textAlign: TextAlign.left,
                       ),
