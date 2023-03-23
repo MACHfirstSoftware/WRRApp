@@ -205,7 +205,7 @@ class _ReportContentsState extends State<ReportContents>
       floatingActionButton: showHideAnchor
           ? FloatingActionButton(
               mini: true,
-              heroTag: "anchor4",
+              heroTag: "go_top_premium",
               backgroundColor: AppColors.btnColor,
               child: Icon(
                 Icons.keyboard_arrow_up_rounded,

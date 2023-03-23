@@ -205,7 +205,7 @@ class _AllPostsPageState extends State<AllPostsPage>
       floatingActionButton: showHideAnchor
           ? FloatingActionButton(
               mini: true,
-              heroTag: "anchor1",
+              heroTag: "go_top_allpost",
               backgroundColor: AppColors.btnColor,
               child: Icon(
                 Icons.keyboard_arrow_up_rounded,

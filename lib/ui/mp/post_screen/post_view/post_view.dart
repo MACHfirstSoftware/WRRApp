@@ -718,262 +718,266 @@ class _PostViewState extends State<PostView> {
             ),
           ),
           // if (_user.id != widget.post.personId)
-          if ((isOwner && _user.id != widget.post.personId) ||
-              (!isOwner && _user.id != widget.post.sharePersonId))
+          if (widget.post.postType != "Premium")
+            if ((isOwner && _user.id != widget.post.personId) ||
+                (!isOwner && _user.id != widget.post.sharePersonId))
+              SizedBox(
+                  height: 60.h,
+                  width: 40.h,
+                  child: IconButton(
+                    splashColor: AppColors.btnColor.withOpacity(0.5),
+                    iconSize: 25.h,
+                    icon: Icon(
+                      Icons.person_add_alt_rounded,
+                      color: isFollowed ? AppColors.btnColor : Colors.black54,
+                    ),
+                    onPressed: () {
+                      if (isFollowed) {
+                        _personUnfollow(followerId, isOwner);
+                      } else {
+                        _personFollow(followerId, isOwner);
+                      }
+                    },
+                  )),
+          if (widget.post.postType != "Premium")
             SizedBox(
                 height: 60.h,
-                width: 40.h,
-                child: IconButton(
-                  splashColor: AppColors.btnColor.withOpacity(0.5),
-                  iconSize: 25.h,
-                  icon: Icon(
-                    Icons.person_add_alt_rounded,
-                    color: isFollowed ? AppColors.btnColor : Colors.black54,
-                  ),
-                  onPressed: () {
-                    if (isFollowed) {
-                      _personUnfollow(followerId, isOwner);
-                    } else {
-                      _personFollow(followerId, isOwner);
+                width: 50.h,
+                child: PopupMenuButton(
+                  padding: EdgeInsets.zero,
+                  color: AppColors.popBGColor,
+                  icon: Icon(Icons.more_horiz_rounded, size: 30.h),
+                  itemBuilder: (context) => [
+                    if (isOwner && _user.id != widget.post.personId)
+                      PopupMenuItem<String>(
+                        value: "Report",
+                        height: 30.h,
+                        padding: EdgeInsets.zero,
+                        child: Center(
+                          child: SizedBox(
+                            width: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 80.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "Report",
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.error_rounded,
+                                      color: Colors.white,
+                                      size: 20.w,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (isOwner && _user.id != widget.post.personId)
+                      PopupMenuItem<String>(
+                        value: "Block",
+                        height: 30.h,
+                        padding: EdgeInsets.zero,
+                        child: Center(
+                          child: SizedBox(
+                            width: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 80.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "Block",
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.w400),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.person_off_rounded,
+                                      color: Colors.redAccent,
+                                      size: 20.w,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (!widget.post.isShare &&
+                        _user.id == widget.post.personId)
+                      PopupMenuItem<String>(
+                        value: "Edit",
+                        height: 30.h,
+                        padding: EdgeInsets.zero,
+                        child: Center(
+                          child: SizedBox(
+                            width: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 80.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "Edit",
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.mode_edit_outline_outlined,
+                                      color: Colors.white,
+                                      size: 20.w,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (!widget.post.isShare &&
+                        _user.id == widget.post.personId)
+                      PopupMenuItem<String>(
+                        value: "Delete",
+                        height: 30.h,
+                        padding: EdgeInsets.zero,
+                        child: Center(
+                          child: SizedBox(
+                            width: 100.w,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: 80.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "Delete",
+                                      style: TextStyle(
+                                          fontSize: 15.sp,
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.w400),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 20.w,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.redAccent,
+                                      size: 20.w,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                  onSelected: (String value) {
+                    if (value == "Report") {
+                      Navigator.of(context).push(HeroDialogRoute(
+                          builder: (context) => ConfirmationPopup(
+                              onTap: _postAbuse,
+                              title: "Report",
+                              message: "Do you want to report post?",
+                              leftBtnText: "Report",
+                              rightBtnText: "Cancel")));
+                    }
+                    if (value == "Block") {
+                      Navigator.of(context).push(HeroDialogRoute(
+                          builder: (context) => ConfirmationPopup(
+                              onTap: _blockUser,
+                              title: "Block User",
+                              message: "Do you want to block this user?",
+                              leftBtnText: "Block",
+                              rightBtnText: "Cancel")));
+                    }
+                    if (value == "Edit") {
+                      if (widget.post.postType != "Premium") {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => UpdatePost(
+                                    post: widget.post,
+                                  )),
+                        );
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => UpdateReportPost(
+                                    post: widget.post,
+                                  )),
+                        );
+                      }
+                    }
+                    if (value == "Delete") {
+                      Navigator.push(
+                          context,
+                          HeroDialogRoute(
+                              builder: (_) => ConfirmationPopup(
+                                    title: "Delete",
+                                    message:
+                                        "If you delete now, you'll lose this post.",
+                                    leftBtnText: "Delete",
+                                    rightBtnText: "Cancel",
+                                    onTap: _deletePost,
+                                  )));
                     }
                   },
-                )),
-          SizedBox(
-              height: 60.h,
-              width: 50.h,
-              child: PopupMenuButton(
-                padding: EdgeInsets.zero,
-                color: AppColors.popBGColor,
-                icon: Icon(Icons.more_horiz_rounded, size: 30.h),
-                itemBuilder: (context) => [
-                  if (isOwner && _user.id != widget.post.personId)
-                    PopupMenuItem<String>(
-                      value: "Report",
-                      height: 30.h,
-                      padding: EdgeInsets.zero,
-                      child: Center(
-                        child: SizedBox(
-                          width: 100.w,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 80.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Report",
-                                    style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Icon(
-                                    Icons.error_rounded,
-                                    color: Colors.white,
-                                    size: 20.w,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (isOwner && _user.id != widget.post.personId)
-                    PopupMenuItem<String>(
-                      value: "Block",
-                      height: 30.h,
-                      padding: EdgeInsets.zero,
-                      child: Center(
-                        child: SizedBox(
-                          width: 100.w,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 80.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Block",
-                                    style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Colors.redAccent,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Icon(
-                                    Icons.person_off_rounded,
-                                    color: Colors.redAccent,
-                                    size: 20.w,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (!widget.post.isShare && _user.id == widget.post.personId)
-                    PopupMenuItem<String>(
-                      value: "Edit",
-                      height: 30.h,
-                      padding: EdgeInsets.zero,
-                      child: Center(
-                        child: SizedBox(
-                          width: 100.w,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 80.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Edit",
-                                    style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Icon(
-                                    Icons.mode_edit_outline_outlined,
-                                    color: Colors.white,
-                                    size: 20.w,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (!widget.post.isShare && _user.id == widget.post.personId)
-                    PopupMenuItem<String>(
-                      value: "Delete",
-                      height: 30.h,
-                      padding: EdgeInsets.zero,
-                      child: Center(
-                        child: SizedBox(
-                          width: 100.w,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 80.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Delete",
-                                    style: TextStyle(
-                                        fontSize: 15.sp,
-                                        color: Colors.redAccent,
-                                        fontWeight: FontWeight.w400),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.w,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Icon(
-                                    Icons.delete,
-                                    color: Colors.redAccent,
-                                    size: 20.w,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-                onSelected: (String value) {
-                  if (value == "Report") {
-                    Navigator.of(context).push(HeroDialogRoute(
-                        builder: (context) => ConfirmationPopup(
-                            onTap: _postAbuse,
-                            title: "Report",
-                            message: "Do you want to report post?",
-                            leftBtnText: "Report",
-                            rightBtnText: "Cancel")));
-                  }
-                  if (value == "Block") {
-                    Navigator.of(context).push(HeroDialogRoute(
-                        builder: (context) => ConfirmationPopup(
-                            onTap: _blockUser,
-                            title: "Block User",
-                            message: "Do you want to block this user?",
-                            leftBtnText: "Block",
-                            rightBtnText: "Cancel")));
-                  }
-                  if (value == "Edit") {
-                    if (widget.post.postType != "Premium") {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => UpdatePost(
-                                  post: widget.post,
-                                )),
-                      );
-                    } else {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => UpdateReportPost(
-                                  post: widget.post,
-                                )),
-                      );
-                    }
-                  }
-                  if (value == "Delete") {
-                    Navigator.push(
-                        context,
-                        HeroDialogRoute(
-                            builder: (_) => ConfirmationPopup(
-                                  title: "Delete",
-                                  message:
-                                      "If you delete now, you'll lose this post.",
-                                  leftBtnText: "Delete",
-                                  rightBtnText: "Cancel",
-                                  onTap: _deletePost,
-                                )));
-                  }
-                },
-              ))
+                ))
         ],
       ),
     );

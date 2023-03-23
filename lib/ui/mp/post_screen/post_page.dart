@@ -70,7 +70,7 @@ class _PostPageState extends State<PostPage> with WidgetsBindingObserver {
         floatingActionButton: Visibility(
           visible: !keyboardIsOpen,
           child: FloatingActionButton(
-              heroTag: "1",
+              heroTag: "create_post",
               backgroundColor: AppColors.btnColor,
               child: Icon(
                 Icons.add,

@@ -51,7 +51,7 @@ class WeatherService {
     print(isPremium);
     try {
       final response = await _dio.get(
-          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countySeat,WI&days=${isPremium ? 10 : 5}");
+          "http://api.weatherapi.com/v1/forecast.json?key=${Constant.weatherApiKey}&q=$countySeat,WI&days=${isPremium ? 11 : 5}");
       if (response.statusCode == 200) {
         // final details = response.data;
         // log(details.toString());

@@ -204,7 +204,7 @@ class _MyWRRPostsState extends State<MyWRRPosts>
       floatingActionButton: showHideAnchor
           ? FloatingActionButton(
               mini: true,
-              heroTag: "anchor3",
+              heroTag: "go_top_mywrr",
               backgroundColor: AppColors.btnColor,
               child: Icon(
                 Icons.keyboard_arrow_up_rounded,

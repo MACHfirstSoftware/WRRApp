@@ -5,7 +5,6 @@ import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/subscription_status.dart';
 import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
-import 'package:wisconsin_app/ui/mp/report_screen/create_update_report/create_report_post.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_content_page.dart';
 import 'package:wisconsin_app/ui/mp/report_screen/widgets/report_page_appbar.dart';
 import 'package:wisconsin_app/widgets/view_models.dart';

@@ -210,7 +210,7 @@ class _MyRegionPostsState extends State<MyRegionPosts>
       floatingActionButton: showHideAnchor
           ? FloatingActionButton(
               mini: true,
-              heroTag: "anchor2",
+              heroTag: "go_top_myregion",
               backgroundColor: AppColors.btnColor,
               child: Icon(
                 Icons.keyboard_arrow_up_rounded,

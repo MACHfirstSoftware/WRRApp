@@ -102,21 +102,21 @@ class _ReportPageAppBarState extends State<ReportPageAppBar> {
               right: 40.w,
               child: GestureDetector(
                 onTap: () {
-                  final _subscriptionStatus =
-                      Provider.of<RevenueCatProvider>(context, listen: false)
-                          .subscriptionStatus;
-                  // print(_subscriptionStatus);
-                  if (_subscriptionStatus == SubscriptionStatus.premium) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ContestMainPage()));
-                  } else {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ContestFreeSubs()));
-                  }
+                  // final _subscriptionStatus =
+                  //     Provider.of<RevenueCatProvider>(context, listen: false)
+                  //         .subscriptionStatus;
+                  // // print(_subscriptionStatus);
+                  // if (_subscriptionStatus == SubscriptionStatus.premium) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ContestMainPage()));
+                  // } else {
+                  //   Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (_) => const ContestFreeSubs()));
+                  // }
                 },
                 child: SvgPicture.asset(
                   'assets/icons/trophy-bold.svg',
