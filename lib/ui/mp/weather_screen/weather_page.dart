@@ -8,7 +8,6 @@ import 'package:wisconsin_app/providers/revenuecat_provider.dart';
 import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_body.dart';
-import 'package:wisconsin_app/ui/mp/weather_screen/widget/forecast_weather.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/weather_appbar.dart';
 import 'package:wisconsin_app/ui/mp/weather_screen/widget/current_weather_details.dart';
 import 'package:wisconsin_app/utils/hero_dialog_route.dart';

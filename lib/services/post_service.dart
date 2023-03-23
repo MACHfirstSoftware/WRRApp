@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -24,10 +23,6 @@ class PostService {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/MyWRR" +
           (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
-      // log(response.data.toString());
-      print(Constant.baseUrl +
-          "/Post/$userId/MyWRR" +
-          (lastRecordTime != null ? "?lastRecordTime=$lastRecordTime" : ""));
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -48,19 +43,12 @@ class PostService {
   static Future<ApiResult<List<Post>>> getMyRegionPosts(
       String userId, int regionId,
       {DateTime? lastRecordTime}) async {
-    print(userId);
     try {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/MyRegion" +
           (lastRecordTime != null
               ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
               : "?regionId=$regionId"));
-      print(Constant.baseUrl +
-          "/Post/$userId/MyRegion" +
-          (lastRecordTime != null
-              ? "?lastRecordTime=$lastRecordTime&regionId=$regionId"
-              : "?regionId=$regionId"));
-      inspect(response.data);
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)
@@ -109,11 +97,7 @@ class PostService {
       final response = await CustomHttp.getDio().get(Constant.baseUrl +
           "/Post/$userId/Report?regionId=$regionId" +
           (lastRecordTime != null ? "&lastRecordTime=$lastRecordTime" : ""));
-      print(Constant.baseUrl +
-          "/Post/$userId/Report?regionId=$regionId" +
-          (lastRecordTime != null ? "&lastRecordTime=$lastRecordTime" : ""));
-      // log(response.data.toString());
-      // inspect(response.data);
+
       if (response.statusCode == 200) {
         return ApiResult.success(
             data: (response.data as List<dynamic>)

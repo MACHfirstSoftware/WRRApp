@@ -349,10 +349,8 @@ class _NewReportPostState extends State<NewReportPost> {
           } else {
             _images.add(element);
           }
-          print((size / (1024 * 1024)));
         }
         if (isHasOverSizeImage) {
-          print("Images larger than 5MB cannot be uploaded.");
           ScaffoldMessenger.maybeOf(context)?.showSnackBar(customSnackBar(
               context: context,
               messageText: "Images larger than 5MB cannot be uploaded.",

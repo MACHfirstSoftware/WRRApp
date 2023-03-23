@@ -5,17 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:wisconsin_app/config.dart';
 import 'package:wisconsin_app/enum/api_status.dart';
 import 'package:wisconsin_app/models/county.dart';
-import 'package:wisconsin_app/models/region.dart';
-import 'package:wisconsin_app/models/user.dart';
-import 'package:wisconsin_app/providers/contest_provider.dart';
 import 'package:wisconsin_app/providers/county_provider.dart';
-import 'package:wisconsin_app/providers/region_post_provider.dart';
-import 'package:wisconsin_app/providers/region_provider.dart';
-import 'package:wisconsin_app/providers/report_post_provider.dart';
-import 'package:wisconsin_app/providers/user_provider.dart';
 import 'package:wisconsin_app/providers/weather_provider.dart';
 import 'package:wisconsin_app/utils/common.dart';
-import 'package:wisconsin_app/widgets/view_map.dart';
 
 class WeatherAppBar extends StatefulWidget {
   const WeatherAppBar({Key? key}) : super(key: key);
@@ -26,11 +18,11 @@ class WeatherAppBar extends StatefulWidget {
 
 class _WeatherAppBarState extends State<WeatherAppBar> {
   late List<County> _counties;
-  late List<Region> _regions;
+  // late List<Region> _regions;
   @override
   void initState() {
     _counties = Provider.of<CountyProvider>(context, listen: false).counties;
-    _regions = Provider.of<RegionProvider>(context, listen: false).regions;
+    // _regions = Provider.of<RegionProvider>(context, listen: false).regions;
     super.initState();
   }
 
@@ -109,85 +101,85 @@ class _WeatherAppBarState extends State<WeatherAppBar> {
     });
   }
 
-  _buildDropMenu() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    return PopupMenuButton(
-      child: SvgPicture.asset(
-        'assets/icons/location.svg',
-        height: 30.h,
-        width: 30.h,
-        fit: BoxFit.fill,
-        alignment: Alignment.center,
-        color: Colors.white,
-      ),
-      color: AppColors.popBGColor,
-      itemBuilder: (context) => [
-        PopupMenuItem<Region>(
-          value: Region(id: -1, name: "View Map"),
-          child: SizedBox(
-              width: 200.w,
-              child: Center(
-                child: Container(
-                    alignment: Alignment.center,
-                    height: 45.h,
-                    width: 180.w,
-                    decoration: BoxDecoration(
-                        color: Colors.white10,
-                        borderRadius: BorderRadius.circular(20.w)),
-                    child: SizedBox(
-                        height: 25.h,
-                        width: 120.w,
-                        child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.center,
-                            child: Text("View Map",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.btnColor))))),
-              )),
-        ),
-        ..._regions.map((region) => PopupMenuItem<Region>(
-            value: region,
-            child: SizedBox(
-              width: 200.w,
-              child: ListTile(
-                trailing: region.name == userProvider.user.regionName
-                    ? const Icon(
-                        Icons.check,
-                        color: AppColors.btnColor,
-                      )
-                    : null,
-                title: Text(
-                  region.name,
-                  style: const TextStyle(color: Colors.white),
-                  maxLines: 1,
-                ),
-              ),
-            )))
-      ],
-      onSelected: (Region value) {
-        if (value.id == -1) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const ViewMap()));
-        } else {
-          if (userProvider.user.regionName != value.name) {
-            User _user = userProvider.user;
-            _user.regionName = value.name;
-            userProvider.setUser(_user);
-            Provider.of<RegionPostProvider>(context, listen: false)
-                .chnageRegion(_user.id, value.id);
-            Provider.of<ReportPostProvider>(context, listen: false)
-                .chnageRegion(_user.id, value.id);
-            // Provider.of<AllPostProvider>(context, listen: false)
-            //     .chnageRegion(_user.id, value.id);
-            Provider.of<ContestProvider>(context, listen: false)
-                .chnageRegion(_user.id, value.id);
-          }
-        }
-      },
-    );
-  }
+  // _buildDropMenu() {
+  //   final userProvider = Provider.of<UserProvider>(context, listen: false);
+  //   return PopupMenuButton(
+  //     child: SvgPicture.asset(
+  //       'assets/icons/location.svg',
+  //       height: 30.h,
+  //       width: 30.h,
+  //       fit: BoxFit.fill,
+  //       alignment: Alignment.center,
+  //       color: Colors.white,
+  //     ),
+  //     color: AppColors.popBGColor,
+  //     itemBuilder: (context) => [
+  //       PopupMenuItem<Region>(
+  //         value: Region(id: -1, name: "View Map"),
+  //         child: SizedBox(
+  //             width: 200.w,
+  //             child: Center(
+  //               child: Container(
+  //                   alignment: Alignment.center,
+  //                   height: 45.h,
+  //                   width: 180.w,
+  //                   decoration: BoxDecoration(
+  //                       color: Colors.white10,
+  //                       borderRadius: BorderRadius.circular(20.w)),
+  //                   child: SizedBox(
+  //                       height: 25.h,
+  //                       width: 120.w,
+  //                       child: FittedBox(
+  //                           fit: BoxFit.scaleDown,
+  //                           alignment: Alignment.center,
+  //                           child: Text("View Map",
+  //                               style: TextStyle(
+  //                                   fontSize: 16.sp,
+  //                                   fontWeight: FontWeight.w500,
+  //                                   color: AppColors.btnColor))))),
+  //             )),
+  //       ),
+  //       ..._regions.map((region) => PopupMenuItem<Region>(
+  //           value: region,
+  //           child: SizedBox(
+  //             width: 200.w,
+  //             child: ListTile(
+  //               trailing: region.name == userProvider.user.regionName
+  //                   ? const Icon(
+  //                       Icons.check,
+  //                       color: AppColors.btnColor,
+  //                     )
+  //                   : null,
+  //               title: Text(
+  //                 region.name,
+  //                 style: const TextStyle(color: Colors.white),
+  //                 maxLines: 1,
+  //               ),
+  //             ),
+  //           )))
+  //     ],
+  //     onSelected: (Region value) {
+  //       if (value.id == -1) {
+  //         Navigator.push(
+  //             context, MaterialPageRoute(builder: (_) => const ViewMap()));
+  //       } else {
+  //         if (userProvider.user.regionName != value.name) {
+  //           User _user = userProvider.user;
+  //           _user.regionName = value.name;
+  //           userProvider.setUser(_user);
+  //           Provider.of<RegionPostProvider>(context, listen: false)
+  //               .chnageRegion(_user.id, value.id);
+  //           Provider.of<ReportPostProvider>(context, listen: false)
+  //               .chnageRegion(_user.id, value.id);
+  //           // Provider.of<AllPostProvider>(context, listen: false)
+  //           //     .chnageRegion(_user.id, value.id);
+  //           Provider.of<ContestProvider>(context, listen: false)
+  //               .chnageRegion(_user.id, value.id);
+  //         }
+  //       }
+  //     },
+  //   );
+  // }
 
   _buildDropMenuForCounty(WeatherProvider weatherProvider) {
     return PopupMenuButton(
